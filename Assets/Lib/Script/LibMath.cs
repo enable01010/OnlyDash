@@ -151,4 +151,16 @@ public class LibMath
 
         return answer;
     }
+
+    /// <summary>
+    /// Šp“x‚ğ0`360‚ÉC³‚·‚éˆ—
+    /// </summary>
+    /// <param name="lfAngle"></param>
+    /// <returns></returns>
+    private static float ClampAngle(float lfAngle)
+    {
+        if (lfAngle < -360f) lfAngle += 360f;
+        if (lfAngle > 360f) lfAngle -= 360f;
+        return lfAngle;
+    }
 }

@@ -132,4 +132,61 @@ public class LibPhysics
 
         return answer;
     }
+
+
+
+    //static public Raycast2DBuilder BuildStart()
+    //{
+    //    return new Raycast2DBuilder();
+    //}
+
+    //public class Raycast2DBuilder
+    //{
+    //    Vector2 origin = Vector2.zero;
+    //    Vector2 direction = Vector2.zero;
+    //    float distance = 0.0f;
+    //    int layerMask = 1;
+    //    float duration = 0.0f;
+
+    //    public Raycast2DBuilder SetOrigin(Vector2 origin) 
+    //    { 
+    //        this.origin = origin;
+    //        return this;
+    //    } 
+    //    public Raycast2DBuilder SetDirection(Vector2 direction)
+    //    { 
+    //        this.direction = direction;
+    //        return this;
+    //    }
+    //    public Raycast2DBuilder SetDistance(float distance)
+    //    {
+    //        this.distance = distance;
+    //        return this;
+    //    }
+    //    public Raycast2DBuilder SetLayerMask(int layerMask)
+    //    {
+    //        this.layerMask = layerMask;
+    //        return this;
+    //    }
+    //    public Raycast2DBuilder SetDuration(float duration)
+    //    {
+    //        this.duration = duration;
+    //        return this;
+    //    }
+
+    //    public RaycastHit2D Raycast2D()
+    //    {
+    //        return LibPhysics.Raycast2D(origin, direction, distance, layerMask, duration);
+    //    }
+    //}
+
+    // Žg‚¢•û
+    //LibPhysics
+    //        .BuildStart()
+    //        .SetDirection()
+    //        .SetDistance()
+    //        .SetDuration()
+    //        .SetOrigin()
+    //        .SetLayerMask()
+    //        .Raycast2D();
 }

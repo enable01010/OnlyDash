@@ -70,6 +70,29 @@ public class LibPhysics
 
 
     /// <summary>
+    /// Physics2D.CircleCast
+    /// </summary>
+    /// <param name="start"></param>
+    /// <param name="radius"> 円の半径 </param>
+    /// <param name="direction"></param>
+    /// <param name="distance"></param>
+    /// <param name="layerMask"> 特定のレイヤーのコライダーのみを判別 (1の場合はDefaultのみ) </param>
+    /// <param name="duration"> 消えるまでの時間(秒単位) (0の場合は1フレームのみ表示) </param>
+    /// <returns></returns>
+    static public RaycastHit2D Circlecast2D(Vector2 start, float radius, Vector2 direction, float distance, int layerMask = 1, float duration = 0.0f)
+    {
+        RaycastHit2D answer = new RaycastHit2D();
+
+        //answer = Physics2D.CircleCast();
+
+#if UNITY_EDITOR
+        //Debug.DrawLine(start, end, Color.red, duration);
+#endif
+
+        return answer;
+    }
+
+    /// <summary>
     /// Physics.Raycast
     /// </summary>
     /// <param name="origin"> 原点 </param>

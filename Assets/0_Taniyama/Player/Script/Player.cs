@@ -105,6 +105,8 @@ public class Player : SingletonActionListener<Player>
 
     #endregion
 
+    #region Monobehaviourのコールバック関数
+
     private void OnDrawGizmosSelected()
     {
         Color transparentGreen = new Color(0.0f, 1.0f, 0.0f, 0.35f);
@@ -131,61 +133,9 @@ public class Player : SingletonActionListener<Player>
         GroundCheck();
     }
 
-    /// <summary>
-    /// キャラクターの移動に関する処理
-    /// 先にRot()
-    /// </summary>
-    private void Move()
-    {
-        float targetSpeed = SPRINT_SPEED;
-        if (move == Vector2.zero) targetSpeed = 0.0f;
-        float currentHorizontalSpeed = new Vector3(_controller.velocity.x, 0.0f, _controller.velocity.z).magnitude;
-        const float SPEED_OFFSET = 0.1f;
-        float inputMagnitude = move.magnitude;
+    #endregion
 
-        //ぱっと見移動系計算
-        if (currentHorizontalSpeed < targetSpeed - SPEED_OFFSET || currentHorizontalSpeed > targetSpeed + SPEED_OFFSET)
-        {
-            // creates curved result rather than a linear one giving a more organic speed change
-            // note T in Lerp is clamped, so we don't need to clamp our speed
-            _speed = Mathf.Lerp(currentHorizontalSpeed, targetSpeed * inputMagnitude,
-                Time.deltaTime * SPEED_CHANGE_RATE);
-
-            // round speed to 3 decimal places
-            _speed = Mathf.Round(_speed * 1000f) / 1000f;
-        }
-        else
-        {
-            _speed = targetSpeed;
-        }
-
-        _animationBlend = Mathf.Lerp(_animationBlend, targetSpeed, Time.deltaTime * SPEED_CHANGE_RATE);
-        if (_animationBlend < 0.01f) _animationBlend = 0f;
-
-        Vector3 targetDirection = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
-
-        _controller.Move(targetDirection.normalized * (_speed * Time.deltaTime) + new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
-
-        _animator.SetFloat(_animIDSpeed, _animationBlend);
-        _animator.SetFloat(_animIDMotionSpeed, inputMagnitude);
-
-    }
-
-    /// <summary>
-    /// キャラクターの回転に関する処理
-    /// </summary>
-    private void Rot()
-    {
-        Vector3 inputDirection = new Vector3(move.x, 0.0f, move.y).normalized;
-        if (move != Vector2.zero)
-        {
-            _targetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg + _mainCamera.transform.eulerAngles.y;
-            float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, _targetRotation, ref _rotationVelocity, ROTATION_SMOOTH_TIME);
-
-            // rotate to face input direction relative to camera position
-            transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
-        }
-    }
+    #region 初期設定用関数
 
     /// <summary>
     /// アニメーションの設定
@@ -229,6 +179,10 @@ public class Player : SingletonActionListener<Player>
         _jumpTimeoutDelta = JUMP_TIMEOUT;
         _fallTimeoutDelta = FALL_TIMEOUT;
     }
+
+    #endregion
+
+    #region キャラクターの挙動制御用関数
 
     /// <summary>
     /// キャラクターが着地しているか確認する処理
@@ -310,6 +264,64 @@ public class Player : SingletonActionListener<Player>
         }
     }
 
+    /// <summary>
+    /// キャラクターの移動に関する処理
+    /// 先にRot()
+    /// </summary>
+    private void Move()
+    {
+        float targetSpeed = SPRINT_SPEED;
+        if (move == Vector2.zero) targetSpeed = 0.0f;
+        float currentHorizontalSpeed = new Vector3(_controller.velocity.x, 0.0f, _controller.velocity.z).magnitude;
+        const float SPEED_OFFSET = 0.1f;
+        float inputMagnitude = move.magnitude;
+
+        //ぱっと見移動系計算
+        if (currentHorizontalSpeed < targetSpeed - SPEED_OFFSET || currentHorizontalSpeed > targetSpeed + SPEED_OFFSET)
+        {
+            // creates curved result rather than a linear one giving a more organic speed change
+            // note T in Lerp is clamped, so we don't need to clamp our speed
+            _speed = Mathf.Lerp(currentHorizontalSpeed, targetSpeed * inputMagnitude,
+                Time.deltaTime * SPEED_CHANGE_RATE);
+
+            // round speed to 3 decimal places
+            _speed = Mathf.Round(_speed * 1000f) / 1000f;
+        }
+        else
+        {
+            _speed = targetSpeed;
+        }
+
+        _animationBlend = Mathf.Lerp(_animationBlend, targetSpeed, Time.deltaTime * SPEED_CHANGE_RATE);
+        if (_animationBlend < 0.01f) _animationBlend = 0f;
+
+        Vector3 targetDirection = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
+
+        _controller.Move(targetDirection.normalized * (_speed * Time.deltaTime) + new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
+
+        _animator.SetFloat(_animIDSpeed, _animationBlend);
+        _animator.SetFloat(_animIDMotionSpeed, inputMagnitude);
+
+    }
+
+    /// <summary>
+    /// キャラクターの回転に関する処理
+    /// </summary>
+    private void Rot()
+    {
+        Vector3 inputDirection = new Vector3(move.x, 0.0f, move.y).normalized;
+        if (move != Vector2.zero)
+        {
+            _targetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg + _mainCamera.transform.eulerAngles.y;
+            float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, _targetRotation, ref _rotationVelocity, ROTATION_SMOOTH_TIME);
+
+            // rotate to face input direction relative to camera position
+            transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
+        }
+    }
+
+    #endregion
+
     #region ActionListenerのコールバック関数
 
     public override void OnPlayerMove(InputAction.CallbackContext context)
@@ -387,7 +399,6 @@ public class Player : SingletonActionListener<Player>
     }
 
     #endregion
-
 
     #region ステート呼び出し用関数
 

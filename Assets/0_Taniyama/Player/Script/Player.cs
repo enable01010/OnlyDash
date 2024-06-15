@@ -281,6 +281,7 @@ public class Player : SingletonActionListener<Player>
             else
             {
                 _animator.SetBool(_animIDFreeFall, true);
+                _animator.SetBool(_animIDJump, false);
             }
         }
     }
@@ -294,7 +295,6 @@ public class Player : SingletonActionListener<Player>
         {
             _fallTimeoutDelta = FALL_TIMEOUT;
 
-            _animator.SetBool(_animIDJump, false);
             _animator.SetBool(_animIDFreeFall, false);
 
             if (_verticalVelocity < 0.0f)

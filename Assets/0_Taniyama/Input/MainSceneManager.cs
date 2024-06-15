@@ -114,4 +114,9 @@ public partial class MainSceneManager:Singleton<MainSceneManager>
 	{
 		instance.actionListeners.Add(listener);
 	}
+
+	public static string GetCurrentControlScheme()
+	{
+		return instance._input.currentControlScheme;
+    }
 }

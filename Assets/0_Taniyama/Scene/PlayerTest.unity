@@ -2137,6 +2137,12 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 6982812147933622148}
   m_SourcePrefab: {fileID: 100100000, guid: 447cba1118c3f2b49afd92dcbcf7eb7d, type: 3}
+--- !u!1 &6977116358523986242 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2133253863265182256, guid: 447cba1118c3f2b49afd92dcbcf7eb7d,
+    type: 3}
+  m_PrefabInstance: {fileID: 6977116358523986241}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &6982812147933622148
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2190,6 +2196,11 @@ MonoBehaviour:
   GroundLayers:
     serializedVersion: 2
     m_Bits: 1
+  CinemachineCameraTarget: {fileID: 6977116358523986242}
+  TopClamp: 70
+  BottomClamp: -30
+  lockCameraPosition: 0
+  CameraAngleOverride: 0
   LandingAudioClip: {fileID: 0}
   FootstepAudioClips: []
   FOOTSTEP_AUDIO_VOLUME: 0.5

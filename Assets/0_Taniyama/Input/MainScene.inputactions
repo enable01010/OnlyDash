@@ -43,12 +43,12 @@
                 },
                 {
                     "name": "CamMove",
-                    "type": "Button",
+                    "type": "Value",
                     "id": "a189df7e-c03b-4b78-a588-b42c781adcd2",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "Vector2",
                     "processors": "",
                     "interactions": "",
-                    "initialStateCheck": false
+                    "initialStateCheck": true
                 },
                 {
                     "name": "Slow",
@@ -168,7 +168,7 @@
                 {
                     "name": "",
                     "id": "3a5d9f6f-7ce0-457c-a724-0e4468330064",
-                    "path": "<DualShockGamepad>/leftStick",
+                    "path": "<Gamepad>/leftStick",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -179,7 +179,7 @@
                 {
                     "name": "",
                     "id": "078befd4-d560-479b-bae7-e35bb60e2a9f",
-                    "path": "<Keyboard>/space",
+                    "path": "<Gamepad>/leftShoulder",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -195,17 +195,6 @@
                     "processors": "",
                     "groups": "",
                     "action": "Slide",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "6b716c91-ae12-4a47-9b76-cb3a564be0a1",
-                    "path": "",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "CamMove",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -250,6 +239,28 @@
                     "processors": "",
                     "groups": "",
                     "action": "Buck",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "7b6d439d-2fec-49dd-83e7-d8ccf01c9e11",
+                    "path": "<Mouse>/delta",
+                    "interactions": "",
+                    "processors": "InvertVector2(invertX=false),ScaleVector2(x=0.05,y=0.05)",
+                    "groups": "",
+                    "action": "CamMove",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "4043b1ea-2e38-4c0c-829c-7201e1db473b",
+                    "path": "<Gamepad>/rightStick",
+                    "interactions": "",
+                    "processors": "InvertVector2(invertX=false),ScaleVector2(x=300,y=300)",
+                    "groups": "",
+                    "action": "CamMove",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

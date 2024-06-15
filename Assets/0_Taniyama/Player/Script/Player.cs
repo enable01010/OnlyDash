@@ -6,13 +6,13 @@ using Unity.VisualScripting;
 
 [RequireComponent(typeof(Animator))]
 [RequireComponent(typeof(CharacterController))]
+
 public class Player : SingletonActionListener<Player>
 {
     #region 別コンポーネント
 
     private Animator _animator;
     private CharacterController _controller;
-    private StarterAssets.StarterAssetsInputs _input;
     private GameObject _mainCamera;
 
     #endregion
@@ -73,9 +73,40 @@ public class Player : SingletonActionListener<Player>
 
     #region ActionListenerの用変数
 
-    private Vector2 move = Vector2.zero;
+    private Vector2 playerMove = Vector2.zero;
+    private Vector2 camMove = Vector2.zero;
     private bool isSlide = false;
     private bool isSlow = false;
+
+    #endregion
+
+    #region カメラ用の変数
+    [Header("カメラ")]
+    public GameObject CinemachineCameraTarget;
+    [Tooltip("上限")]
+    public float TopClamp = 70.0f;
+    [Tooltip("下限")]
+    public float BottomClamp = -30.0f;
+    public bool lockCameraPosition = false;
+    public float CameraAngleOverride = 0.0f;
+    private const float THRESHOLD = 0.01f;
+    private float _cinemachineTargetYaw;
+    private float _cinemachineTargetPitch;
+
+    private bool IsCurrentDeviceMouse
+    {
+        get
+        {
+#if ENABLE_INPUT_SYSTEM
+
+            string a = MainSceneManager.GetCurrentControlScheme();
+            bool answer = MainSceneManager.GetCurrentControlScheme() == "KeyboardMouse";
+            return MainSceneManager.GetCurrentControlScheme() == "KeyboardMouse";
+#else
+				return false;
+#endif
+        }
+    }
 
     #endregion
 
@@ -131,6 +162,7 @@ public class Player : SingletonActionListener<Player>
     private void Update()
     {
         GroundCheck();
+        CameraRotation();
     }
 
     #endregion
@@ -160,6 +192,8 @@ public class Player : SingletonActionListener<Player>
         {
             _mainCamera = GameObject.FindGameObjectWithTag("MainCamera");
         }
+
+        _cinemachineTargetYaw = CinemachineCameraTarget.transform.rotation.eulerAngles.y;
     }
 
     /// <summary>
@@ -180,7 +214,7 @@ public class Player : SingletonActionListener<Player>
         _fallTimeoutDelta = FALL_TIMEOUT;
     }
 
-    #endregion
+#endregion
 
     #region キャラクターの挙動制御用関数
 
@@ -271,10 +305,10 @@ public class Player : SingletonActionListener<Player>
     private void Move()
     {
         float targetSpeed = SPRINT_SPEED;
-        if (move == Vector2.zero) targetSpeed = 0.0f;
+        if (playerMove == Vector2.zero) targetSpeed = 0.0f;
         float currentHorizontalSpeed = new Vector3(_controller.velocity.x, 0.0f, _controller.velocity.z).magnitude;
         const float SPEED_OFFSET = 0.1f;
-        float inputMagnitude = move.magnitude;
+        float inputMagnitude = playerMove.magnitude;
 
         //ぱっと見移動系計算
         if (currentHorizontalSpeed < targetSpeed - SPEED_OFFSET || currentHorizontalSpeed > targetSpeed + SPEED_OFFSET)
@@ -309,8 +343,8 @@ public class Player : SingletonActionListener<Player>
     /// </summary>
     private void Rot()
     {
-        Vector3 inputDirection = new Vector3(move.x, 0.0f, move.y).normalized;
-        if (move != Vector2.zero)
+        Vector3 inputDirection = new Vector3(playerMove.x, 0.0f, playerMove.y).normalized;
+        if (playerMove != Vector2.zero)
         {
             _targetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg + _mainCamera.transform.eulerAngles.y;
             float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, _targetRotation, ref _rotationVelocity, ROTATION_SMOOTH_TIME);
@@ -330,7 +364,7 @@ public class Player : SingletonActionListener<Player>
 
         base.OnPlayerMove(context);
 
-        move = context.ReadValue<Vector2>();
+        playerMove = context.ReadValue<Vector2>();
     }
 
     public override void OnJump(InputAction.CallbackContext context)
@@ -366,6 +400,38 @@ public class Player : SingletonActionListener<Player>
         base.OnSlide(context);
 
         isSlide = context.ReadValue<bool>();
+    }
+
+    public override void OnCamMove(InputAction.CallbackContext context)
+    {
+        base.OnCamMove(context);
+
+        camMove = context.ReadValue<Vector2>();
+    }
+
+    #endregion
+
+    #region カメラの挙動制御用関数
+
+    private void CameraRotation()
+    {
+        // if there is an input and camera position is not fixed
+        if (camMove.sqrMagnitude >= THRESHOLD && !lockCameraPosition)
+        {
+            //Don't multiply mouse input by Time.deltaTime;
+            float deltaTimeMultiplier = IsCurrentDeviceMouse ? 1.0f : Time.deltaTime;
+
+            _cinemachineTargetYaw += camMove.x * deltaTimeMultiplier;
+            _cinemachineTargetPitch += camMove.y * deltaTimeMultiplier;
+        }
+
+        // clamp our rotations so our values are limited 360 degrees
+        _cinemachineTargetYaw = LibMath.ClampAngle(_cinemachineTargetYaw, float.MinValue, float.MaxValue);
+        _cinemachineTargetPitch = LibMath.ClampAngle(_cinemachineTargetPitch, BottomClamp, TopClamp);
+
+        // Cinemachine will follow this target
+        CinemachineCameraTarget.transform.rotation = Quaternion.Euler(_cinemachineTargetPitch + CameraAngleOverride,
+            _cinemachineTargetYaw, 0.0f);
     }
 
     #endregion

@@ -24,13 +24,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8889462286381814989}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &9188554597645389304
 MonoBehaviour:
@@ -45,5 +45,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   audioMixer: {fileID: 24100000, guid: c0050f909c2c66745bcf1a065291b9df, type: 2}
-  audioObjectPrefab: {fileID: 1430336126188433021, guid: 852859304e55ec54fb1ffb6c00bf7467, type: 3}
+  audioObjectPrefab: {fileID: 1430336126188433021, guid: b24f9726a5ef82e48b7504b17af2771b,
+    type: 3}
   trollCount: 10

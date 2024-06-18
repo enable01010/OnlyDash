@@ -4053,6 +4053,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Aqua
       objectReference: {fileID: 0}
+    - target: {fileID: 8646056645455486735, guid: 58a4c6ae4a5533a46b51ff57d604b86d,
+        type: 3}
+      propertyPath: m_Center.y
+      value: 0.77
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:

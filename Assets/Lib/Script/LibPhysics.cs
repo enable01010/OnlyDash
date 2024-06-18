@@ -5,7 +5,7 @@ using UnityEngine;
 /// <summary>
 /// Ray(Line)を出した際にDebug.Drawをするクラス
 /// </summary>
-public class LibPhysics
+public static class LibPhysics
 {
     /// <summary>
     /// Physics2D.Raycast
@@ -344,6 +344,64 @@ public class LibPhysics
     }
 
 
+    //static public implicit operator bool(RaycastHit raycastHit)
+    //{
+    //    bool answer;
+
+    //    answer = raycastHit.transform != null;
+
+    //    return answer;
+    //}
+
+    //static public bool operator ==(RaycastHit raycastHit, bool temp)
+    //{
+    //    bool answer;
+
+    //    // 一致してたらtrue
+    //    if((raycastHit.transform != null) == temp)
+    //    {
+    //        answer = true;
+    //    }
+    //    else
+    //    {
+    //        answer = false;
+    //    }
+
+    //    return answer;
+    //}
+
+    //static public bool operator !=(RaycastHit raycastHit, bool temp)
+    //{
+    //    bool answer;
+
+    //    // 一致してなかったらtrue
+    //    if ((raycastHit.transform != null) != temp)
+    //    {
+    //        answer = true;
+    //    }
+    //    else
+    //    {
+    //        answer = false;
+    //    }
+
+    //    return answer;
+    //}
+
+    // staticクラスにしないとダメ？
+    static public bool IsHit(this RaycastHit raycastHit)
+    {
+        return raycastHit.transform != null;
+    }
+
+    //static public bool operator true(RaycastHit raycastHit)
+    //{
+    //    return raycastHit.transform != null;
+    //}
+
+    //static public bool operator false(RaycastHit raycastHit)
+    //{
+    //    return raycastHit.transform == null;
+    //}
 
     // Builderパターン
     //static public Raycast2DBuilder BuildStart()

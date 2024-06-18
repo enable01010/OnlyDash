@@ -27,7 +27,7 @@ public class SphereCastTest : MonoBehaviour
             groundLayers
         );
 
-        if (temp.transform != null)
+        if (temp.IsHit())//.transform != null)
         {
             Debug.Log(temp.transform.gameObject.name);
         }

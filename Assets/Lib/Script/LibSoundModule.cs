@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.UI;
+using System;
 
 internal class LibSoundModule : MonoBehaviour
 {
@@ -11,15 +12,19 @@ internal class LibSoundModule : MonoBehaviour
     [SerializeField] private AudioMixer audioMixer;
     [SerializeField] private GameObject audioObjectPrefab;
 
-    [SerializeField] private int trollCount = 10;
-    private int trollNowCount = 0;
+    private int bgmLength;
+    private int soundLength;
 
     private AudioClip[] audioClipBGM;
     private AudioClip[] audioClipSE;
 
     private AudioSource[] audioSourceBGM;
-    private AudioSource[] audioSourceSolo;
-    private AudioSource[] audioSourceTroll;
+    private AudioSource[] audioSourcePlay;
+    private AudioSource audioSourcePlayOneShot;
+
+    private Transform[] transformBGM;
+    private Transform[] transformPlay;
+    private Transform transformPlayOneShot;
 
     #endregion
 
@@ -27,28 +32,74 @@ internal class LibSoundModule : MonoBehaviour
 
     public void Init()
     {
-        audioClipBGM = Resources.LoadAll<AudioClip>("Sound/BGM");
-        audioClipSE = Resources.LoadAll<AudioClip>("Sound/SE");
-
+        // オブジェクト生成
         GameObject parentSound = new GameObject("Sound");
         GameObject parentBGM = new GameObject("BGM");
         GameObject parentSE = new GameObject("SE");
-        GameObject parentSolo = new GameObject("Solo");
-        GameObject parentTroll = new GameObject("Troll");
+        GameObject parentPlay = new GameObject("Play");
+        GameObject parentPlayOneShot = new GameObject("PlayOneShot");
 
         parentSound.transform.SetParent(this.transform);
         parentBGM.transform.SetParent(parentSound.transform);
         parentSE.transform.SetParent(parentSound.transform);
-        parentSolo.transform.SetParent(parentSE.transform);
-        parentTroll.transform.SetParent(parentSE.transform);
+        parentPlay.transform.SetParent(parentSE.transform);
+        parentPlayOneShot.transform.SetParent(parentSE.transform);
+
+
+        // AudioClipをenum順にソートして入れる
+        bgmLength = Enum.GetValues(typeof(BGMName)).Length;
+        soundLength = Enum.GetValues(typeof(SoundFxName)).Length;
+
+        audioClipBGM = new AudioClip[bgmLength];
+        audioClipSE = new AudioClip[soundLength];
+
+        audioClipBGM = Resources.LoadAll<AudioClip>("Sound/BGM");
+        audioClipSE = Resources.LoadAll<AudioClip>("Sound/SE");
+
+
+        Array.Resize(ref audioClipBGM, bgmLength);
+        Array.Resize(ref audioClipSE, soundLength);
+
+        for (int i = 0; i < bgmLength; i++)// BGM
+        {
+            BGMName bGMName = (BGMName)Enum.ToObject(typeof(BGMName), i);
+
+            for (int j = 0; j < bgmLength; j++)
+            {
+                if (audioClipBGM[j] != null && audioClipBGM[j].name == bGMName.ToString())
+                {
+                    AudioClip temp = audioClipBGM[i];
+                    audioClipBGM[i] = audioClipBGM[j];
+                    audioClipBGM[j] = temp;
+                    break;
+                }
+            }
+        }
+
+        for (int i = 0; i < soundLength; i++)// Sound
+        {
+            SoundFxName soundFxName = (SoundFxName)Enum.ToObject(typeof(SoundFxName), i);
+
+            for (int j = 0; j < soundLength; j++)
+            {
+                if (audioClipSE[j] != null && audioClipSE[j].name == soundFxName.ToString())
+                {
+                    AudioClip temp = audioClipSE[i];
+                    audioClipSE[i] = audioClipSE[j];
+                    audioClipSE[j] = temp;
+                    break;
+                }
+            }
+        }
+
 
         // BGM用
-        audioSourceBGM = new AudioSource[audioClipBGM.Length];
-        for (int i = 0; i < audioClipBGM.Length; i++)
+        audioSourceBGM = new AudioSource[bgmLength];
+        for (int i = 0; i < bgmLength; i++)
         {
             GameObject obj = Instantiate(audioObjectPrefab);
             obj.transform.SetParent(parentBGM.transform);
-            obj.name = audioClipBGM[i].name;
+            obj.name = ((BGMName)Enum.ToObject(typeof(BGMName), i)).ToString();
 
             audioSourceBGM[i] = obj.GetComponent<AudioSource>();
             audioSourceBGM[i].clip = audioClipBGM[i];
@@ -56,30 +107,31 @@ internal class LibSoundModule : MonoBehaviour
             audioSourceBGM[i].loop = true;
         }
 
-        // 独唱SE用
-        audioSourceSolo = new AudioSource[audioClipSE.Length];
-        for (int i = 0; i < audioClipSE.Length; i++)
+
+        // SE Play用(音が重ならず、上書きされる)
+        audioSourcePlay = new AudioSource[soundLength];
+        for (int i = 0; i < soundLength; i++)
         {
             GameObject obj = Instantiate(audioObjectPrefab);
-            obj.transform.SetParent(parentSolo.transform);
-            obj.name = audioClipSE[i].name;
+            obj.transform.SetParent(parentPlay.transform);
+            obj.name = ((SoundFxName)Enum.ToObject(typeof(SoundFxName), i)).ToString();
 
-            audioSourceSolo[i] = obj.GetComponent<AudioSource>();
-            audioSourceSolo[i].clip = audioClipSE[i];
-            audioSourceSolo[i].outputAudioMixerGroup = audioMixer.FindMatchingGroups("Master")[2];
+            audioSourcePlay[i] = obj.GetComponent<AudioSource>();
+            if (audioClipSE[i] != null)
+            {
+                audioSourcePlay[i].clip = audioClipSE[i];
+            }
+            audioSourcePlay[i].outputAudioMixerGroup = audioMixer.FindMatchingGroups("Master")[2];
         }
 
-        // 輪唱SE用
-        audioSourceTroll = new AudioSource[trollCount];
-        for (int i = 0; i < trollCount; i++)
-        {
-            GameObject obj = Instantiate(audioObjectPrefab);
-            obj.transform.SetParent(parentTroll.transform);
-            obj.name = "Troll_" + i;
 
-            audioSourceTroll[i] = obj.GetComponent<AudioSource>();
-            audioSourceTroll[i].outputAudioMixerGroup = audioMixer.FindMatchingGroups("Master")[2];
-        }
+        // SE PlayOneShot用(音が重なる)
+        GameObject objShot = Instantiate(audioObjectPrefab);
+        objShot.transform.SetParent(parentPlayOneShot.transform);
+        objShot.name = "PlayOneShot";
+
+        audioSourcePlayOneShot = objShot.GetComponent<AudioSource>();
+        audioSourcePlayOneShot.outputAudioMixerGroup = audioMixer.FindMatchingGroups("Master")[2];
     }
 
     public void SetAudioMixerMaster(float value)
@@ -106,15 +158,21 @@ internal class LibSoundModule : MonoBehaviour
         audioMixer.SetFloat("SE", volume);
     }
 
-    public void PlayBGM(string name)
+    public void PlayBGM(int number, float startTime)
     {
         bool isMissing = true;
         for (int i = 0; i < audioSourceBGM.Length; i++)
         {
-            if (audioSourceBGM[i].clip.name == name)
+            if (i == number)
             {
-                audioSourceBGM[i].Play();
-                isMissing = false;
+                if (audioClipBGM[number] != null)
+                {
+                    AudioSource audio = audioSourceBGM[number];
+                    //audio.time = startTime;
+                    audio.Play();
+                    audio.time = startTime;
+                    isMissing = false;
+                }
             }
             else
             {
@@ -125,48 +183,44 @@ internal class LibSoundModule : MonoBehaviour
 #if UNITY_EDITOR
         if (isMissing == true)
         {
+            string name = ((BGMName)Enum.ToObject(typeof(BGMName), number)).ToString();
             Debug.Log(name + "はありません");
         }
 #endif
     }
 
-    public void PlaySoloSE(string name, float time)
+    public void PlaySoloSE(int number, float startTime)
     {
-        for (int i = 0; i < audioSourceSolo.Length; i++)
+        if(audioClipSE[number] != null)
         {
-            if (audioSourceSolo[i].clip.name == name)
-            {
-                AudioSource audio = audioSourceSolo[i];
-                audio.time = time;
-                audio.Play();
+            AudioSource audio = audioSourcePlay[number];
+            //audio.time = startTime;
+            audio.Play();
+            audio.time = startTime;
 
-                return;
-            }
+            return;
         }
 
 #if UNITY_EDITOR
+        string name = ((SoundFxName)Enum.ToObject(typeof(SoundFxName), number)).ToString();
         Debug.Log(name + "はありません");
 #endif
     }
 
-    public void PlayTrollSE(string name, float time)
+    public void PlayTrollSE(int number, float startTime)
     {
-        for (int i = 0; i < audioClipSE.Length; i++)
+        if (audioClipSE[number] != null)
         {
-            if (audioClipSE[i].name == name)
-            {
-                AudioSource audio = audioSourceTroll[trollNowCount];
-                audio.clip = audioClipSE[i];
-                audio.time = time;
-                audio.Play();
+            AudioSource audio = audioSourcePlayOneShot;
+            //audio.time = startTime;
+            audio.PlayOneShot(audioClipSE[number]);
+            audio.time = startTime;
 
-                trollNowCount = (trollNowCount + 1) % trollCount;
-
-                return;
-            }
+            return;
         }
 
 #if UNITY_EDITOR
+        string name = ((SoundFxName)Enum.ToObject(typeof(SoundFxName), number)).ToString();
         Debug.Log(name + "はありません");
 #endif
     }
@@ -178,15 +232,12 @@ internal class LibSoundModule : MonoBehaviour
             audioSourceBGM[i].Stop();
         }
 
-        for (int i = 0; i < audioSourceSolo.Length; i++)
+        for (int i = 0; i < audioSourcePlay.Length; i++)
         {
-            audioSourceSolo[i].Stop();
+            audioSourcePlay[i].Stop();
         }
 
-        for (int i = 0; i < audioSourceTroll.Length; i++)
-        {
-            audioSourceTroll[i].Stop();
-        }
+        audioSourcePlayOneShot.Stop();
     }
 
     public float AudioMixerGetFloat(string name)
@@ -229,13 +280,13 @@ public class LibSound
     {
         GameObject prefab = (GameObject)Resources.Load("Prefabs/SoundModule");
 
-        GameObject tempObject = Object.Instantiate(prefab);
+        GameObject tempObject = UnityEngine.Object.Instantiate(prefab);//////////////////////////////////////////
 
         module = tempObject.GetComponent<LibSoundModule>();
 
         module.Init();
 
-        Object.DontDestroyOnLoad(tempObject);
+        UnityEngine.Object.DontDestroyOnLoad(tempObject);////////////////////////////////////////////////////////
     }
 
     #region CustomMethod
@@ -255,22 +306,20 @@ public class LibSound
         instance.module.SetAudioMixerSE(value);
     }
 
-    public static void PlayBGM(BGMName sound)
+    public static void PlayBGM(BGMName sound, float startTime = 0)
     {
         string name = sound.ToString();
-        instance.module.PlayBGM(name);
+        instance.module.PlayBGM((int)sound, startTime);
     }
 
     public static void PlaySoloSE(SoundFxName sound, float startTime = 0)
     {
-        string name = sound.ToString();
-        instance.module.PlaySoloSE(name, startTime);
+        instance.module.PlaySoloSE((int)sound, startTime);
     }
 
     public static void PlayTrollSE(SoundFxName sound, float startTime = 0)
     {
-        string name = sound.ToString();
-        instance.module.PlayTrollSE(name, startTime);
+        instance.module.PlayTrollSE((int)sound, startTime);
     }
 
     public static void StopAll()
@@ -291,30 +340,38 @@ public class LibSound
     #endregion
 }
 
+public enum BGMName
+{
+    BGM1 = 0,
+    BGM2,
+    BGM3,
+}
+
 public enum SoundFxName
 {
     CharacterReadyJump = 0,
     CharacterJump,
     CharacterLanding,
+    琴の滑奏,
     CharacterCollision,
     CharacterReadyWallKick,
     CharacterWallKick,
+    ゲージ回復2,
     TutorialOpen,
     TutorialClose,
     SettingOpen,
     SettingClose,
     GoalOpen,
+    きらーん2,
     SceneLoad,
     Star,
     ResultTime,
     ResultTimeStop,
     Cheer,
     Window,
+    決定ボタンを押す51,
     ClearImage,
     Goal,
 }
 
-public enum BGMName
-{
-    BGM1 = 0,
-}
+

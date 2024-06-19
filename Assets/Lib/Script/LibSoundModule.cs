@@ -22,6 +22,10 @@ internal class LibSoundModule : MonoBehaviour
     private AudioSource[] audioSourcePlay;
     private AudioSource audioSourcePlayOneShot;
 
+    private Transform[] transformBGM;
+    private Transform[] transformPlay;
+    private Transform transformPlayOneShot;
+
     #endregion
 
     #region CustomMethod
@@ -154,7 +158,7 @@ internal class LibSoundModule : MonoBehaviour
         audioMixer.SetFloat("SE", volume);
     }
 
-    public void PlayBGM(int number)
+    public void PlayBGM(int number, float startTime)
     {
         bool isMissing = true;
         for (int i = 0; i < audioSourceBGM.Length; i++)
@@ -163,7 +167,10 @@ internal class LibSoundModule : MonoBehaviour
             {
                 if (audioClipBGM[number] != null)
                 {
-                    audioSourceBGM[number].Play();
+                    AudioSource audio = audioSourceBGM[number];
+                    //audio.time = startTime;
+                    audio.Play();
+                    audio.time = startTime;
                     isMissing = false;
                 }
             }
@@ -182,13 +189,14 @@ internal class LibSoundModule : MonoBehaviour
 #endif
     }
 
-    public void PlaySoloSE(int number, float time)
+    public void PlaySoloSE(int number, float startTime)
     {
         if(audioClipSE[number] != null)
         {
             AudioSource audio = audioSourcePlay[number];
-            audio.time = time;
+            //audio.time = startTime;
             audio.Play();
+            audio.time = startTime;
 
             return;
         }
@@ -199,13 +207,14 @@ internal class LibSoundModule : MonoBehaviour
 #endif
     }
 
-    public void PlayTrollSE(int number, float time)
+    public void PlayTrollSE(int number, float startTime)
     {
         if (audioClipSE[number] != null)
         {
             AudioSource audio = audioSourcePlayOneShot;
-            audio.time = time;
+            //audio.time = startTime;
             audio.PlayOneShot(audioClipSE[number]);
+            audio.time = startTime;
 
             return;
         }
@@ -297,10 +306,10 @@ public class LibSound
         instance.module.SetAudioMixerSE(value);
     }
 
-    public static void PlayBGM(BGMName sound)
+    public static void PlayBGM(BGMName sound, float startTime = 0)
     {
         string name = sound.ToString();
-        instance.module.PlayBGM((int)sound);
+        instance.module.PlayBGM((int)sound, startTime);
     }
 
     public static void PlaySoloSE(SoundFxName sound, float startTime = 0)
@@ -310,7 +319,6 @@ public class LibSound
 
     public static void PlayTrollSE(SoundFxName sound, float startTime = 0)
     {
-        string name = sound.ToString();
         instance.module.PlayTrollSE((int)sound, startTime);
     }
 

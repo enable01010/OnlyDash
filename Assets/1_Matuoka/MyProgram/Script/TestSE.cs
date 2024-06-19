@@ -31,7 +31,7 @@ public class TestSE : MonoBehaviour
 
     public void aaa2()
     {
-        LibSound.PlayBGM(bGMName);
+        LibSound.PlayBGM(bGMName, 3f);
     }
 
     public void bbb1()
@@ -51,7 +51,7 @@ public class TestSE : MonoBehaviour
 
     public void bbb4()
     {
-        LibSound.PlaySoloSE(soundFxName4);
+        LibSound.PlaySoloSE(soundFxName4, 0.5f);
     }
 
     public void ccc1()
@@ -71,7 +71,7 @@ public class TestSE : MonoBehaviour
 
     public void ccc4()
     {
-        LibSound.PlayTrollSE(soundFxName4);
+        LibSound.PlayTrollSE(soundFxName4, 0.5f);
     }
 
 

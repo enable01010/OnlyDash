@@ -31,47 +31,47 @@ public class TestSE : MonoBehaviour
 
     public void aaa2()
     {
-        LibSound.PlayBGM(bGMName, 3f);
+        LibSound.PlayBGM(bGMName);
     }
 
     public void bbb1()
     {
-        LibSound.PlaySoloSE(soundFxName1);
+        LibSound.PlaySE(soundFxName1, 0.3f);
     }
 
     public void bbb2()
     {
-        LibSound.PlaySoloSE(soundFxName2);
+        LibSound.PlaySE(soundFxName2, 0.3f);
     }
 
     public void bbb3()
     {
-        LibSound.PlaySoloSE(soundFxName3);
+        LibSound.PlaySE(soundFxName3, 0.1f);
     }
 
     public void bbb4()
     {
-        LibSound.PlaySoloSE(soundFxName4, 0.5f);
+        LibSound.PlaySE(soundFxName4, 0.3f);
     }
 
     public void ccc1()
     {
-        LibSound.PlayTrollSE(soundFxName1);
+        LibSound.PlayOneShotSE(soundFxName1);
     }
 
     public void ccc2()
     {
-        LibSound.PlayTrollSE(soundFxName2);
+        LibSound.PlayOneShotSE(soundFxName2);
     }
 
     public void ccc3()
     {
-        LibSound.PlayTrollSE(soundFxName3);
+        LibSound.PlayOneShotSE(soundFxName3);
     }
 
     public void ccc4()
     {
-        LibSound.PlayTrollSE(soundFxName4, 0.5f);
+        LibSound.PlayOneShotSE(soundFxName4, 0.5f);
     }
 
 

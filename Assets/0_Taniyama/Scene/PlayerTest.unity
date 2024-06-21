@@ -3721,6 +3721,12 @@ ReflectionProbe:
   m_UseOcclusionCulling: 1
   m_Importance: 1
   m_CustomBakedTexture: {fileID: 0}
+--- !u!1 &1883375789 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6784733598655198766, guid: 58a4c6ae4a5533a46b51ff57d604b86d,
+    type: 3}
+  m_PrefabInstance: {fileID: 2846988249221407417}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &2082667867 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7532251991482030495, guid: 58a4c6ae4a5533a46b51ff57d604b86d,
@@ -4053,6 +4059,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: Aqua
       objectReference: {fileID: 0}
+    - target: {fileID: 7439197762528954755, guid: 58a4c6ae4a5533a46b51ff57d604b86d,
+        type: 3}
+      propertyPath: <GroundLayers>k__BackingField.m_Bits
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7439197762528954755, guid: 58a4c6ae4a5533a46b51ff57d604b86d,
+        type: 3}
+      propertyPath: <CinemachineCameraTarget>k__BackingField
+      value: 
+      objectReference: {fileID: 1883375789}
     - target: {fileID: 8646056645455486735, guid: 58a4c6ae4a5533a46b51ff57d604b86d,
         type: 3}
       propertyPath: m_Center.y
@@ -4789,26 +4805,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f7c37b918ab32ba4e9aebab851eaf24b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SPRINT_SPEED: 5.335
-  MOVE_SPEED: 5.335
-  JUMP_TIMEOUT: 0.5
-  FALL_TIMEOUT: 0.15
-  isGrounded: 1
-  GROUNDED_OFFSET: -0.14
-  GROUNDED_RADIUS: 0.28
-  GroundLayers:
+  <SPRINT_SPEED>k__BackingField: 5.335
+  <MOVE_SPEED>k__BackingField: 5.335
+  <JUMP_TIMEOUT>k__BackingField: 0.5
+  <FALL_TIMEOUT>k__BackingField: 0.15
+  _speed: 0
+  _animationBlend: 0
+  _rotationVelocity: 0
+  <isGrounded>k__BackingField: 1
+  <GROUNDED_OFFSET>k__BackingField: -0.14
+  <GROUNDED_RADIUS>k__BackingField: 0.28
+  <GroundLayers>k__BackingField:
     serializedVersion: 2
     m_Bits: 0
-  CinemachineCameraTarget: {fileID: 0}
-  TopClamp: 70
-  BottomClamp: -30
-  lockCameraPosition: 0
-  CameraAngleOverride: 0
-  LandingAudioClip: {fileID: 0}
-  FootstepAudioClips: []
-  FOOTSTEP_AUDIO_VOLUME: 0.5
-  JUMP_HEIGHT: 1.2
-  GRAVITY: -15
+  <CinemachineCameraTarget>k__BackingField: {fileID: 0}
+  <TopClamp>k__BackingField: 70
+  <BottomClamp>k__BackingField: -30
+  <lockCameraPosition>k__BackingField: 0
+  <CameraAngleOverride>k__BackingField: 0
+  <LandingAudioClip>k__BackingField: {fileID: 0}
+  <FootstepAudioClips>k__BackingField: []
+  <FOOTSTEP_AUDIO_VOLUME>k__BackingField: 0.5
+  <JUMP_HEIGHT>k__BackingField: 1.2
+  <GRAVITY>k__BackingField: -15
 --- !u!1001 &7470605951010592241
 PrefabInstance:
   m_ObjectHideFlags: 0

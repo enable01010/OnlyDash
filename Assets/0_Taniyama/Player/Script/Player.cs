@@ -7,93 +7,93 @@ using Unity.VisualScripting;
 [RequireComponent(typeof(Animator))]
 [RequireComponent(typeof(CharacterController))]
 
-public class Player : SingletonActionListener<Player>
+public class Player : SingletonActionListener<Player>, I_Move
 {
     #region 別コンポーネント
 
-    private Animator _animator;
-    private CharacterController _controller;
-    private GameObject _mainCamera;
+    public Animator _animator { private set; get; }
+    public CharacterController _controller { private set; get; }
+    public GameObject _mainCamera { private set; get; }
 
     #endregion
 
     #region ステータス
 
-    [Header("ステータス")]
-    [Tooltip("走りの移動速度")]
-    [SerializeField] private float SPRINT_SPEED = 5.335f;
+    [field: Header("ステータス")]
+    [field: Tooltip("走りの移動速度")]
+    [field: SerializeField] public float SPRINT_SPEED { private set; get; } = 5.335f;
 
-    [Tooltip("歩きの移動速度")]
-    [SerializeField] private float MOVE_SPEED = 5.335f;
+    [field: Tooltip("歩きの移動速度")]
+    [field: SerializeField] public float MOVE_SPEED { private set; get; } = 5.335f;
 
-    [Tooltip("移動速度の変化率")]
-    private float SPEED_CHANGE_RATE = 10.0f;
+    [field: Tooltip("移動速度の変化率")]
+    public float SPEED_CHANGE_RATE { private set; get; } = 10.0f;
 
-    [Tooltip("最大回転速度")]
-    [Range(0.0f, 0.3f)]
-    private float ROTATION_SMOOTH_TIME = 0.12f;
+    [field: Tooltip("最大回転速度")]
+    [field: Range(0.0f, 0.3f)]
+    public float ROTATION_SMOOTH_TIME { private set; get; } = 0.12f;
 
-    [Space(10)]
-    [Tooltip("ジャンプクールタイム")]
-    public float JUMP_TIMEOUT = 0.50f;
+    [field: Space(10)]
+    [field: Tooltip("ジャンプクールタイム")]
+    [field: SerializeField] public float JUMP_TIMEOUT { private set; get; } = 0.50f;
 
-    [Tooltip("落下までの時間")]
-    public float FALL_TIMEOUT = 0.15f;
+    [field: Tooltip("落下までの時間")]
+    [field: SerializeField] public float FALL_TIMEOUT { private set; get; } = 0.15f;
 
     //移動
-    private float _speed;
-    private float _animationBlend;
+    [HideInInspector] public float _speed;
+    [HideInInspector] public float _animationBlend;
     //回転
-    private float _targetRotation = 0.0f;
-    private float _rotationVelocity;
+    public float _targetRotation { private set; get; } = 0.0f;
+    [HideInInspector] public float _rotationVelocity;
     //落下
-    private float _verticalVelocity;
-    private float TERMINAL_VELOCITY = 53.0f;
+    public float _verticalVelocity{private set; get;}
+    public float TERMINAL_VELOCITY { private set; get; } = 53.0f;
     //時間
-    private float _jumpTimeoutDelta;
-    private float _fallTimeoutDelta;
+    public float _jumpTimeoutDelta{private set; get;}
+    public float _fallTimeoutDelta{private set; get;}
     #endregion
 
     #region 着地判定用の変数
 
-    [Header("着地判定")]
-    [Tooltip("地面に接しているが")]
-    [SerializeField,ReadOnly] private bool isGrounded = true;
+    [field: Header("着地判定")]
+    [field: Tooltip("地面に接しているが")]
+    [field: SerializeField, ReadOnly] public bool isGrounded { private set; get; } = true;
 
-    [Tooltip("PlayerのTransformから計測する頂点の距離")]
-    [SerializeField] private float GROUNDED_OFFSET = -0.14f;
+    [field: Tooltip("PlayerのTransformから計測する頂点の距離")]
+    [field: SerializeField] public float GROUNDED_OFFSET { private set; get; } = -0.14f;
 
-    [Tooltip("地面と離れた判定をする球の半径")]
-    [SerializeField] private float GROUNDED_RADIUS = 0.28f;
+    [field: Tooltip("地面と離れた判定をする球の半径")]
+    [field: SerializeField] public float GROUNDED_RADIUS { private set; get; } = 0.28f;
 
-    [Tooltip("地面のレイヤー")]
-    [SerializeField] private LayerMask GroundLayers;
+    [field: Tooltip("地面のレイヤー")]
+    [field: SerializeField] public LayerMask GroundLayers{private set; get;}
 
     #endregion
 
     #region ActionListenerの用変数
 
-    private Vector2 playerMove = Vector2.zero;
-    private Vector2 camMove = Vector2.zero;
-    private bool isSlide = false;
-    private bool isSlow = false;
+    public Vector2 playerMove { private set; get; } = Vector2.zero;
+    public Vector2 camMove { private set; get; } = Vector2.zero;
+    public bool isSlide { private set; get; } = false;
+    public bool isSlow { private set; get; } = false;
 
     #endregion
 
     #region カメラ用の変数
-    [Header("カメラ")]
-    public GameObject CinemachineCameraTarget;
-    [Tooltip("上限")]
-    public float TopClamp = 70.0f;
-    [Tooltip("下限")]
-    public float BottomClamp = -30.0f;
-    public bool lockCameraPosition = false;
-    public float CameraAngleOverride = 0.0f;
-    private const float THRESHOLD = 0.01f;
-    private float _cinemachineTargetYaw;
-    private float _cinemachineTargetPitch;
+    [field: Header("カメラ")]
+    [field: SerializeField] public GameObject CinemachineCameraTarget{private set; get;}
+    [field: Tooltip("上限")]
+    [field: SerializeField] public float TopClamp { private set; get; } = 70.0f;
+    [field: Tooltip("下限")]
+    [field: SerializeField] public float BottomClamp { private set; get; } = -30.0f;
+    [field: SerializeField] public bool lockCameraPosition { private set; get; } = false;
+    [field: SerializeField] public float CameraAngleOverride { private set; get; } = 0.0f;
+    public const float THRESHOLD = 0.01f;
+    public float _cinemachineTargetYaw{private set; get;}
+    public float _cinemachineTargetPitch{private set; get;}
 
-    private bool IsCurrentDeviceMouse
+    public bool IsCurrentDeviceMouse
     {
         get
         {
@@ -103,7 +103,7 @@ public class Player : SingletonActionListener<Player>
             bool answer = MainSceneManager.GetCurrentControlScheme() == "KeyboardMouse";
             return MainSceneManager.GetCurrentControlScheme() == "KeyboardMouse";
 #else
-				return false;
+			return false;
 #endif
         }
     }
@@ -112,27 +112,27 @@ public class Player : SingletonActionListener<Player>
 
     #region サウンド関係
 
-    public AudioClip LandingAudioClip;
-    public AudioClip[] FootstepAudioClips;
-    [Range(0, 1)] public float FOOTSTEP_AUDIO_VOLUME = 0.5f;
+    [field: SerializeField] public AudioClip LandingAudioClip{private set; get;}
+    [field: SerializeField] public AudioClip[] FootstepAudioClips{private set; get;}
+    [field: Range(0, 1), SerializeField] public float FOOTSTEP_AUDIO_VOLUME { private set; get; } = 0.5f;
 
     #endregion
 
     #region ジャンプ用の変数
 
-    [SerializeField] private float JUMP_HEIGHT = 1.2f;
-    [SerializeField] private float GRAVITY = -15.0f;
+    [field: SerializeField] public float JUMP_HEIGHT { private set; get; } = 1.2f;
+    [field: SerializeField] public float GRAVITY { private set; get; } = -15.0f;
 
     #endregion
 
     #region アニメーターの設定
 
     //アニメーターの設定用
-    private int _animIDSpeed;
-    private int _animIDGrounded;
-    private int _animIDJump;
-    private int _animIDFreeFall;
-    private int _animIDMotionSpeed;
+    public int _animIDSpeed{private set; get;}
+    public int _animIDGrounded{private set; get;}
+    public int _animIDJump{private set; get;}
+    public int _animIDFreeFall{private set; get;}
+    public int _animIDMotionSpeed{private set; get;}
 
     #endregion
 
@@ -298,45 +298,6 @@ public class Player : SingletonActionListener<Player>
         }
     }
 
-    /// <summary>
-    /// キャラクターの移動に関する処理
-    /// 先にRot()
-    /// </summary>
-    private void Move()
-    {
-        float targetSpeed = SPRINT_SPEED;
-        if (playerMove == Vector2.zero) targetSpeed = 0.0f;
-        float currentHorizontalSpeed = new Vector3(_controller.velocity.x, 0.0f, _controller.velocity.z).magnitude;
-        const float SPEED_OFFSET = 0.1f;
-        float inputMagnitude = playerMove.magnitude;
-
-        //ぱっと見移動系計算
-        if (currentHorizontalSpeed < targetSpeed - SPEED_OFFSET || currentHorizontalSpeed > targetSpeed + SPEED_OFFSET)
-        {
-            // creates curved result rather than a linear one giving a more organic speed change
-            // note T in Lerp is clamped, so we don't need to clamp our speed
-            _speed = Mathf.Lerp(currentHorizontalSpeed, targetSpeed * inputMagnitude,
-                Time.deltaTime * SPEED_CHANGE_RATE);
-
-            // round speed to 3 decimal places
-            _speed = Mathf.Round(_speed * 1000f) / 1000f;
-        }
-        else
-        {
-            _speed = targetSpeed;
-        }
-
-        _animationBlend = Mathf.Lerp(_animationBlend, targetSpeed, Time.deltaTime * SPEED_CHANGE_RATE);
-        if (_animationBlend < 0.01f) _animationBlend = 0f;
-
-        Vector3 targetDirection = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
-
-        _controller.Move(targetDirection.normalized * (_speed * Time.deltaTime) + new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
-
-        _animator.SetFloat(_animIDSpeed, _animationBlend);
-        _animator.SetFloat(_animIDMotionSpeed, inputMagnitude);
-
-    }
 
     /// <summary>
     /// キャラクターの回転に関する処理
@@ -481,7 +442,7 @@ public class Player : SingletonActionListener<Player>
         GameData.G_AllCheck();
 
         Rot();
-        Move();
+        ((I_Move)this).Move();
         CaluculateJumpSettingsOnGround();
     }
 
@@ -490,10 +451,58 @@ public class Player : SingletonActionListener<Player>
         GameData.G_AllCheck();
 
         Rot();
-        Move();//要検証、空中入力を受け付けるべきかどうか
+        ((I_Move)this).Move();//要検証、空中入力を受け付けるべきかどうか
         CaluculateJumpSettingsInAir();
         CaluculateGravitySettings();
     }
     #endregion
+
+    public virtual Player GetThis()
+    {
+        return this;
+    }
 }
 
+public interface I_Move
+{
+    public Player GetThis();
+
+    /// <summary>
+    /// キャラクターの移動に関する処理
+    /// 先にRot()
+    /// </summary>
+    public void Move()
+    {
+        float targetSpeed = GetThis().SPRINT_SPEED;
+        if (GetThis().playerMove == Vector2.zero) targetSpeed = 0.0f;
+        float currentHorizontalSpeed = new Vector3(GetThis()._controller.velocity.x, 0.0f, GetThis()._controller.velocity.z).magnitude;
+        const float SPEED_OFFSET = 0.1f;
+        float inputMagnitude = GetThis().playerMove.magnitude;
+
+        //ぱっと見移動系計算
+        if (currentHorizontalSpeed < targetSpeed - SPEED_OFFSET || currentHorizontalSpeed > targetSpeed + SPEED_OFFSET)
+        {
+            // creates curved result rather than a linear one giving a more organic speed change
+            // note T in Lerp is clamped, so we don't need to clamp our speed
+            GetThis()._speed = Mathf.Lerp(currentHorizontalSpeed, targetSpeed * inputMagnitude,
+                Time.deltaTime * GetThis().SPEED_CHANGE_RATE);
+
+            // round speed to 3 decimal places
+            GetThis()._speed = Mathf.Round(GetThis()._speed * 1000f) / 1000f;
+        }
+        else
+        {
+            GetThis()._speed = targetSpeed;
+        }
+
+        GetThis()._animationBlend = Mathf.Lerp(GetThis()._animationBlend, targetSpeed, Time.deltaTime * GetThis().SPEED_CHANGE_RATE);
+        if (GetThis()._animationBlend < 0.01f) GetThis()._animationBlend = 0f;
+
+        Vector3 targetDirection = Quaternion.Euler(0.0f, GetThis()._targetRotation, 0.0f) * Vector3.forward;
+
+        GetThis()._controller.Move(targetDirection.normalized * (GetThis()._speed * Time.deltaTime) + new Vector3(0.0f, GetThis()._verticalVelocity, 0.0f) * Time.deltaTime);
+
+        GetThis()._animator.SetFloat(GetThis()._animIDSpeed, GetThis()._animationBlend);
+        GetThis()._animator.SetFloat(GetThis()._animIDMotionSpeed, inputMagnitude);
+    }
+}

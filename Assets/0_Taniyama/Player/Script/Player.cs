@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Unity.VisualScripting;
+using static Player;
 
 [RequireComponent(typeof(Animator))]
 [RequireComponent(typeof(CharacterController))]
 
-public class Player : SingletonActionListener<Player>
+public partial class Player : SingletonActionListener<Player>, I_Move
 {
     #region 別コンポーネント
 
@@ -298,45 +299,7 @@ public class Player : SingletonActionListener<Player>
         }
     }
 
-    /// <summary>
-    /// キャラクターの移動に関する処理
-    /// 先にRot()
-    /// </summary>
-    private void Move()
-    {
-        float targetSpeed = SPRINT_SPEED;
-        if (playerMove == Vector2.zero) targetSpeed = 0.0f;
-        float currentHorizontalSpeed = new Vector3(_controller.velocity.x, 0.0f, _controller.velocity.z).magnitude;
-        const float SPEED_OFFSET = 0.1f;
-        float inputMagnitude = playerMove.magnitude;
-
-        //ぱっと見移動系計算
-        if (currentHorizontalSpeed < targetSpeed - SPEED_OFFSET || currentHorizontalSpeed > targetSpeed + SPEED_OFFSET)
-        {
-            // creates curved result rather than a linear one giving a more organic speed change
-            // note T in Lerp is clamped, so we don't need to clamp our speed
-            _speed = Mathf.Lerp(currentHorizontalSpeed, targetSpeed * inputMagnitude,
-                Time.deltaTime * SPEED_CHANGE_RATE);
-
-            // round speed to 3 decimal places
-            _speed = Mathf.Round(_speed * 1000f) / 1000f;
-        }
-        else
-        {
-            _speed = targetSpeed;
-        }
-
-        _animationBlend = Mathf.Lerp(_animationBlend, targetSpeed, Time.deltaTime * SPEED_CHANGE_RATE);
-        if (_animationBlend < 0.01f) _animationBlend = 0f;
-
-        Vector3 targetDirection = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
-
-        _controller.Move(targetDirection.normalized * (_speed * Time.deltaTime) + new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
-
-        _animator.SetFloat(_animIDSpeed, _animationBlend);
-        _animator.SetFloat(_animIDMotionSpeed, inputMagnitude);
-
-    }
+    
 
     /// <summary>
     /// キャラクターの回転に関する処理
@@ -481,7 +444,7 @@ public class Player : SingletonActionListener<Player>
         GameData.G_AllCheck();
 
         Rot();
-        Move();
+        ((I_Move)this).Move();
         CaluculateJumpSettingsOnGround();
     }
 
@@ -490,10 +453,15 @@ public class Player : SingletonActionListener<Player>
         GameData.G_AllCheck();
 
         Rot();
-        Move();//要検証、空中入力を受け付けるべきかどうか
+        ((I_Move)this).Move();//要検証、空中入力を受け付けるべきかどうか
         CaluculateJumpSettingsInAir();
         CaluculateGravitySettings();
     }
     #endregion
+
+    public virtual Player GetThis()
+    {
+        return this;
+    }
 }
 

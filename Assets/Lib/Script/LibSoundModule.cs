@@ -56,9 +56,11 @@ internal class LibSoundModule : MonoBehaviour
         audioClipBGM = Resources.LoadAll<AudioClip>("Sound/BGM");
         audioClipSE = Resources.LoadAll<AudioClip>("Sound/SE");
 
+        Array.Resize(ref audioClipBGM, bgmLength);// enumÇÃêîÇ‹Ç≈îzóÒägí£
+        Array.Resize(ref audioClipSE, soundLength);// enumÇÃêîÇ‹Ç≈îzóÒägí£
 
-        Array.Resize(ref audioClipBGM, bgmLength);
-        Array.Resize(ref audioClipSE, soundLength);
+        transformBGM = new Transform[bgmLength];
+        transformPlay = new Transform[soundLength];
 
         for (int i = 0; i < bgmLength; i++)// BGM
         {
@@ -101,6 +103,8 @@ internal class LibSoundModule : MonoBehaviour
             obj.transform.SetParent(parentBGM.transform);
             obj.name = ((BGMName)Enum.ToObject(typeof(BGMName), i)).ToString();
 
+            transformBGM[i] = obj.transform;
+
             audioSourceBGM[i] = obj.GetComponent<AudioSource>();
             audioSourceBGM[i].clip = audioClipBGM[i];
             audioSourceBGM[i].outputAudioMixerGroup = audioMixer.FindMatchingGroups("Master")[1];
@@ -116,8 +120,10 @@ internal class LibSoundModule : MonoBehaviour
             obj.transform.SetParent(parentPlay.transform);
             obj.name = ((SoundFxName)Enum.ToObject(typeof(SoundFxName), i)).ToString();
 
+            transformPlay[i] = obj.transform;
+
             audioSourcePlay[i] = obj.GetComponent<AudioSource>();
-            if (audioClipSE[i] != null)
+            //if (audioClipSE[i] != null)
             {
                 audioSourcePlay[i].clip = audioClipSE[i];
             }
@@ -129,6 +135,8 @@ internal class LibSoundModule : MonoBehaviour
         GameObject objShot = Instantiate(audioObjectPrefab);
         objShot.transform.SetParent(parentPlayOneShot.transform);
         objShot.name = "PlayOneShot";
+
+        transformPlayOneShot = objShot.transform;
 
         audioSourcePlayOneShot = objShot.GetComponent<AudioSource>();
         audioSourcePlayOneShot.outputAudioMixerGroup = audioMixer.FindMatchingGroups("Master")[2];
@@ -158,7 +166,7 @@ internal class LibSoundModule : MonoBehaviour
         audioMixer.SetFloat("SE", volume);
     }
 
-    public void PlayBGM(int number, float startTime)
+    public void PlayBGM(int number)
     {
         bool isMissing = true;
         for (int i = 0; i < audioSourceBGM.Length; i++)
@@ -168,9 +176,7 @@ internal class LibSoundModule : MonoBehaviour
                 if (audioClipBGM[number] != null)
                 {
                     AudioSource audio = audioSourceBGM[number];
-                    //audio.time = startTime;
                     audio.Play();
-                    audio.time = startTime;
                     isMissing = false;
                 }
             }
@@ -189,14 +195,13 @@ internal class LibSoundModule : MonoBehaviour
 #endif
     }
 
-    public void PlaySoloSE(int number, float startTime)
+    public void PlaySE(int number, float startTime)
     {
         if(audioClipSE[number] != null)
         {
             AudioSource audio = audioSourcePlay[number];
-            //audio.time = startTime;
             audio.Play();
-            audio.time = startTime;
+            audio.time = startTime;// PlayÇÃå„Ç…ê›íË
 
             return;
         }
@@ -207,14 +212,13 @@ internal class LibSoundModule : MonoBehaviour
 #endif
     }
 
-    public void PlayTrollSE(int number, float startTime)
+    public void PlayOneShotSE(int number, float startTime)
     {
         if (audioClipSE[number] != null)
         {
             AudioSource audio = audioSourcePlayOneShot;
-            //audio.time = startTime;
+            audio.time = startTime;////////////////////////////////////////É_ÉÅ
             audio.PlayOneShot(audioClipSE[number]);
-            audio.time = startTime;
 
             return;
         }
@@ -306,20 +310,19 @@ public class LibSound
         instance.module.SetAudioMixerSE(value);
     }
 
-    public static void PlayBGM(BGMName sound, float startTime = 0)
+    public static void PlayBGM(BGMName sound)
     {
-        string name = sound.ToString();
-        instance.module.PlayBGM((int)sound, startTime);
+        instance.module.PlayBGM((int)sound);
     }
 
-    public static void PlaySoloSE(SoundFxName sound, float startTime = 0)
+    public static void PlaySE(SoundFxName sound, float startTime = 0)
     {
-        instance.module.PlaySoloSE((int)sound, startTime);
+        instance.module.PlaySE((int)sound, startTime);
     }
 
-    public static void PlayTrollSE(SoundFxName sound, float startTime = 0)
+    public static void PlayOneShotSE(SoundFxName sound, float startTime = 0)
     {
-        instance.module.PlayTrollSE((int)sound, startTime);
+        instance.module.PlayOneShotSE((int)sound, startTime);
     }
 
     public static void StopAll()

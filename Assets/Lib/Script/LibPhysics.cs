@@ -7,6 +7,8 @@ using UnityEngine;
 /// </summary>
 public static class LibPhysics
 {
+    #region Raycast2D
+
     /// <summary>
     /// Physics2D.Raycast
     /// </summary>
@@ -120,8 +122,10 @@ public static class LibPhysics
     }
 
 
-    //----------------------------------------3D------------------------------------------------------------------------------------------
 
+    #endregion
+    
+    #region Raycast3D
 
     /// <summary>
     /// Physics.Raycast
@@ -224,8 +228,10 @@ public static class LibPhysics
     }
 
 
-    //--------------------------------------Draw---------------------------------------------------------------------
 
+    #endregion
+    
+    #region Draw
 
     // CircleCastのDraw
     static private void DrawCircleLine(Vector2 origin, float radius, Vector2 direction, float distance, float duration, Color drawColor)
@@ -277,8 +283,6 @@ public static class LibPhysics
         Debug.DrawLine(origin + nor * radius, offset + origin + nor * radius, color, duration);
         Debug.DrawLine(origin - nor * radius, offset + origin - nor * radius, color, duration);
     }
-
-
 
     // SphereCastのDraw
     static private void DrawSphereLine(Vector3 origin, float radius, Vector3 direction, float distance, float duration, Color drawColor)
@@ -343,6 +347,23 @@ public static class LibPhysics
         Debug.DrawLine(origin, origin + offset, color, duration);
     }
 
+    #endregion
+
+    #region IsHit(boolを返す拡張メソッド) staticクラスにしないとダメ？
+
+    // RaycastHit2D
+    static public bool IsHit(this RaycastHit2D raycastHit)
+    {
+        return raycastHit.transform != null;
+    }
+
+    // RaycastHit
+    static public bool IsHit(this RaycastHit raycastHit)
+    {
+        return raycastHit.transform != null;
+    }
+
+    // --------------------------試行錯誤--------------------------
 
     //static public implicit operator bool(RaycastHit raycastHit)
     //{
@@ -387,12 +408,6 @@ public static class LibPhysics
     //    return answer;
     //}
 
-    // staticクラスにしないとダメ？
-    static public bool IsHit(this RaycastHit raycastHit)
-    {
-        return raycastHit.transform != null;
-    }
-
     //static public bool operator true(RaycastHit raycastHit)
     //{
     //    return raycastHit.transform != null;
@@ -402,6 +417,10 @@ public static class LibPhysics
     //{
     //    return raycastHit.transform == null;
     //}
+
+    #endregion
+
+    #region Builderパターン
 
     // Builderパターン
     //static public Raycast2DBuilder BuildStart()
@@ -458,4 +477,6 @@ public static class LibPhysics
     //        .SetOrigin()
     //        .SetLayerMask()
     //        .Raycast2D();
+
+    #endregion
 }

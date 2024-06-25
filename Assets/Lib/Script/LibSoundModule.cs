@@ -10,7 +10,7 @@ internal class LibSoundModule : MonoBehaviour
     #region Fields
 
     [SerializeField] private AudioMixer audioMixer;
-    [SerializeField] private GameObject audioObjectPrefab;
+    private GameObject audioObjectPrefab;
 
     private int bgmLength;
     private int soundLength;
@@ -29,6 +29,8 @@ internal class LibSoundModule : MonoBehaviour
     #endregion
 
     #region CustomMethod
+
+    #region Init
 
     public void Init()
     {
@@ -62,7 +64,9 @@ internal class LibSoundModule : MonoBehaviour
         transformBGM = new Transform[bgmLength];
         transformPlay = new Transform[soundLength];
 
-        for (int i = 0; i < bgmLength; i++)// BGM
+
+        // BGMをソートしてaudioClipBGMに入れる
+        for (int i = 0; i < bgmLength; i++)
         {
             BGMName bGMName = (BGMName)Enum.ToObject(typeof(BGMName), i);
 
@@ -78,7 +82,8 @@ internal class LibSoundModule : MonoBehaviour
             }
         }
 
-        for (int i = 0; i < soundLength; i++)// Sound
+        // SoundをソートしてaudioClipSEに入れる
+        for (int i = 0; i < soundLength; i++)
         {
             SoundFxName soundFxName = (SoundFxName)Enum.ToObject(typeof(SoundFxName), i);
 
@@ -95,7 +100,12 @@ internal class LibSoundModule : MonoBehaviour
         }
 
 
-        // BGM用
+        // audioObjectPrefabの生成
+        audioObjectPrefab = new GameObject("AudioSource");
+        audioObjectPrefab.AddComponent<AudioSource>();
+
+
+        // BGM用AudioSourceの生成
         audioSourceBGM = new AudioSource[bgmLength];
         for (int i = 0; i < bgmLength; i++)
         {
@@ -112,7 +122,7 @@ internal class LibSoundModule : MonoBehaviour
         }
 
 
-        // SE Play用(音が重ならず、上書きされる)
+        // SE Play(音が重ならず、上書きされる)用AudioSourceの生成
         audioSourcePlay = new AudioSource[soundLength];
         for (int i = 0; i < soundLength; i++)
         {
@@ -123,15 +133,12 @@ internal class LibSoundModule : MonoBehaviour
             transformPlay[i] = obj.transform;
 
             audioSourcePlay[i] = obj.GetComponent<AudioSource>();
-            //if (audioClipSE[i] != null)
-            {
-                audioSourcePlay[i].clip = audioClipSE[i];
-            }
+            audioSourcePlay[i].clip = audioClipSE[i];
             audioSourcePlay[i].outputAudioMixerGroup = audioMixer.FindMatchingGroups("Master")[2];
         }
 
 
-        // SE PlayOneShot用(音が重なる)
+        // SE PlayOneShot(音が重なる)用AudioSourceの生成
         GameObject objShot = Instantiate(audioObjectPrefab);
         objShot.transform.SetParent(parentPlayOneShot.transform);
         objShot.name = "PlayOneShot";
@@ -140,7 +147,15 @@ internal class LibSoundModule : MonoBehaviour
 
         audioSourcePlayOneShot = objShot.GetComponent<AudioSource>();
         audioSourcePlayOneShot.outputAudioMixerGroup = audioMixer.FindMatchingGroups("Master")[2];
+
+
+        // audioObjectPrefabの削除
+        Destroy(audioObjectPrefab);
     }
+
+    #endregion
+
+    #region AudioMixerの音量を変える
 
     public void SetAudioMixerMaster(float value)
     {
@@ -166,7 +181,11 @@ internal class LibSoundModule : MonoBehaviour
         audioMixer.SetFloat("SE", volume);
     }
 
-    public void PlayBGM(int number)
+    #endregion
+
+    #region 音を流す・止める
+
+    public void PlayBGM(int number, float volume, Vector3 position)
     {
         bool isMissing = true;
         for (int i = 0; i < audioSourceBGM.Length; i++)
@@ -195,7 +214,7 @@ internal class LibSoundModule : MonoBehaviour
 #endif
     }
 
-    public void PlaySE(int number, float startTime)
+    public void PlaySE(int number, float volume, float startTime, Vector3 position)
     {
         if(audioClipSE[number] != null)
         {
@@ -212,7 +231,7 @@ internal class LibSoundModule : MonoBehaviour
 #endif
     }
 
-    public void PlayOneShotSE(int number, float startTime)
+    public void PlayOneShotSE(int number, float volume, float startTime, Vector3 position)
     {
         if (audioClipSE[number] != null)
         {
@@ -244,20 +263,32 @@ internal class LibSoundModule : MonoBehaviour
         audioSourcePlayOneShot.Stop();
     }
 
-    public float AudioMixerGetFloat(string name)
-    {
-        audioMixer.GetFloat(name, out float sliderMasterValue);
+    #endregion
 
-        return sliderMasterValue;
-    }
+    #region スライダーをAudioMixerの値に変換
+
+    //public float AudioMixerGetFloat(string name)
+    //{
+    //    audioMixer.GetFloat(name, out float sliderMasterValue);
+
+    //    return sliderMasterValue;
+    //}
 
     public void SliderValueChange(Slider sliderMaster, Slider sliderBGM, Slider sliderSE)
     {
+        // AudioMixerの音量取得
+        audioMixer.GetFloat("Master", out float masterVolume);
+        audioMixer.GetFloat("BGM", out float bgmVolume);
+        audioMixer.GetFloat("SE", out float seVolume);
+
+
         // 初期音量設定
-        sliderMaster.value = Mathf.Pow(10f, LibSound.AudioMixerGetFloat("Master") / 20f);
-        sliderBGM.value = Mathf.Pow(10f, LibSound.AudioMixerGetFloat("BGM") / 20f);
-        sliderSE.value = Mathf.Pow(10f, LibSound.AudioMixerGetFloat("SE") / 20f);
+        sliderMaster.value = Mathf.Pow(10f, masterVolume / 20f);
+        sliderBGM.value = Mathf.Pow(10f, bgmVolume / 20f);
+        sliderSE.value = Mathf.Pow(10f, seVolume / 20f);
     }
+
+    #endregion
 
     #endregion
 }
@@ -295,6 +326,8 @@ public class LibSound
 
     #region CustomMethod
 
+    #region AudioMixerの音量を変える
+
     public static void SetAudioMixerMaster(float value)
     {
         instance.module.SetAudioMixerMaster(value);
@@ -310,19 +343,37 @@ public class LibSound
         instance.module.SetAudioMixerSE(value);
     }
 
+    #endregion
+
+    #region 音を流す・止める
+
+    public static void PlayBGM(BGMName sound, float volume, Vector3 position)
+    {
+        instance.module.PlayBGM((int)sound, volume, position);
+    }
     public static void PlayBGM(BGMName sound)
     {
-        instance.module.PlayBGM((int)sound);
+        instance.module.PlayBGM((int)sound, 0, Vector3.zero);
+    }
+
+    public static void PlaySE(SoundFxName sound, float volume, float startTime, Vector3 position)
+    {
+        instance.module.PlaySE((int)sound, volume, startTime, position);
     }
 
     public static void PlaySE(SoundFxName sound, float startTime = 0)
     {
-        instance.module.PlaySE((int)sound, startTime);
+        instance.module.PlaySE((int)sound, 0, startTime, Vector3.zero);
+    }
+
+    public static void PlayOneShotSE(SoundFxName sound, float volume, float startTime, Vector3 position)
+    {
+        instance.module.PlayOneShotSE((int)sound, volume, startTime, position);
     }
 
     public static void PlayOneShotSE(SoundFxName sound, float startTime = 0)
     {
-        instance.module.PlayOneShotSE((int)sound, startTime);
+        instance.module.PlayOneShotSE((int)sound, 0, startTime, Vector3.zero);
     }
 
     public static void StopAll()
@@ -330,15 +381,21 @@ public class LibSound
         instance.module.StopAll();
     }
 
-    public static float AudioMixerGetFloat(string name)
-    {
-        return instance.module.AudioMixerGetFloat(name);
-    }
+    #endregion
+
+    #region スライダーをAudioMixerの値に変換
+
+    //public static float AudioMixerGetFloat(string name)
+    //{
+    //    return instance.module.AudioMixerGetFloat(name);
+    //}
 
     public static void SliderValueChange(Slider sliderMaster, Slider sliderBGM, Slider sliderSE)
     {
         instance.module.SliderValueChange(sliderMaster, sliderBGM, sliderSE);
     }
+
+    #endregion
 
     #endregion
 }

@@ -45,6 +45,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   audioMixer: {fileID: 24100000, guid: c0050f909c2c66745bcf1a065291b9df, type: 2}
-  audioObjectPrefab: {fileID: 1430336126188433021, guid: b24f9726a5ef82e48b7504b17af2771b,
-    type: 3}
-  trollCount: 10
+  playOneShotLength: 5
+  audioMixerMaxVolume: 12

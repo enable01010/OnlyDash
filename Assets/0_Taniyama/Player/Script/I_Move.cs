@@ -14,13 +14,26 @@ public partial class Player : SingletonActionListener<Player>
         /// </summary>
         public void Move()
         {
+            // 走る最大速度
             float targetSpeed = GetThis().SPRINT_SPEED;
+
+            // コントローラー入力
             if (GetThis().playerMove == Vector2.zero) targetSpeed = 0.0f;
+
+            // 現在の速度
             float currentHorizontalSpeed = new Vector3(GetThis()._controller.velocity.x, 0.0f, GetThis()._controller.velocity.z).magnitude;
+            
+            // ？？？
             const float SPEED_OFFSET = 0.1f;
+
+            // コントローラー入力のMagnitude
             float inputMagnitude = GetThis().playerMove.magnitude;
 
-            //ぱっと見移動系計算
+
+
+
+            // 速度計算
+
             if (currentHorizontalSpeed < targetSpeed - SPEED_OFFSET || currentHorizontalSpeed > targetSpeed + SPEED_OFFSET)
             {
                 // creates curved result rather than a linear one giving a more organic speed change
@@ -28,7 +41,8 @@ public partial class Player : SingletonActionListener<Player>
                 GetThis()._speed = Mathf.Lerp(currentHorizontalSpeed, targetSpeed * inputMagnitude,
                     Time.deltaTime * GetThis().SPEED_CHANGE_RATE);
 
-                // round speed to 3 decimal places
+                // 速度を小数点以下3桁に丸める
+                // Mathf.Round 最も近い整数を返す(端数が.5の場合は最も近い偶数を返す)
                 GetThis()._speed = Mathf.Round(GetThis()._speed * 1000f) / 1000f;
             }
             else
@@ -43,6 +57,8 @@ public partial class Player : SingletonActionListener<Player>
 
             GetThis()._controller.Move(targetDirection.normalized * (GetThis()._speed * Time.deltaTime) + new Vector3(0.0f, GetThis()._verticalVelocity, 0.0f) * Time.deltaTime);
 
+
+            // アニメーター関連
             GetThis()._animator.SetFloat(GetThis()._animIDSpeed, GetThis()._animationBlend);
             GetThis()._animator.SetFloat(GetThis()._animIDMotionSpeed, inputMagnitude);
 

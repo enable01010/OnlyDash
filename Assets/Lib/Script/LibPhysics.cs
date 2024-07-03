@@ -138,11 +138,9 @@ public static class LibPhysics
     /// <returns></returns>
     static public RaycastHit Raycast(Vector3 origin, Vector3 direction, float distance, int layerMask = 1, float duration = 0.0f)
     {
-        RaycastHit answer = new RaycastHit();
+        RaycastHit answer;
 
-        Physics.Raycast(origin, direction, out RaycastHit hitInfo, distance, layerMask);
-
-        answer = hitInfo;
+        Physics.Raycast(origin, direction, out answer, distance, layerMask);
 
 #if UNITY_EDITOR
         Debug.DrawRay(origin, direction.normalized * distance, Color.red, duration);
@@ -178,11 +176,9 @@ public static class LibPhysics
     /// <returns></returns>
     static public RaycastHit Linecast(Vector3 start, Vector3 end, int layerMask = 1, float duration = 0.0f)
     {
-        RaycastHit answer = new RaycastHit();
+        RaycastHit answer;
 
-        Physics.Linecast(start, end, out RaycastHit hitInfo, layerMask);
-
-        answer = hitInfo;
+        Physics.Linecast(start, end, out answer, layerMask);
 
 #if UNITY_EDITOR
         Debug.DrawLine(start, end, Color.red, duration);
@@ -205,11 +201,9 @@ public static class LibPhysics
     /// <returns></returns>
     static public RaycastHit SphereCast(Vector3 origin, float radius, Vector3 direction, float distance, int layerMask = 1, float duration = 0.0f)
     {
-        RaycastHit answer = new RaycastHit();
+        RaycastHit answer;
 
-        Physics.SphereCast(origin, radius, direction, out RaycastHit hitInfo, distance, layerMask);
-
-        answer = hitInfo;
+        Physics.SphereCast(origin, radius, direction, out answer, distance, layerMask);
 
 #if UNITY_EDITOR
 
@@ -352,9 +346,9 @@ public static class LibPhysics
     #region IsHit(boolを返す拡張メソッド) staticクラスにしないとダメ？
 
     // RaycastHit2D
-    static public bool IsHit(this RaycastHit2D raycastHit)
+    static public bool IsHit(this RaycastHit2D raycastHit2D)
     {
-        return raycastHit.transform != null;
+        return raycastHit2D;
     }
 
     // RaycastHit

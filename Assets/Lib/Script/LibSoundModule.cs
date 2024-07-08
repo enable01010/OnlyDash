@@ -22,6 +22,9 @@ internal class LibSoundModule : MonoBehaviour
     private AudioSource[] audioSourcePlay;
     private AudioSource[] audioSourcePlayOneShot;
 
+    private bool[] isPlayingBGM;
+    private float[] startTimeBGM;
+
     [Header("PlayOneShotの数(音が重なる)")]
     [SerializeField] private int playOneShotLength = 10;
     int playOneShotCount = 0;
@@ -63,6 +66,17 @@ internal class LibSoundModule : MonoBehaviour
 
         Array.Resize(ref audioClipBGM, bgmLength);// enumの数まで配列拡張
         Array.Resize(ref audioClipSE, soundLength);// enumの数まで配列拡張
+
+
+        // BGMのLoop用
+        isPlayingBGM = new bool[bgmLength];
+        startTimeBGM = new float[bgmLength];
+        for (int i = 0; i < bgmLength; i++)
+        {
+            isPlayingBGM[i] = false;
+            startTimeBGM[i] = 0f;
+        }
+
 
         // BGMをソートしてaudioClipBGMに入れる
         for (int i = 0; i < bgmLength; i++)
@@ -115,7 +129,7 @@ internal class LibSoundModule : MonoBehaviour
             audioSourceBGM[i] = obj.GetComponent<AudioSource>();
             audioSourceBGM[i].clip = audioClipBGM[i];
             audioSourceBGM[i].outputAudioMixerGroup = audioMixer.FindMatchingGroups("Master")[1];
-            audioSourceBGM[i].loop = true;
+            //audioSourceBGM[i].loop = true;
         }
 
 
@@ -132,16 +146,6 @@ internal class LibSoundModule : MonoBehaviour
             audioSourcePlay[i].outputAudioMixerGroup = audioMixer.FindMatchingGroups("Master")[2];
         }
 
-
-        // SE PlayOneShot(音が重なる)用AudioSourceの生成
-        //GameObject objShot = Instantiate(audioObjectPrefab);
-        //objShot.transform.SetParent(parentPlayOneShot.transform);
-        //objShot.name = "PlayOneShot";
-
-        //transformPlayOneShot = objShot.transform;
-
-        //audioSourcePlayOneShot = objShot.GetComponent<AudioSource>();
-        //audioSourcePlayOneShot.outputAudioMixerGroup = audioMixer.FindMatchingGroups("Master")[2];
 
         // SE PlayOneShot(音が重なる)用AudioSourceの生成
         audioSourcePlayOneShot = new AudioSource[playOneShotLength];
@@ -196,26 +200,19 @@ internal class LibSoundModule : MonoBehaviour
     public void PlayBGM(int number, Vector3 position, float volume, float startTime, bool is3D)
     {
         bool isMissing = true;
-        for (int i = 0; i < audioSourceBGM.Length; i++)
+        if (audioClipBGM[number] != null)
         {
-            if (i == number)
-            {
-                if (audioClipBGM[number] != null)
-                {
-                    isMissing = false;
+            isMissing = false;
 
-                    AudioSource audio = audioSourceBGM[number];
-                    audio.spatialBlend = is3D ? 1.0f : 0.0f;
-                    audio.transform.position = position;
-                    audio.volume = Mathf.Clamp01(volume);
-                    audio.Play();
-                    audio.time = startTime;// Playの後に設定
-                }
-            }
-            else
-            {
-                audioSourceBGM[i].Stop();
-            }
+            AudioSource audio = audioSourceBGM[number];
+            audio.spatialBlend = is3D ? 1.0f : 0.0f;
+            audio.transform.position = position;
+            audio.volume = Mathf.Clamp01(volume);
+            audio.Play();
+            audio.time = startTime;// Playの後に設定
+
+            isPlayingBGM[number] = true;
+            startTimeBGM[number] = startTime;
         }
 
 #if UNITY_EDITOR
@@ -277,6 +274,7 @@ internal class LibSoundModule : MonoBehaviour
         for (int i = 0; i < audioSourceBGM.Length; i++)
         {
             audioSourceBGM[i].Stop();
+            isPlayingBGM[i] = false;
         }
 
         for (int i = 0; i < audioSourcePlay.Length; i++)
@@ -284,10 +282,25 @@ internal class LibSoundModule : MonoBehaviour
             audioSourcePlay[i].Stop();
         }
 
-        for (int i = 0; i < audioSourcePlay.Length; i++)
+        for (int i = 0; i < audioSourcePlayOneShot.Length; i++)
         {
             audioSourcePlayOneShot[i].Stop();
         }
+    }
+
+    public void StopAllBGM()
+    {
+        for (int i = 0; i < audioSourceBGM.Length; i++)
+        {
+            audioSourceBGM[i].Stop();
+            isPlayingBGM[i] = false;
+        }
+    }
+
+    public void StopBGM(int number)
+    {
+        audioSourceBGM[number].Stop();
+        isPlayingBGM[number] = false;
     }
 
     #endregion
@@ -311,6 +324,22 @@ internal class LibSoundModule : MonoBehaviour
     #endregion
 
     #endregion
+
+
+    private void Update()
+    {
+        for (int i = 0; i < bgmLength; i++)
+        {
+            if (isPlayingBGM[i] == true)
+            {
+                if (audioSourceBGM[i].isPlaying == false)
+                {
+                    audioSourceBGM[i].Play();
+                    audioSourceBGM[i].time = startTimeBGM[i];// Playの後に設定
+                }
+            }
+        }
+    }
 }
 
 public class LibSound
@@ -406,9 +435,19 @@ public class LibSound
         instance.module.StopAll();
     }
 
+    public static void StopAllBGM()
+    {
+        instance.module.StopAllBGM();
+    }
+
+    public static void StopBGM(BGMName sound)
+    {
+        instance.module.StopBGM((int)sound);
+    }
+
     #endregion
 
-    #region 音を流す・止める　Builderパターン
+    #region 音を流す　Builderパターン
 
     // PlayBGM_Builderパターン
     static public PlayBGM_Builder PlayBGM_BuildStart()
@@ -569,6 +608,8 @@ public enum BGMName
     BGM1 = 0,
     BGM2,
     BGM3,
+    琴の滑奏,
+    ゲージ回復2,
 }
 
 public enum SoundFxName

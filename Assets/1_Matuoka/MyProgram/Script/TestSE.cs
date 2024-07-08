@@ -7,10 +7,10 @@ public class TestSE : MonoBehaviour
 {
 
     public BGMName bGMName = BGMName.BGM1;
-    public SoundFxName soundFxName1 = SoundFxName.‹Õ‚ÌŠŠ‘t;
-    public SoundFxName soundFxName2 = SoundFxName.‹Õ‚ÌŠŠ‘t;
-    public SoundFxName soundFxName3 = SoundFxName.‹Õ‚ÌŠŠ‘t;
-    public SoundFxName soundFxName4 = SoundFxName.‹Õ‚ÌŠŠ‘t;
+    public SoundFxName soundFxName1;// = SoundFxName.‹Õ‚ÌŠŠ‘t;
+    public SoundFxName soundFxName2;// = SoundFxName.‹Õ‚ÌŠŠ‘t;
+    public SoundFxName soundFxName3;// = SoundFxName.‹Õ‚ÌŠŠ‘t;
+    public SoundFxName soundFxName4;// = SoundFxName.‹Õ‚ÌŠŠ‘t;
 
     [SerializeField] Slider sliderMaster;
     [SerializeField] Slider sliderBGM;
@@ -30,12 +30,22 @@ public class TestSE : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Return))
         {
-            LibSound.PlayBGM3D(bGMName, Vector3.right);
+            LibSound.PlayBGM2D(bGMName, 0.5f, 0.5f);
         }
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
             LibSound.StopAll();
+        }
+
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            LibSound.StopAllBGM();
+        }
+
+        if (Input.GetKeyDown(KeyCode.Alpha2))
+        {
+            LibSound.StopBGM(bGMName);
         }
 
 

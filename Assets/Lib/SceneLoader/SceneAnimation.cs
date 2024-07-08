@@ -41,7 +41,7 @@ public class SceneAnimation : MonoBehaviour
         _anim.SetBool("FadeOut", false);
         _anim.SetBool("FadeIn",true);
 
-        LibSound.PlayOneShotSE(SoundFxName.SceneLoad);
+        //LibSound.PlayOneShotSE(SoundFxName.SceneLoad);
 
         yield return new WaitForSeconds(FADEIN_TIME);
 

@@ -7,6 +7,8 @@ using UnityEngine;
 /// </summary>
 public static class LibPhysics
 {
+    #region Raycast2D
+
     /// <summary>
     /// Physics2D.Raycast
     /// </summary>
@@ -120,8 +122,10 @@ public static class LibPhysics
     }
 
 
-    //----------------------------------------3D------------------------------------------------------------------------------------------
 
+    #endregion
+    
+    #region Raycast3D
 
     /// <summary>
     /// Physics.Raycast
@@ -134,11 +138,9 @@ public static class LibPhysics
     /// <returns></returns>
     static public RaycastHit Raycast(Vector3 origin, Vector3 direction, float distance, int layerMask = 1, float duration = 0.0f)
     {
-        RaycastHit answer = new RaycastHit();
+        RaycastHit answer;
 
-        Physics.Raycast(origin, direction, out RaycastHit hitInfo, distance, layerMask);
-
-        answer = hitInfo;
+        Physics.Raycast(origin, direction, out answer, distance, layerMask);
 
 #if UNITY_EDITOR
         Debug.DrawRay(origin, direction.normalized * distance, Color.red, duration);
@@ -174,11 +176,9 @@ public static class LibPhysics
     /// <returns></returns>
     static public RaycastHit Linecast(Vector3 start, Vector3 end, int layerMask = 1, float duration = 0.0f)
     {
-        RaycastHit answer = new RaycastHit();
+        RaycastHit answer;
 
-        Physics.Linecast(start, end, out RaycastHit hitInfo, layerMask);
-
-        answer = hitInfo;
+        Physics.Linecast(start, end, out answer, layerMask);
 
 #if UNITY_EDITOR
         Debug.DrawLine(start, end, Color.red, duration);
@@ -201,11 +201,9 @@ public static class LibPhysics
     /// <returns></returns>
     static public RaycastHit SphereCast(Vector3 origin, float radius, Vector3 direction, float distance, int layerMask = 1, float duration = 0.0f)
     {
-        RaycastHit answer = new RaycastHit();
+        RaycastHit answer;
 
-        Physics.SphereCast(origin, radius, direction, out RaycastHit hitInfo, distance, layerMask);
-
-        answer = hitInfo;
+        Physics.SphereCast(origin, radius, direction, out answer, distance, layerMask);
 
 #if UNITY_EDITOR
 
@@ -224,8 +222,10 @@ public static class LibPhysics
     }
 
 
-    //--------------------------------------Draw---------------------------------------------------------------------
 
+    #endregion
+    
+    #region Draw
 
     // CircleCastのDraw
     static private void DrawCircleLine(Vector2 origin, float radius, Vector2 direction, float distance, float duration, Color drawColor)
@@ -277,8 +277,6 @@ public static class LibPhysics
         Debug.DrawLine(origin + nor * radius, offset + origin + nor * radius, color, duration);
         Debug.DrawLine(origin - nor * radius, offset + origin - nor * radius, color, duration);
     }
-
-
 
     // SphereCastのDraw
     static private void DrawSphereLine(Vector3 origin, float radius, Vector3 direction, float distance, float duration, Color drawColor)
@@ -343,6 +341,23 @@ public static class LibPhysics
         Debug.DrawLine(origin, origin + offset, color, duration);
     }
 
+    #endregion
+
+    #region IsHit(boolを返す拡張メソッド) staticクラスにしないとダメ？
+
+    // RaycastHit2D
+    static public bool IsHit(this RaycastHit2D raycastHit2D)
+    {
+        return raycastHit2D;
+    }
+
+    // RaycastHit
+    static public bool IsHit(this RaycastHit raycastHit)
+    {
+        return raycastHit.transform != null;
+    }
+
+    // --------------------------試行錯誤--------------------------
 
     //static public implicit operator bool(RaycastHit raycastHit)
     //{
@@ -387,12 +402,6 @@ public static class LibPhysics
     //    return answer;
     //}
 
-    // staticクラスにしないとダメ？
-    static public bool IsHit(this RaycastHit raycastHit)
-    {
-        return raycastHit.transform != null;
-    }
-
     //static public bool operator true(RaycastHit raycastHit)
     //{
     //    return raycastHit.transform != null;
@@ -402,6 +411,10 @@ public static class LibPhysics
     //{
     //    return raycastHit.transform == null;
     //}
+
+    #endregion
+
+    #region Builderパターン
 
     // Builderパターン
     //static public Raycast2DBuilder BuildStart()
@@ -458,4 +471,6 @@ public static class LibPhysics
     //        .SetOrigin()
     //        .SetLayerMask()
     //        .Raycast2D();
+
+    #endregion
 }

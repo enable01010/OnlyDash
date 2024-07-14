@@ -199,74 +199,67 @@ internal class LibSoundModule : MonoBehaviour
 
     public void PlayBGM(int number, Vector3 position, float volume, float startTime, bool is3D)
     {
-        bool isMissing = true;
-        if (audioClipBGM[number] != null)
+        if (audioClipBGM[number] == null)
         {
-            isMissing = false;
-
-            AudioSource audio = audioSourceBGM[number];
-            audio.spatialBlend = is3D ? 1.0f : 0.0f;
-            audio.transform.position = position;
-            audio.volume = Mathf.Clamp01(volume);
-            audio.Play();
-            audio.time = startTime;// PlayÇÃå„Ç…ê›íË
-
-            isPlayingBGM[number] = true;
-            startTimeBGM[number] = startTime;
-        }
-
 #if UNITY_EDITOR
-        if (isMissing == true)
-        {
             string name = ((BGMName)Enum.ToObject(typeof(BGMName), number)).ToString();
             Debug.Log(name + "ÇÕÇ†ÇËÇ‹ÇπÇÒ");
-        }
 #endif
+            return;
+        }
+
+        AudioSource audio = audioSourceBGM[number];
+        audio.spatialBlend = is3D ? 1.0f : 0.0f;
+        audio.transform.position = position;
+        audio.volume = Mathf.Clamp01(volume);
+        audio.Play();
+        audio.time = startTime;// PlayÇÃå„Ç…ê›íË
+
+        isPlayingBGM[number] = true;
+        startTimeBGM[number] = startTime;
     }
 
     public void PlaySE(int number, Vector3 position, float volume, float startTime, bool is3D)
     {
-        if(audioClipSE[number] != null)
+        if (audioClipSE[number] == null)
         {
-            AudioSource audio = audioSourcePlay[number];
-            audio.spatialBlend = is3D ? 1.0f : 0.0f;
-            audio.transform.position = position;
-            audio.volume = Mathf.Clamp01(volume);
-            audio.Play();
-            audio.time = startTime;// PlayÇÃå„Ç…ê›íË
-
+#if UNITY_EDITOR
+            string name = ((SoundFxName)Enum.ToObject(typeof(SoundFxName), number)).ToString();
+            Debug.Log(name + "ÇÕÇ†ÇËÇ‹ÇπÇÒ");
+#endif
             return;
         }
 
-#if UNITY_EDITOR
-        string name = ((SoundFxName)Enum.ToObject(typeof(SoundFxName), number)).ToString();
-        Debug.Log(name + "ÇÕÇ†ÇËÇ‹ÇπÇÒ");
-#endif
+        AudioSource audio = audioSourcePlay[number];
+        audio.spatialBlend = is3D ? 1.0f : 0.0f;
+        audio.transform.position = position;
+        audio.volume = Mathf.Clamp01(volume);
+        audio.Play();
+        audio.time = startTime;// PlayÇÃå„Ç…ê›íË
     }
 
     public void PlayOneShotSE(int number, Vector3 position, float volume, float startTime, bool is3D)
     {
-        if (audioClipSE[number] != null)
+        if (audioClipSE[number] == null)
         {
-            AudioSource audio = audioSourcePlayOneShot[playOneShotCount];
-            audio.clip = audioClipSE[number];
-            audio.spatialBlend = is3D ? 1.0f : 0.0f;
-            audio.transform.position = position;
-            audio.volume = Mathf.Clamp01(volume);
-            audio.Play();
-            audio.time = startTime;// PlayÇÃå„Ç…ê›íË
-
-            audio.gameObject.name = audioClipSE[number].name;
-
-            playOneShotCount = (playOneShotCount + 1) % playOneShotLength;
-
+#if UNITY_EDITOR
+            string name = ((SoundFxName)Enum.ToObject(typeof(SoundFxName), number)).ToString();
+            Debug.Log(name + "ÇÕÇ†ÇËÇ‹ÇπÇÒ");
+#endif
             return;
         }
 
-#if UNITY_EDITOR
-        string name = ((SoundFxName)Enum.ToObject(typeof(SoundFxName), number)).ToString();
-        Debug.Log(name + "ÇÕÇ†ÇËÇ‹ÇπÇÒ");
-#endif
+        AudioSource audio = audioSourcePlayOneShot[playOneShotCount];
+        audio.clip = audioClipSE[number];
+        audio.spatialBlend = is3D ? 1.0f : 0.0f;
+        audio.transform.position = position;
+        audio.volume = Mathf.Clamp01(volume);
+        audio.Play();
+        audio.time = startTime;// PlayÇÃå„Ç…ê›íË
+
+        audio.gameObject.name = audioClipSE[number].name;
+
+        playOneShotCount = (playOneShotCount + 1) % playOneShotLength;
     }
 
     public void StopAll()
@@ -323,21 +316,52 @@ internal class LibSoundModule : MonoBehaviour
 
     #endregion
 
+    #region BGMÇÉãÅ[Évçƒê∂
+
+    private void LoopBGM()
+    {
+        for (int i = 0; i < bgmLength; i++)
+        {
+            if (isPlayingBGM[i] == false) continue;
+            if (audioSourceBGM[i].isPlaying == true) continue;
+
+            audioSourceBGM[i].Play();
+            audioSourceBGM[i].time = startTimeBGM[i];// PlayÇÃå„Ç…ê›íË
+        }
+    }
+
+    #endregion
+
     #endregion
 
 
     private void Update()
     {
-        for (int i = 0; i < bgmLength; i++)
+        LoopBGM();
+        audioSourceBGM.AudioContinue(isPlayingBGM, startTimeBGM);
+    }
+}
+
+
+// ägí£ä÷êî
+public static class AudioSourceArray
+{
+    /// <summary>
+    /// ägí£ä÷êî
+    /// </summary>
+    /// <param name="array"></param>
+    /// <param name="isPlayingBGM"></param>
+    /// <param name="startTimeBGM"></param>
+    public static void AudioContinue(this AudioSource[] array, bool[] isPlayingBGM, float[] startTimeBGM)
+    {
+        int length = array.Length;
+        for (int i = 0; i < length; i++)
         {
-            if (isPlayingBGM[i] == true)
-            {
-                if (audioSourceBGM[i].isPlaying == false)
-                {
-                    audioSourceBGM[i].Play();
-                    audioSourceBGM[i].time = startTimeBGM[i];// PlayÇÃå„Ç…ê›íË
-                }
-            }
+            if (isPlayingBGM[i] == false) continue;
+            if (array[i].isPlaying == true) continue;
+
+            array[i].Play();
+            array[i].time = startTimeBGM[i];// PlayÇÃå„Ç…ê›íË
         }
     }
 }

@@ -1783,6 +1783,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 6250606337119821870, guid: dc8965673a73a2b4b9783cb17af17c0f,
+        type: 3}
+      propertyPath: SLIDING_SPEED
+      value: 10
+      objectReference: {fileID: 0}
     - target: {fileID: 7232723983279821239, guid: dc8965673a73a2b4b9783cb17af17c0f,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1905,6 +1910,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Mrin
+      objectReference: {fileID: 0}
+    - target: {fileID: 1955391180736944968, guid: ac6b745bcf9cfeb4895b75d179581b50,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -2457,6 +2467,8 @@ MonoBehaviour:
   MOVE_SPEED: 5.335
   JUMP_TIMEOUT: 0.5
   FALL_TIMEOUT: 0.15
+  SLIDING_TIMEOUT: 1
+  SLIDING_SPEED: 6
   isGrounded: 1
   GROUNDED_OFFSET: -0.14
   GROUNDED_RADIUS: 0.28

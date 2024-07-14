@@ -8,7 +8,7 @@ using static Player;
 [RequireComponent(typeof(Animator))]
 [RequireComponent(typeof(CharacterController))]
 
-public partial class Player : SingletonActionListener<Player>, I_Move
+public partial class Player : SingletonActionListener<Player>, I_Move,I_Sliding
 {
     #region 別コンポーネント
 
@@ -42,6 +42,7 @@ public partial class Player : SingletonActionListener<Player>, I_Move
     public float FALL_TIMEOUT = 0.15f;
 
     [Space(10)]
+    [Header("スライディング関係")]
     [Tooltip("スライディングの時間")]
     [SerializeField] private float SLIDING_TIMEOUT = 1.0f;
     [Tooltip("スライディングの速度")]
@@ -139,6 +140,7 @@ public partial class Player : SingletonActionListener<Player>, I_Move
     private int _animIDSpeed;
     private int _animIDGrounded;
     private int _animIDJump;
+    private int _animIDSliding;
     private int _animIDFreeFall;
     private int _animIDMotionSpeed;
 
@@ -187,6 +189,7 @@ public partial class Player : SingletonActionListener<Player>, I_Move
         _animIDSpeed = Animator.StringToHash("Speed");
         _animIDGrounded = Animator.StringToHash("Grounded");
         _animIDJump = Animator.StringToHash("Jump");
+        _animIDSliding = Animator.StringToHash("Sliding");
         _animIDFreeFall = Animator.StringToHash("FreeFall");
         _animIDMotionSpeed = Animator.StringToHash("MotionSpeed");
     }
@@ -371,15 +374,15 @@ public partial class Player : SingletonActionListener<Player>, I_Move
     public override void OnSlide(InputAction.CallbackContext context)
     {
         GameData.G_AllCheck();
-        if (isGrounded == false) return;
+        if (isGrounded == false) return; //着地してない場合
+        if (_slidingTimeoutDelta > 0) return;//すでにスライディングしてる場合
+        if (_jumpTimeoutDelta > 0) return;//着地した瞬間にスライディングするの防止
 
         base.OnSlide(context);
 
         if (context.phase == InputActionPhase.Started)
         {
-            _animator.SetBool(_animIDJump, true);
-            _slidingTimeoutDelta = SLIDING_TIMEOUT;
-            CustomEvent.Trigger(gameObject, "OnSliding");
+            CustomEvent.Trigger(gameObject, "useSliding");
         }
     }
 
@@ -395,7 +398,7 @@ public partial class Player : SingletonActionListener<Player>, I_Move
 
             // 乗る、降りる 初期設定関数呼び出し
 
-            Debug.Log("ZipLineボタンが押されたよ");
+            //Debug.Log("ZipLineボタンが押されたよ");
 
             // 乗る stateに切り替え
             CustomEvent.Trigger(gameObject, "useZipLine");
@@ -498,11 +501,23 @@ public partial class Player : SingletonActionListener<Player>, I_Move
         CaluculateGravitySettings();
     }
 
+    public void SlidingEnter()
+    {
+        _animator.SetTrigger(_animIDSliding);
+        _slidingTimeoutDelta = SLIDING_TIMEOUT;
+    }
+
     public void SlidingState()
     {
         GameData.G_AllCheck();
 
+        ((I_Sliding)this).Sliding();
         CaluculateJumpSettingsOnGround();
+    }
+
+    public void SlidingExit()
+    {
+        _slidingTimeoutDelta = 0;
     }
 
     public void ZipLineState()

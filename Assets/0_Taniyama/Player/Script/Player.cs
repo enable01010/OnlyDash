@@ -41,6 +41,12 @@ public partial class Player : SingletonActionListener<Player>, I_Move
     [Tooltip("落下までの時間")]
     public float FALL_TIMEOUT = 0.15f;
 
+    [Space(10)]
+    [Tooltip("スライディングの時間")]
+    [SerializeField] private float SLIDING_TIMEOUT = 1.0f;
+    [Tooltip("スライディングの速度")]
+    [SerializeField] private float SLIDING_SPEED = 6.0f;
+
     //移動
     private float _speed;
     private float _animationBlend;
@@ -53,6 +59,7 @@ public partial class Player : SingletonActionListener<Player>, I_Move
     //時間
     private float _jumpTimeoutDelta;
     private float _fallTimeoutDelta;
+    private float _slidingTimeoutDelta;
     #endregion
 
     #region 着地判定用の変数
@@ -333,18 +340,17 @@ public partial class Player : SingletonActionListener<Player>, I_Move
     public override void OnJump(InputAction.CallbackContext context)
     {
         GameData.G_AllCheck();
+        if (isGrounded == false) return;
 
         base.OnJump(context);
 
-        if (isGrounded == true)
+        if (context.phase == InputActionPhase.Started && _jumpTimeoutDelta <= 0.0f)
         {
-            if (context.phase == InputActionPhase.Started && _jumpTimeoutDelta <= 0.0f)
-            {
-                _verticalVelocity = Mathf.Sqrt(JUMP_HEIGHT * -2f * GRAVITY);
-                _animator.SetBool(_animIDJump, true);
-                _jumpTimeoutDelta = JUMP_TIMEOUT;
-            }
+            _verticalVelocity = Mathf.Sqrt(JUMP_HEIGHT * -2f * GRAVITY);
+            _animator.SetBool(_animIDJump, true);
+            _jumpTimeoutDelta = JUMP_TIMEOUT;
         }
+        
     }
 
     public override void OnSlow(InputAction.CallbackContext context)
@@ -359,19 +365,26 @@ public partial class Player : SingletonActionListener<Player>, I_Move
     public override void OnSlide(InputAction.CallbackContext context)
     {
         GameData.G_AllCheck();
+        if (isGrounded == false) return;
 
         base.OnSlide(context);
 
-        switch(context.phase)
+        if (context.phase == InputActionPhase.Started)
         {
-            case InputActionPhase.Started:
-                isSlide = true;
-                Debug.Log("Slide検知開始");
-                break;
-            case InputActionPhase.Canceled:
-                isSlide = false;
-                Debug.Log("Slide検知終了");
-                break;
+            _animator.SetBool(_animIDJump, true);
+            _slidingTimeoutDelta = SLIDING_TIMEOUT;
+            CustomEvent.Trigger(gameObject, "OnSliding");
+        }
+    }
+
+    public override void OnZipLine(InputAction.CallbackContext context)
+    {
+        GameData.G_AllCheck();
+
+        base.OnZipLine(context);
+        if (context.phase == InputActionPhase.Started)
+        {
+            Debug.Log("ZipLineボタンが押されたよ");
         }
     }
 
@@ -466,6 +479,13 @@ public partial class Player : SingletonActionListener<Player>, I_Move
         ((I_Move)this).Move();//要検証、空中入力を受け付けるべきかどうか
         CaluculateJumpSettingsInAir();
         CaluculateGravitySettings();
+    }
+
+    public void SlidingState()
+    {
+        GameData.G_AllCheck();
+
+        CaluculateJumpSettingsOnGround();
     }
     #endregion
 

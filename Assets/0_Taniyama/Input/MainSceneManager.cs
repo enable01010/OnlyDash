@@ -37,7 +37,16 @@ public partial class MainSceneManager:Singleton<MainSceneManager>
 			listener.OnSlide(context);
 		}
 	}
-	public void OnCamMove(InputAction.CallbackContext context)
+
+    public void OnZipLine(InputAction.CallbackContext context)
+    {
+        foreach (I_ActionListener listener in actionListeners)
+        {
+            listener.OnZipLine(context);
+        }
+    }
+
+    public void OnCamMove(InputAction.CallbackContext context)
 	{
 		foreach (I_ActionListener listener in actionListeners)
 		{
@@ -81,6 +90,7 @@ public partial class MainSceneManager:Singleton<MainSceneManager>
 		_input.actions["PlayerMove"].started += OnPlayerMove;
 		_input.actions["Jump"].started += OnJump;
 		_input.actions["Slide"].started += OnSlide;
+		_input.actions["ZipLine"].started += OnZipLine;
 		_input.actions["CamMove"].started += OnCamMove;
 		_input.actions["Slow"].started += OnSlow;
 		_input.actions["Cursor"].started += OnCursor;
@@ -92,7 +102,8 @@ public partial class MainSceneManager:Singleton<MainSceneManager>
 		_input.actions["PlayerMove"].performed += OnPlayerMove;
 		_input.actions["Jump"].performed += OnJump;
 		_input.actions["Slide"].performed += OnSlide;
-		_input.actions["CamMove"].performed += OnCamMove;
+        _input.actions["ZipLine"].performed += OnZipLine;
+        _input.actions["CamMove"].performed += OnCamMove;
 		_input.actions["Slow"].performed += OnSlow;
 		_input.actions["Cursor"].performed += OnCursor;
 		_input.actions["Select"].performed += OnSelect;
@@ -103,7 +114,8 @@ public partial class MainSceneManager:Singleton<MainSceneManager>
 		_input.actions["PlayerMove"].canceled += OnPlayerMove;
 		_input.actions["Jump"].canceled += OnJump;
 		_input.actions["Slide"].canceled += OnSlide;
-		_input.actions["CamMove"].canceled += OnCamMove;
+        _input.actions["ZipLine"].canceled += OnZipLine;
+        _input.actions["CamMove"].canceled += OnCamMove;
 		_input.actions["Slow"].canceled += OnSlow;
 		_input.actions["Cursor"].canceled += OnCursor;
 		_input.actions["Select"].canceled += OnSelect;

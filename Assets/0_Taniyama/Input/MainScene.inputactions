@@ -85,6 +85,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "ZipLine",
+                    "type": "Button",
+                    "id": "476b7edf-25c9-4852-993b-6059d5cc8d77",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -261,6 +270,17 @@
                     "processors": "InvertVector2(invertX=false),ScaleVector2(x=300,y=300)",
                     "groups": "",
                     "action": "CamMove",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "50921657-9526-4331-bb07-b4cf7744e1d8",
+                    "path": "<Gamepad>/buttonEast",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ZipLine",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

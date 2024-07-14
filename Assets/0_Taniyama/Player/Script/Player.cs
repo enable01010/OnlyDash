@@ -326,6 +326,12 @@ public partial class Player : SingletonActionListener<Player>, I_Move
 
     #endregion
 
+    #region ZipLine設定用関数
+
+
+
+    #endregion
+
     #region ActionListenerのコールバック関数
 
     public override void OnPlayerMove(InputAction.CallbackContext context)
@@ -382,9 +388,20 @@ public partial class Player : SingletonActionListener<Player>, I_Move
         GameData.G_AllCheck();
 
         base.OnZipLine(context);
+
         if (context.phase == InputActionPhase.Started)
         {
+            // 乗るか、降りるかの判断する関数呼び出し
+
+            // 乗る、降りる 初期設定関数呼び出し
+
             Debug.Log("ZipLineボタンが押されたよ");
+
+            // 乗る stateに切り替え
+            CustomEvent.Trigger(gameObject, "useZipLine");
+
+            // 降りる stateに切り替え
+            CustomEvent.Trigger(gameObject, "endZipLine");
         }
     }
 
@@ -487,6 +504,14 @@ public partial class Player : SingletonActionListener<Player>, I_Move
 
         CaluculateJumpSettingsOnGround();
     }
+
+    public void ZipLineState()
+    {
+        // ZipLineStateのときにUpdateで呼ばれる関数
+        GameData.G_AllCheck();
+
+    }
+
     #endregion
 
     public virtual Player GetThis()

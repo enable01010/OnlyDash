@@ -362,7 +362,17 @@ public partial class Player : SingletonActionListener<Player>, I_Move
 
         base.OnSlide(context);
 
-        isSlide = context.ReadValue<bool>();
+        switch(context.phase)
+        {
+            case InputActionPhase.Started:
+                isSlide = true;
+                Debug.Log("Slide検知開始");
+                break;
+            case InputActionPhase.Canceled:
+                isSlide = false;
+                Debug.Log("Slide検知終了");
+                break;
+        }
     }
 
     public override void OnCamMove(InputAction.CallbackContext context)

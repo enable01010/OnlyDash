@@ -33,7 +33,7 @@ public partial class Player : SingletonActionListener<Player>
         }
         public virtual void Climbing()
         {
-
+            RotManagement();
         }
         public virtual void OnExit()
         {
@@ -43,6 +43,14 @@ public partial class Player : SingletonActionListener<Player>
         public virtual void SetArea(WallArea wallArea)
         {
             this.wallArea = wallArea;
+        }
+
+
+        private void RotManagement()
+        {
+            Player instance = Player.instance;
+            float rotation = Mathf.SmoothDampAngle(instance.transform.eulerAngles.y, wallArea.rot.y, ref instance._rotationVelocity, instance.ROTATION_SMOOTH_TIME);
+            instance.transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
         }
     }
 }

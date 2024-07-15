@@ -163,6 +163,21 @@ public partial class Player : SingletonActionListener<Player>
     {
         GroundCheck();
         CameraRotation();
+
+#if UNITY_EDITOR
+        if(Input.GetKeyDown(KeyCode.Return))
+        {
+            if(move.GetType() == typeof(ControlledMove))
+            {
+                move = new AutoMove();
+            }
+            else if(move.GetType() == typeof(AutoMove))
+            {
+                move = new ControlledMove();
+            }
+
+        }
+#endif
     }
 
     #endregion

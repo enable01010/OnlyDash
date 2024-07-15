@@ -380,8 +380,7 @@ public partial class Player : SingletonActionListener<Player>
     {
         GameData.G_AllCheck();
         if (isGrounded == false) return; //着地してない場合
-        if (_slidingTimeoutDelta > 0) return;//すでにスライディングしてる場合
-        if (_jumpTimeoutDelta > 0) return;//着地した瞬間にスライディングするの防止
+        if (sliding.IsGuard() == true) return;//ステート特有のガード節
 
         base.OnSlide(context);
 

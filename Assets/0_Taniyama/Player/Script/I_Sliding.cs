@@ -7,9 +7,7 @@ public partial class Player : SingletonActionListener<Player>
 {
     public interface I_Sliding
     {
-        /// <summary>
-        /// キャラクターのスライディングに関する処理
-        /// </summary>
+        public bool IsGuard();
         public void OnExit();
         public void Sliding();
         public void OnEnter();
@@ -17,6 +15,15 @@ public partial class Player : SingletonActionListener<Player>
 
     public class DefaultSliding:I_Sliding
     {
+        public virtual bool IsGuard()
+        {
+            Player instance = Player.instance;
+            if (instance._slidingTimeoutDelta > 0) return true;//すでにスライディングしてる場合
+            if (instance._jumpTimeoutDelta > 0)  return true;//着地した瞬間にスライディングするの防止
+
+            return false;
+        }
+
         public virtual void OnEnter()
         {
             Player instance = Player.instance;

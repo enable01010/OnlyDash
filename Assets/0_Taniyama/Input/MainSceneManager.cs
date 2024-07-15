@@ -46,6 +46,14 @@ public partial class MainSceneManager:Singleton<MainSceneManager>
         }
     }
 
+    public void OnClimbing(InputAction.CallbackContext context)
+    {
+        foreach (I_ActionListener listener in actionListeners)
+        {
+            listener.OnClimbing(context);
+        }
+    }
+
     public void OnCamMove(InputAction.CallbackContext context)
 	{
 		foreach (I_ActionListener listener in actionListeners)
@@ -91,7 +99,8 @@ public partial class MainSceneManager:Singleton<MainSceneManager>
 		_input.actions["Jump"].started += OnJump;
 		_input.actions["Slide"].started += OnSlide;
 		_input.actions["ZipLine"].started += OnZipLine;
-		_input.actions["CamMove"].started += OnCamMove;
+        _input.actions["Climbing"].started += OnClimbing;
+        _input.actions["CamMove"].started += OnCamMove;
 		_input.actions["Slow"].started += OnSlow;
 		_input.actions["Cursor"].started += OnCursor;
 		_input.actions["Select"].started += OnSelect;
@@ -103,6 +112,7 @@ public partial class MainSceneManager:Singleton<MainSceneManager>
 		_input.actions["Jump"].performed += OnJump;
 		_input.actions["Slide"].performed += OnSlide;
         _input.actions["ZipLine"].performed += OnZipLine;
+        _input.actions["Climbing"].performed += OnClimbing;
         _input.actions["CamMove"].performed += OnCamMove;
 		_input.actions["Slow"].performed += OnSlow;
 		_input.actions["Cursor"].performed += OnCursor;
@@ -115,6 +125,7 @@ public partial class MainSceneManager:Singleton<MainSceneManager>
 		_input.actions["Jump"].canceled += OnJump;
 		_input.actions["Slide"].canceled += OnSlide;
         _input.actions["ZipLine"].canceled += OnZipLine;
+        _input.actions["Climbing"].canceled += OnClimbing;
         _input.actions["CamMove"].canceled += OnCamMove;
 		_input.actions["Slow"].canceled += OnSlow;
 		_input.actions["Cursor"].canceled += OnCursor;

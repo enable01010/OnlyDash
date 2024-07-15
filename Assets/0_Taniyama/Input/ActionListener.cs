@@ -10,6 +10,7 @@ public interface I_ActionListener
 	public void OnJump(InputAction.CallbackContext context);
 	public void OnSlide(InputAction.CallbackContext context);
 	public void OnZipLine(InputAction.CallbackContext context);
+    public void OnClimbing(InputAction.CallbackContext context);
     public void OnCamMove(InputAction.CallbackContext context);
 	public void OnSlow(InputAction.CallbackContext context);
 	public void OnCursor(InputAction.CallbackContext context);
@@ -24,6 +25,7 @@ public abstract class MonobehaviourActionListener : MonoBehaviour, I_ActionListe
 	public virtual void OnJump(InputAction.CallbackContext context) { }
 	public virtual void OnSlide(InputAction.CallbackContext context) { }
 	public virtual void OnZipLine(InputAction.CallbackContext context) { }
+    public virtual void OnClimbing(InputAction.CallbackContext context) { }
     public virtual void OnCamMove(InputAction.CallbackContext context) { }
 	public virtual void OnSlow(InputAction.CallbackContext context) { }
 	public virtual void OnCursor(InputAction.CallbackContext context) { }
@@ -43,6 +45,7 @@ public abstract class SingletonActionListener<T> : Singleton<T>,I_ActionListener
 	public virtual void OnJump(InputAction.CallbackContext context) { }
 	public virtual void OnSlide(InputAction.CallbackContext context) { }
     public virtual void OnZipLine(InputAction.CallbackContext context) { }
+    public virtual void OnClimbing(InputAction.CallbackContext context) { }
     public virtual void OnCamMove(InputAction.CallbackContext context) { }
 	public virtual void OnSlow(InputAction.CallbackContext context) { }
 	public virtual void OnCursor(InputAction.CallbackContext context) { }

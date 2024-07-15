@@ -58,6 +58,7 @@ public partial class Player : SingletonActionListener<Player>
     [Header("インターフェース")]
     [Tooltip("移動"), SerializeReference, SubclassSelector] I_Move move = new ControlledMove();
     [Tooltip("スライディング"), SerializeReference, SubclassSelector] I_Sliding sliding = new DefaultSliding();
+    [Tooltip("クライミング"), SerializeReference, SubclassSelector] I_Climbing climbing = new DefaultClimbing();
 
     #endregion
 
@@ -133,6 +134,11 @@ public partial class Player : SingletonActionListener<Player>
     private int _animIDSliding;
     private int _animIDFreeFall;
     private int _animIDMotionSpeed;
+    private int _animIDClimbing_x;
+    private int _animIDClimbing_y;
+    private int _animIDClimbingStart;
+    private int _animIDClimbingUp;
+    private int _animIDClimbingDown;
 
     #endregion
 
@@ -197,6 +203,11 @@ public partial class Player : SingletonActionListener<Player>
         _animIDSliding = Animator.StringToHash("Sliding");
         _animIDFreeFall = Animator.StringToHash("FreeFall");
         _animIDMotionSpeed = Animator.StringToHash("MotionSpeed");
+        _animIDClimbing_x = Animator.StringToHash("Climbing_X");
+        _animIDClimbing_y = Animator.StringToHash("Climbing_Y");
+        _animIDClimbingStart = Animator.StringToHash("ClimbingStart");
+        _animIDClimbingUp = Animator.StringToHash("ClimbingEndUp");
+        _animIDClimbingDown = Animator.StringToHash("ClimbingEndDown");
     }
 
     /// <summary>
@@ -344,7 +355,7 @@ public partial class Player : SingletonActionListener<Player>
 
     public override void OnPlayerMove(InputAction.CallbackContext context)
     {
-        GameData.G_AllCheck();
+        if (GameData.G_AllCheck() == true) return;
 
         base.OnPlayerMove(context);
 
@@ -353,7 +364,7 @@ public partial class Player : SingletonActionListener<Player>
 
     public override void OnJump(InputAction.CallbackContext context)
     {
-        GameData.G_AllCheck();
+        if (GameData.G_AllCheck() == true) return;
         if (isGrounded == false) return;
 
         base.OnJump(context);
@@ -369,7 +380,7 @@ public partial class Player : SingletonActionListener<Player>
 
     public override void OnSlow(InputAction.CallbackContext context)
     {
-        GameData.G_AllCheck();
+        if (GameData.G_AllCheck() == true) return;
 
         base.OnSlow(context);
 
@@ -378,7 +389,7 @@ public partial class Player : SingletonActionListener<Player>
 
     public override void OnSlide(InputAction.CallbackContext context)
     {
-        GameData.G_AllCheck();
+        if (GameData.G_AllCheck() == true) return;
         if (isGrounded == false) return; //着地してない場合
         if (sliding.IsGuard() == true) return;//ステート特有のガード節
 
@@ -392,7 +403,7 @@ public partial class Player : SingletonActionListener<Player>
 
     public override void OnZipLine(InputAction.CallbackContext context)
     {
-        GameData.G_AllCheck();
+        if (GameData.G_AllCheck() == true) return;
 
         base.OnZipLine(context);
 
@@ -410,6 +421,20 @@ public partial class Player : SingletonActionListener<Player>
             // 降りる stateに切り替え
             CustomEvent.Trigger(gameObject, "endZipLine");
         }
+    }
+
+    public override void OnClimbing(InputAction.CallbackContext context)
+    {
+        if (GameData.G_AllCheck()) return;
+        if (climbing.IsGuard() == true) return;
+
+        base.OnSlow(context);
+
+        if (context.phase == InputActionPhase.Started)
+        {
+            CustomEvent.Trigger(gameObject, "ClimbingStart");
+        }
+
     }
 
     public override void OnCamMove(InputAction.CallbackContext context)
@@ -530,7 +555,30 @@ public partial class Player : SingletonActionListener<Player>
 
     }
 
+    public void ClimbingEnter()
+    {
+        climbing.OnEnter();
+    }
+
+    public void ClimbingState()
+    {
+        climbing.Climbing();
+    }
+
+    public void ClimbingExit()
+    {
+        climbing.OnExit();
+    }
+
     #endregion
 
+    #region インターフェース呼び出し用関数
+
+    public void SetWallArea(WallArea wallArea)
+    {
+        climbing.SetArea(wallArea);
+    }
+
+    #endregion
 }
 

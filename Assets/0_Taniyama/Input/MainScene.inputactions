@@ -94,6 +94,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "Climbing",
+                    "type": "Button",
+                    "id": "6e0506ca-09b8-49c3-85c0-a63a27b24ba0",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -281,6 +290,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "ZipLine",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "144206d2-479c-4857-a785-50063d04127a",
+                    "path": "<Gamepad>/buttonWest",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Climbing",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

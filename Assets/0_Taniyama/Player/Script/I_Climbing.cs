@@ -18,6 +18,9 @@ public partial class Player : SingletonActionListener<Player>
     {
         private WallArea wallArea;
         private bool isClimbing = false;
+        [SerializeField] float START_MOVE_SPEED = 5.0f;
+        [SerializeField] Vector3 POSISION_OFFSET = new Vector3(0, 0.15f, 0.15f);
+        [SerializeField] float MAX_DISTANCE = 0.1f;
 
         public virtual bool IsGuard()
         {
@@ -26,7 +29,6 @@ public partial class Player : SingletonActionListener<Player>
         }
         public virtual void OnEnter()
         {
-            Debug.Log("“ü‚Á‚½‚æ");
             Player instance = Player.instance;
 
             instance._animator.SetTrigger(instance._animIDClimbingStart);
@@ -34,6 +36,7 @@ public partial class Player : SingletonActionListener<Player>
         public virtual void Climbing()
         {
             RotManagement();
+            MoveManagement();
         }
         public virtual void OnExit()
         {
@@ -51,6 +54,15 @@ public partial class Player : SingletonActionListener<Player>
             Player instance = Player.instance;
             float rotation = Mathf.SmoothDampAngle(instance.transform.eulerAngles.y, wallArea.rot.y, ref instance._rotationVelocity, instance.ROTATION_SMOOTH_TIME);
             instance.transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
+        }
+
+        private void MoveManagement()
+        {
+            Player instance = Player.instance;
+            Vector3 moveDir = wallArea.pos.position - instance.transform.position - POSISION_OFFSET;
+            if (MAX_DISTANCE > moveDir.magnitude) return;
+            moveDir = moveDir.normalized * START_MOVE_SPEED * Time.deltaTime;
+            instance._controller.Move(moveDir);
         }
     }
 }

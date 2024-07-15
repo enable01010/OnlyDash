@@ -319,4 +319,40 @@ public static class LibVector
 
         return transform;
     }
+
+    static public Vector3 Only_X(this Vector3 vec)
+    {
+        vec.y = 0;
+        vec.z = 0;
+        return vec;
+    }
+
+    static public Vector3 Only_Y(this Vector3 vec)
+    {
+        vec.x = 0;
+        vec.z = 0;
+        return vec;
+    }
+
+    static public Vector3 Only_Z(this Vector3 vec)
+    {
+        vec.y = 0;
+        vec.x = 0;
+        return vec;
+    }
+
+    static public Vector3 Only_X(this int value)
+    {
+        return new Vector3(value,0,0);
+    }
+
+    static public Vector3 Only_Y(this int value)
+    {
+        return new Vector3(0, value, 0);
+    }
+
+    static public Vector3 Only_Z(this int value)
+    {
+        return new Vector3(0, 0, value);
+    }
 }

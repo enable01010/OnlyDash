@@ -24,32 +24,17 @@ public partial class Player : SingletonActionListener<Player>
     [Tooltip("走りの移動速度"),SerializeField] private float SPRINT_SPEED = 5.335f;
     [Tooltip("歩きの移動速度"),SerializeField] private float MOVE_SPEED = 5.335f;
 
-    [Tooltip("移動速度の変化率")]
-    private float SPEED_CHANGE_RATE = 10.0f;
-
-    [Tooltip("最大回転速度")]
-    [Range(0.0f, 0.3f)]
-    private float ROTATION_SMOOTH_TIME = 0.12f;
+    [Tooltip("移動速度の変化率")]private float SPEED_CHANGE_RATE = 10.0f;
+    [Tooltip("最大回転速度"),Range(0.0f, 0.3f)] private float ROTATION_SMOOTH_TIME = 0.12f;
 
     [Space(10)]
-    [Tooltip("ジャンプクールタイム")]
-    public float JUMP_TIMEOUT = 0.50f;
-
-    [Tooltip("落下までの時間")]
-    public float FALL_TIMEOUT = 0.15f;
+    [Tooltip("ジャンプクールタイム"),SerializeField] private float JUMP_TIMEOUT = 0.50f;
+    [Tooltip("落下までの時間"),SerializeField] private float FALL_TIMEOUT = 0.15f;
 
     [Space(10)]
     [Header("スライディング関係")]
-    [Tooltip("スライディングの時間")]
-    [SerializeField] private float SLIDING_TIMEOUT = 1.0f;
-    [Tooltip("スライディングの速度")]
-    [SerializeField] private float SLIDING_SPEED = 6.0f;
-
-    [Space(10)]
-    [Header("インターフェース")]
-    [Tooltip("移動"),SerializeReference, SubclassSelector] I_Move move = new ControlledMove();
-    [Tooltip("スライディング"), SerializeReference, SubclassSelector] I_Sliding sliding = new DefaultSliding();
-
+    [Tooltip("スライディングの時間"),SerializeField] private float SLIDING_TIMEOUT = 1.0f;
+    [Tooltip("スライディングの速度"),SerializeField] private float SLIDING_SPEED = 6.0f;
 
     //移動
     private float _speed;
@@ -64,22 +49,26 @@ public partial class Player : SingletonActionListener<Player>
     private float _jumpTimeoutDelta;
     private float _fallTimeoutDelta;
     private float _slidingTimeoutDelta;
+
+    #endregion
+
+    #region インターフェース
+
+    [Space(10)]
+    [Header("インターフェース")]
+    [Tooltip("移動"), SerializeReference, SubclassSelector] I_Move move = new ControlledMove();
+    [Tooltip("スライディング"), SerializeReference, SubclassSelector] I_Sliding sliding = new DefaultSliding();
+
     #endregion
 
     #region 着地判定用の変数
 
+    [Space(10)]
     [Header("着地判定")]
-    [Tooltip("地面に接しているが")]
-    [SerializeField,ReadOnly] private bool isGrounded = true;
-
-    [Tooltip("PlayerのTransformから計測する頂点の距離")]
-    [SerializeField] private float GROUNDED_OFFSET = -0.14f;
-
-    [Tooltip("地面と離れた判定をする球の半径")]
-    [SerializeField] private float GROUNDED_RADIUS = 0.28f;
-
-    [Tooltip("地面のレイヤー")]
-    [SerializeField] private LayerMask GroundLayers;
+    [Tooltip("地面に接しているが"),SerializeField,ReadOnly] private bool isGrounded = true;
+    [Tooltip("PlayerのTransformから計測する頂点の距離"),SerializeField] private float GROUNDED_OFFSET = -0.14f;
+    [Tooltip("地面と離れた判定をする球の半径"),SerializeField] private float GROUNDED_RADIUS = 0.28f;
+    [Tooltip("地面のレイヤー"),SerializeField] private LayerMask GroundLayers;
 
     #endregion
 
@@ -95,12 +84,10 @@ public partial class Player : SingletonActionListener<Player>
     #region カメラ用の変数
     [Header("カメラ")]
     public GameObject CinemachineCameraTarget;
-    [Tooltip("上限")]
-    public float TopClamp = 70.0f;
-    [Tooltip("下限")]
-    public float BottomClamp = -30.0f;
-    public bool lockCameraPosition = false;
-    public float CameraAngleOverride = 0.0f;
+    [Tooltip("上限"),SerializeField] private float TopClamp = 70.0f;
+    [Tooltip("下限"), SerializeField] private float BottomClamp = -30.0f;
+    private bool lockCameraPosition = false;
+    private float CameraAngleOverride = 0.0f;
     private const float THRESHOLD = 0.01f;
     private float _cinemachineTargetYaw;
     private float _cinemachineTargetPitch;
@@ -124,9 +111,9 @@ public partial class Player : SingletonActionListener<Player>
 
     #region サウンド関係
 
-    public AudioClip LandingAudioClip;
-    public AudioClip[] FootstepAudioClips;
-    [Range(0, 1)] public float FOOTSTEP_AUDIO_VOLUME = 0.5f;
+    [SerializeField] private AudioClip LandingAudioClip;
+    [SerializeField] private AudioClip[] FootstepAudioClips;
+    [Range(0, 1),SerializeField] private float FOOTSTEP_AUDIO_VOLUME = 0.5f;
 
     #endregion
 

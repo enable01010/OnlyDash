@@ -8,7 +8,7 @@ using static Player;
 [RequireComponent(typeof(Animator))]
 [RequireComponent(typeof(CharacterController))]
 
-public partial class Player : SingletonActionListener<Player>, I_Move,I_Sliding
+public partial class Player : SingletonActionListener<Player>
 {
     #region 別コンポーネント
 
@@ -21,11 +21,8 @@ public partial class Player : SingletonActionListener<Player>, I_Move,I_Sliding
     #region ステータス
 
     [Header("ステータス")]
-    [Tooltip("走りの移動速度")]
-    [SerializeField] private float SPRINT_SPEED = 5.335f;
-
-    [Tooltip("歩きの移動速度")]
-    [SerializeField] private float MOVE_SPEED = 5.335f;
+    [Tooltip("走りの移動速度"),SerializeField] private float SPRINT_SPEED = 5.335f;
+    [Tooltip("歩きの移動速度"),SerializeField] private float MOVE_SPEED = 5.335f;
 
     [Tooltip("移動速度の変化率")]
     private float SPEED_CHANGE_RATE = 10.0f;
@@ -47,6 +44,12 @@ public partial class Player : SingletonActionListener<Player>, I_Move,I_Sliding
     [SerializeField] private float SLIDING_TIMEOUT = 1.0f;
     [Tooltip("スライディングの速度")]
     [SerializeField] private float SLIDING_SPEED = 6.0f;
+
+    [Space(10)]
+    [Header("インターフェース")]
+    [Tooltip("移動"),SerializeReference, SubclassSelector] I_Move move = new ControlledMove();
+    [Tooltip("スライディング"), SerializeReference, SubclassSelector] I_Sliding sliding = new DefaultSliding();
+
 
     //移動
     private float _speed;
@@ -487,7 +490,7 @@ public partial class Player : SingletonActionListener<Player>, I_Move,I_Sliding
         GameData.G_AllCheck();
 
         Rot();
-        ((I_Move)this).Move();
+        move.Move();
         CaluculateJumpSettingsOnGround();
     }
 
@@ -496,28 +499,27 @@ public partial class Player : SingletonActionListener<Player>, I_Move,I_Sliding
         GameData.G_AllCheck();
 
         Rot();
-        ((I_Move)this).Move();//要検証、空中入力を受け付けるべきかどうか
+        move.Move();//要検証、空中入力を受け付けるべきかどうか
         CaluculateJumpSettingsInAir();
         CaluculateGravitySettings();
     }
 
     public void SlidingEnter()
     {
-        _animator.SetTrigger(_animIDSliding);
-        _slidingTimeoutDelta = SLIDING_TIMEOUT;
+        sliding.OnEnter();
     }
 
     public void SlidingState()
     {
         GameData.G_AllCheck();
 
-        ((I_Sliding)this).Sliding();
+        sliding.Sliding();
         CaluculateJumpSettingsOnGround();
     }
 
     public void SlidingExit()
     {
-        _slidingTimeoutDelta = 0;
+        sliding.OnExit();
     }
 
     public void ZipLineState()
@@ -529,9 +531,5 @@ public partial class Player : SingletonActionListener<Player>, I_Move,I_Sliding
 
     #endregion
 
-    public virtual Player GetThis()
-    {
-        return this;
-    }
 }
 

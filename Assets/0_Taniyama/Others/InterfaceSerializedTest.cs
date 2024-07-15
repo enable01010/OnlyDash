@@ -16,12 +16,12 @@ public class InterfaceSerializedTest : MonoBehaviour
     [System.Serializable]
     public class I_Test_1 : I_Test
     {
-
+        [SerializeField] int i;
     }
 
     [System.Serializable]
     public class I_Test_2 : I_Test
     {
-
+        [SerializeField] int b;
     }
 }

@@ -42,7 +42,10 @@ public class SubclassSelectorDrawer : PropertyDrawer
 
     private void GetCurrentTypeIndex(string typeFullName)
     {
-        currentTypeIndex = Array.IndexOf(typeFullNameArray, typeFullName);
+        int markIterator = typeFullName.IndexOf("/");
+        typeFullName = typeFullName.Substring(markIterator + 1);
+        currentTypeIndex = Array.IndexOf(typePopupNameArray, typeFullName);
+
     }
 
     private void GetAllInheritedTypes(Type baseType, bool includeMono)

@@ -140,6 +140,10 @@ public partial class Player : SingletonActionListener<Player>
     private int _animIDClimbingUp;
     private int _animIDClimbingDown;
 
+    //IKアニメーションの設定
+    private Vector3 rightHandIKPosition;
+    private Vector3 leftHandIKPosition;
+
     #endregion
 
     #region Monobehaviourのコールバック関数
@@ -576,7 +580,38 @@ public partial class Player : SingletonActionListener<Player>
 
     public void SetWallArea(WallArea wallArea)
     {
-        climbing.SetArea(wallArea);
+        climbing.AddArea(wallArea);
+    }
+
+    public void DeleteWallArea(WallArea wallArea)
+    {
+        climbing.DeleteArea(wallArea);
+    }
+
+    #endregion
+
+    #region アニメーターIK用
+    
+    private void OnAnimatorIK()
+    {
+        RightHandIK();
+        LeftHandIK();
+    }
+
+    private void RightHandIK()
+    {
+        if (rightHandIKPosition == Vector3.zero) return;
+        float rightHandWeight = _animator.GetFloat("RightHandWeight");
+        _animator.SetIKPositionWeight(AvatarIKGoal.RightHand, rightHandWeight);
+        _animator.SetIKPosition(AvatarIKGoal.RightHand, rightHandIKPosition);
+    }
+
+    private void LeftHandIK()
+    {
+        if (leftHandIKPosition == Vector3.zero) return;
+        float leftHandWeight = _animator.GetFloat("LeftHandWeight");
+        _animator.SetIKPositionWeight(AvatarIKGoal.LeftHand, leftHandWeight);
+        _animator.SetIKPosition(AvatarIKGoal.LeftHand, leftHandIKPosition);
     }
 
     #endregion

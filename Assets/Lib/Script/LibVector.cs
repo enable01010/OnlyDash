@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Mathematics;
 using UnityEngine;
 
 /// <summary>
@@ -341,18 +342,28 @@ public static class LibVector
         return vec;
     }
 
-    static public Vector3 Only_X(this int value)
+    static public Vector3 Only_X(this float value)
     {
         return new Vector3(value,0,0);
     }
 
-    static public Vector3 Only_Y(this int value)
+    static public Vector3 Only_Y(this float value)
     {
         return new Vector3(0, value, 0);
     }
 
-    static public Vector3 Only_Z(this int value)
+    static public Vector3 Only_Z(this float value)
     {
         return new Vector3(0, 0, value);
+    }
+
+    static public float3 ChangeFloat3(this Vector3 vec)
+    {
+        return new float3(vec.x, vec.y, vec.z);
+    }
+
+    static public Vector3 ChengeVector3(this float3 value)
+    {
+        return new Vector3(value.x,value.y,value.z);
     }
 }

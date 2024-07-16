@@ -1,11 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Splines;
 
 public class WallArea : MonoBehaviour
 {
     [field: SerializeField] public Vector3 rot { get; private set; }
     [field: SerializeField] public Transform pos { get; private set; }
+    [field: SerializeField] public Spline _spline { get; private set; } 
 
     private void OnTriggerEnter(Collider other)
     {
@@ -19,7 +21,7 @@ public class WallArea : MonoBehaviour
     {
         if (other.TryGetComponent<Player>(out Player player))
         {
-            player.SetWallArea(null);
+            player.DeleteWallArea(this);
         }
     }
 }

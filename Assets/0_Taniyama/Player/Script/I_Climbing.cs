@@ -21,7 +21,7 @@ public partial class Player : SingletonActionListener<Player>
     public class DefaultClimbing : I_Climbing
     {
         //壁用
-        private List<WallArea> wallAreaList;
+        private List<WallArea> wallAreaList = new List<WallArea>();
         private WallArea wallArea;
 
         [SerializeField] float START_MOVE_SPEED = 5.0f;
@@ -40,7 +40,7 @@ public partial class Player : SingletonActionListener<Player>
 
         public virtual bool IsGuard()
         {
-            if (wallArea == null) return true;
+            if (wallAreaList.Count == 0) return true;
             return false;
         }
         public virtual void OnEnter()
@@ -50,9 +50,6 @@ public partial class Player : SingletonActionListener<Player>
         }
         public virtual void Climbing()
         {
-            RotManagement();
-            MoveManagement();
-
             Move();
             Rot();
         }
@@ -86,13 +83,13 @@ public partial class Player : SingletonActionListener<Player>
             {
                 
                 float distance = SplineUtility.GetNearestPoint(
-                    wallAreaList[i]._spline,
-                    instance.transform.position.ChangeFloat3(),
+                    wallAreaList[i]._spline.Spline,
+                    (instance.transform.position - wallAreaList[i]._spline.transform.position).ChangeFloat3(),
                     out float3 nearPos,
                     out float nearPosRate);
                 //TODO: 消せるか実験
 
-                if (minsDistance < distance)
+                if (minsDistance > distance)
                 {
                     minsDistance = distance;
                     minsNumber = i;
@@ -100,6 +97,8 @@ public partial class Player : SingletonActionListener<Player>
                 }
 
             }
+
+            wallArea = wallAreaList[minsNumber];
         }
         private void ClearWallArea()
         {
@@ -138,14 +137,14 @@ public partial class Player : SingletonActionListener<Player>
         private void Move()
         {
             Player instance = Player.instance;
-            Spline spline = wallArea._spline;
+            Spline spline = wallArea._spline.Spline;
 
             //入力を変数に置き換える
             Vector2 inputDir = instance.playerMove;
             float xDir = inputDir.x;
 
             //現状のsplineのポジションを求める
-            Vector3 nowPos = spline.EvaluatePosition(splineRate);
+            Vector3 nowPos = spline.EvaluatePosition(splineRate).ChengeVector3() + wallArea._spline.transform.position;
 
             //TODO: カメラの向きに合わせ
             Vector3 inputDirection = new Vector3(instance.playerMove.x, 0.0f, instance.playerMove.y).normalized;
@@ -163,7 +162,7 @@ public partial class Player : SingletonActionListener<Player>
                 out splineRate);
 
             //TODO: splineRateに合わせてキャラクターの位置を調整する
-            MoveManagement(nearPos.ChengeVector3());
+            MoveManagement(nearPos.ChengeVector3() + wallArea._spline.transform.position);
 
             //アニメーターに数値を入れる
             instance._animator.SetFloat(instance._animIDClimbing_x, xDir);
@@ -176,10 +175,10 @@ public partial class Player : SingletonActionListener<Player>
         private void Rot()
         {
             Player instance = Player.instance;
-            Spline spline = wallArea._spline;
+            Spline spline = wallArea._spline.Spline;
 
             //ベクトルを角度に変更する
-            Vector3 spinePos = spline.EvaluatePosition(splineRate);
+            Vector3 spinePos = spline.EvaluatePosition(splineRate).ChengeVector3() + wallArea._spline.transform.position;
             Vector3 playerPos = instance.transform.position;
             Vector3 dir = spinePos - playerPos;
             float bestAngle = Mathf.Atan2(dir.y, dir.x) + ROT_OFFSET;

@@ -7,7 +7,7 @@ public class WallArea : MonoBehaviour
 {
     [field: SerializeField] public Vector3 rot { get; private set; }
     [field: SerializeField] public Transform pos { get; private set; }
-    [field: SerializeField] public Spline _spline { get; private set; } 
+    [field: SerializeField] public SplineContainer _spline { get; private set; } 
 
     private void OnTriggerEnter(Collider other)
     {

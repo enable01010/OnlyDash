@@ -420,7 +420,7 @@ public static class LibVector
     //Forwardベクトル（正面）に対して別のベクトルが前後どちらにあるか判定する(1が前-1が後）
     static public float VerticalElementOfForwardToDir(Vector3 forward, Vector3 dir)
     {
-        float angle = Vector3.Angle(forward, dir);
+        float angle = Vector3.Angle(forward.normalized, dir.normalized);
         float vertical = (angle <= 90) ? 1.0f : -1.0f;
         return vertical;
     }
@@ -428,21 +428,20 @@ public static class LibVector
     //Forwardベクトル（正面）に対して別のベクトルが左右どちらにあるか判定する(1が右-1が左）
     static public float HolizontalElementOfForwardToDir(Vector3 forward, Vector3 dir)
     {
-        float holizontal = (Vector3.Cross(forward, dir).y >= 0 ? 1 : -1);
+        float holizontal = (Vector3.Cross(forward.normalized, dir.normalized).y < 0 ? -1 : 1);
         return holizontal;
     }
 
     //ベクトルを特定のY軸角度で回転させる（カメラの向きを考慮した入力方向の検知等）
     static public Vector3 RotationDirOfObjectFront(Transform obj, Vector3 dir)
     {
-        Vector3 inputDirection = dir.normalized;
-        float _targetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg + obj.eulerAngles.y;
-        Vector3 targetDirection = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
+        Quaternion _targetRotation = Quaternion.AngleAxis(obj.eulerAngles.y, Vector3.up);
+        Vector3 targetDirection = _targetRotation * dir.normalized;
         return targetDirection;
     }
 
-    static public Vector3 RotationDirOfFront(Vector3 eulerAngles, Vector2 dir)
+    static public Vector3 RotationDirOfObjectFront(Transform obj, Vector2 dir)
     {
-        return RotationDirOfFront(eulerAngles, new Vector3(dir.x, 0, dir.y));
+        return RotationDirOfObjectFront(obj, new Vector3(dir.x, 0, dir.y));
     }
 }

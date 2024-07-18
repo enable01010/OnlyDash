@@ -37,6 +37,9 @@ public partial class Player : SingletonActionListener<Player>
         [SerializeField] Vector3 LEFT_HAND_OFFSET;
         [SerializeField] float ROT_OFFSET;
 
+        [SerializeField] Transform red;
+        [SerializeField] Transform bule;
+        [SerializeField] Transform green;
 
         public virtual bool IsGuard()
         {
@@ -83,7 +86,7 @@ public partial class Player : SingletonActionListener<Player>
             {
                 
                 float distance = SplineUtility.GetNearestPoint(
-                    wallAreaList[i]._spline.Spline,
+                    wallAreaList[i]._spline.Splines[0],
                     (instance.transform.position - wallAreaList[i]._spline.transform.position).ChangeFloat3(),
                     out float3 nearPos,
                     out float nearPosRate);
@@ -118,58 +121,67 @@ public partial class Player : SingletonActionListener<Player>
             instance.leftHandIKPosition = Vector3.zero;
         }
 
-        private void RotManagement()
-        {
-            Player instance = Player.instance;
-            float rotation = Mathf.SmoothDampAngle(instance.transform.eulerAngles.y, wallArea.rot.y, ref instance._rotationVelocity, instance.ROTATION_SMOOTH_TIME);
-            instance.transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
-        }
-
         private void MoveManagement(Vector3 goalPos)
         {
-            Player instance = Player.instance;
-            Vector3 moveDir = goalPos - instance.transform.position - POSISION_OFFSET;
-            if (MAX_DISTANCE > moveDir.magnitude) return;
-            moveDir = moveDir.normalized * START_MOVE_SPEED * Time.deltaTime;
-            instance._controller.Move(moveDir);
+            //Player instance = Player.instance;
+            //Vector3 moveDir = goalPos - instance.transform.position - POSISION_OFFSET;
+            //if (MAX_DISTANCE > moveDir.magnitude) return;
+            //moveDir = moveDir.normalized * START_MOVE_SPEED * Time.deltaTime;
+            //instance._controller.Move(moveDir.normalized);
+
+            instance.transform.position = goalPos;
         }
 
         private void Move()
         {
             Player instance = Player.instance;
-            Spline spline = wallArea._spline.Spline;
+            using NativeSpline spline  = new NativeSpline(wallArea._spline.Splines[0], wallArea._spline.transform.localToWorldMatrix);//wallArea._spline.Splines[0];
 
             //入力を変数に置き換える
             Vector2 inputDir = instance.playerMove;
             float xDir = inputDir.x;
+            
+            if (inputDir.magnitude > 0.1f)
+            {
+                //現状のsplineのポジションを求める
+                Vector3 nowPos = spline.EvaluatePosition(splineRate).ChengeVector3();
 
-            //現状のsplineのポジションを求める
-            Vector3 nowPos = spline.EvaluatePosition(splineRate).ChengeVector3() + wallArea._spline.transform.position;
+                //TODO: カメラの向きに合わせ
+                Vector3 inputDirection = new Vector3(inputDir.x, 0.0f, inputDir.y).normalized;
+                float _targetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg + instance._mainCamera.transform.eulerAngles.y;
+                Vector3 targetDirection = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
+                //TODO: 移動先のポイントを求める
+                Vector3 moveDir = targetDirection.normalized * holizontalMoveSpeed * Time.deltaTime;
+                Vector3 movePos = nowPos + moveDir;
+                Debug.Log(moveDir.x);
+                //移動先のポイントから一番近いスプラインのポジションを求める
+                SplineUtility.GetNearestPoint(
+                    spline,
+                    movePos.ChangeFloat3(),
+                    out float3 nearPos,
+                    out float splineRate1);
 
-            //TODO: カメラの向きに合わせ
-            Vector3 inputDirection = new Vector3(instance.playerMove.x, 0.0f, instance.playerMove.y).normalized;
-            float _targetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg + instance._mainCamera.transform.eulerAngles.y;
-            Vector3 targetDirection = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
+                //TODO: splineRateに合わせてキャラクターの位置を調整する
+                MoveManagement(movePos);
+                SplineUtility.GetNearestPoint(
+                    spline,
+                    instance.transform.position,
+                    out float3 nearPos2,
+                    out float splineRate2);
+                
+                Debug.Log("0:"+ splineRate + "    1:" + splineRate1 + "    2:" + splineRate2);
+                splineRate = splineRate2;
+                //アニメーターに数値を入れる
+                instance._animator.SetFloat(instance._animIDClimbing_x, xDir);
 
-            //TODO: 移動先のポイントを求める
-            Vector3 movePos = nowPos + targetDirection.normalized * (instance._speed * Time.deltaTime);
+                //IK用の情報を入れる
+                instance.rightHandIKPosition = nearPos.ChengeVector3() + RIGHT_HAND_OFFSET;
+                instance.leftHandIKPosition = nearPos.ChengeVector3() + LEFT_HAND_OFFSET;
 
-            //移動先のポイントから一番近いスプラインのポジションを求める
-            SplineUtility.GetNearestPoint(
-                spline,
-                movePos.ChangeFloat3(),
-                out float3 nearPos,
-                out splineRate);
-
-            //TODO: splineRateに合わせてキャラクターの位置を調整する
-            MoveManagement(nearPos.ChengeVector3() + wallArea._spline.transform.position);
-
-            //アニメーターに数値を入れる
-            instance._animator.SetFloat(instance._animIDClimbing_x, xDir);
-
-            //IK用の情報を入れる
-            instance.rightHandIKPosition = nearPos.ChengeVector3() + RIGHT_HAND_OFFSET;
-            instance.leftHandIKPosition = nearPos.ChengeVector3() + LEFT_HAND_OFFSET;
+                red.position = nowPos;
+                bule.position = movePos;
+                green.position = nearPos2;
+            }
         }
 
         private void Rot()

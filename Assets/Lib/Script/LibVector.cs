@@ -421,7 +421,7 @@ public static class LibVector
     static public float VerticalElementOfForwardToDir(Vector3 forward, Vector3 dir)
     {
         float angle = Vector3.Angle(forward.normalized, dir.normalized);
-        float vertical = (angle <= 90) ? 1.0f : -1.0f;
+        float vertical = LibMath.GetRangeToValue(angle, 0, 180) * 2 - 1;
         return vertical;
     }
 
@@ -429,7 +429,7 @@ public static class LibVector
     static public float HolizontalElementOfForwardToDir(Vector3 forward, Vector3 dir)
     {
         float holizontal = (Vector3.Cross(forward.normalized, dir.normalized).y < 0 ? -1 : 1);
-        return holizontal;
+        return Vector3.Cross(forward, dir).y;
     }
 
     //ベクトルを特定のY軸角度で回転させる（カメラの向きを考慮した入力方向の検知等）

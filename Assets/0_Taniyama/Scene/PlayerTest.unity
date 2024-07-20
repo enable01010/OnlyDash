@@ -2036,13 +2036,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6250606337119821870, guid: dc8965673a73a2b4b9783cb17af17c0f,
         type: 3}
+      propertyPath: managedReferences[1002].LAYER_MASK.m_Bits
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6250606337119821870, guid: dc8965673a73a2b4b9783cb17af17c0f,
+        type: 3}
+      propertyPath: managedReferences[1002].LEFT_LEG_OFFSET.z
+      value: -0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 6250606337119821870, guid: dc8965673a73a2b4b9783cb17af17c0f,
+        type: 3}
       propertyPath: managedReferences[1002].POSISION_OFFSET.y
-      value: 1.6
+      value: 1.65
       objectReference: {fileID: 0}
     - target: {fileID: 6250606337119821870, guid: dc8965673a73a2b4b9783cb17af17c0f,
         type: 3}
       propertyPath: managedReferences[1002].POSISION_OFFSET.z
-      value: 0.28
+      value: 0.38
       objectReference: {fileID: 0}
     - target: {fileID: 6250606337119821870, guid: dc8965673a73a2b4b9783cb17af17c0f,
         type: 3}
@@ -2056,8 +2066,108 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6250606337119821870, guid: dc8965673a73a2b4b9783cb17af17c0f,
         type: 3}
+      propertyPath: managedReferences[1002].LEFT_HAND_OFFSET.z
+      value: -0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 6250606337119821870, guid: dc8965673a73a2b4b9783cb17af17c0f,
+        type: 3}
+      propertyPath: managedReferences[1002].RIGHT_LEG_OFFSET.z
+      value: -0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 6250606337119821870, guid: dc8965673a73a2b4b9783cb17af17c0f,
+        type: 3}
+      propertyPath: managedReferences[1002].RIGHT_HAND_OFFSET.z
+      value: -0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 6250606337119821870, guid: dc8965673a73a2b4b9783cb17af17c0f,
+        type: 3}
       propertyPath: managedReferences[1002].holizontalMoveSpeed
       value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 6250606337119821870, guid: dc8965673a73a2b4b9783cb17af17c0f,
+        type: 3}
+      propertyPath: managedReferences[1002].LEFT_LEG_RAY_OFFSET.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6250606337119821870, guid: dc8965673a73a2b4b9783cb17af17c0f,
+        type: 3}
+      propertyPath: managedReferences[1002].LEFT_HAND_POS_OFFSET.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6250606337119821870, guid: dc8965673a73a2b4b9783cb17af17c0f,
+        type: 3}
+      propertyPath: managedReferences[1002].LEFT_HAND_RAY_OFFSET.x
+      value: -0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6250606337119821870, guid: dc8965673a73a2b4b9783cb17af17c0f,
+        type: 3}
+      propertyPath: managedReferences[1002].LEFT_HAND_RAY_OFFSET.z
+      value: -0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6250606337119821870, guid: dc8965673a73a2b4b9783cb17af17c0f,
+        type: 3}
+      propertyPath: managedReferences[1002].LEFT_LEG_POSY_OFFSET.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6250606337119821870, guid: dc8965673a73a2b4b9783cb17af17c0f,
+        type: 3}
+      propertyPath: managedReferences[1002].RIGHT_LEG_POS_OFFSET.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6250606337119821870, guid: dc8965673a73a2b4b9783cb17af17c0f,
+        type: 3}
+      propertyPath: managedReferences[1002].RIGHT_LEG_RAY_OFFSET.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6250606337119821870, guid: dc8965673a73a2b4b9783cb17af17c0f,
+        type: 3}
+      propertyPath: managedReferences[1002].RIGHT_HAND_POS_OFFSET.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6250606337119821870, guid: dc8965673a73a2b4b9783cb17af17c0f,
+        type: 3}
+      propertyPath: managedReferences[1002].RIGHT_HAND_RAY_OFFSET.x
+      value: 0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6250606337119821870, guid: dc8965673a73a2b4b9783cb17af17c0f,
+        type: 3}
+      propertyPath: managedReferences[1002].RIGHT_HAND_RAY_OFFSET.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6250606337119821870, guid: dc8965673a73a2b4b9783cb17af17c0f,
+        type: 3}
+      propertyPath: managedReferences[1002].RIGHT_HAND_RAY_OFFSET.z
+      value: -0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6250606337119821870, guid: dc8965673a73a2b4b9783cb17af17c0f,
+        type: 3}
+      propertyPath: managedReferences[1002].LEFT_HAND_POS_OFFSET_STOP.z
+      value: -0.05
+      objectReference: {fileID: 0}
+    - target: {fileID: 6250606337119821870, guid: dc8965673a73a2b4b9783cb17af17c0f,
+        type: 3}
+      propertyPath: managedReferences[1002].LEFT_HAND_RAY_OFFSET_STOP.x
+      value: -0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6250606337119821870, guid: dc8965673a73a2b4b9783cb17af17c0f,
+        type: 3}
+      propertyPath: managedReferences[1002].LEFT_HAND_RAY_OFFSET_STOP.z
+      value: -0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6250606337119821870, guid: dc8965673a73a2b4b9783cb17af17c0f,
+        type: 3}
+      propertyPath: managedReferences[1002].RIGHT_HAND_POS_OFFSET_STOP.z
+      value: -0.05
+      objectReference: {fileID: 0}
+    - target: {fileID: 6250606337119821870, guid: dc8965673a73a2b4b9783cb17af17c0f,
+        type: 3}
+      propertyPath: managedReferences[1002].RIGHT_HAND_RAY_OFFSET_STOP.x
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6250606337119821870, guid: dc8965673a73a2b4b9783cb17af17c0f,
+        type: 3}
+      propertyPath: managedReferences[1002].RIGHT_HAND_RAY_OFFSET_STOP.z
+      value: -0.1
       objectReference: {fileID: 0}
     - target: {fileID: 7232723983279821239, guid: dc8965673a73a2b4b9783cb17af17c0f,
         type: 3}
@@ -2704,11 +2814,22 @@ MonoBehaviour:
         START_MOVE_SPEED: 5
         POSISION_OFFSET: {x: 0, y: 0.15, z: 0.15}
         SPLINE_MOVE_SPEED: 0
-        RIGHT_HAND_OFFSET: {x: 0, y: 0, z: 0}
-        LEFT_HAND_OFFSET: {x: 0, y: 0, z: 0}
         ROT_OFFSET: 0
         ROT_SPEED: 0
         JUMP_HIGHT: 2
+        CANT_CLIM_UPPOWER: 1
+        RIGHT_HAND_RAY_OFFSET_STOP: {x: 0, y: 0, z: 0}
+        LEFT_HAND_RAY_OFFSET_STOP: {x: 0, y: 0, z: 0}
+        RIGHT_LEG_RAY_OFFSET_STOP: {x: 0, y: 0, z: 0}
+        LEFT_LEG_RAY_OFFSET_STOP: {x: 0, y: 0, z: 0}
+        RIGHT_HAND_POS_OFFSET_STOP: {x: 0, y: 0, z: 0}
+        LEFT_HAND_POS_OFFSET_STOP: {x: 0, y: 0, z: 0}
+        RIGHT_LEG_POS_OFFSET_STOP: {x: 0, y: 0, z: 0}
+        LEFT_LEG_POSY_OFFSET_STOP: {x: 0, y: 0, z: 0}
+        IK_CHECK_LENGTH: 0.3
+        LAYER_MASK:
+          serializedVersion: 2
+          m_Bits: 0
 --- !u!1001 &7470605951010592241
 PrefabInstance:
   m_ObjectHideFlags: 0

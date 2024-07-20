@@ -604,32 +604,29 @@ public partial class Player : SingletonActionListener<Player>
 
     private void RightHandIK()
     {
-        if (rightHandIKPosition == Vector3.zero) return;
-        float rightHandWeight = _animator.GetFloat("RightHandWeight");
+
+        float rightHandWeight = (rightHandIKPosition == Vector3.zero)?0:_animator.GetFloat("RightHandWeight");
         _animator.SetIKPositionWeight(AvatarIKGoal.RightHand, rightHandWeight);
         _animator.SetIKPosition(AvatarIKGoal.RightHand, rightHandIKPosition);
     }
 
     private void LeftHandIK()
     {
-        if (leftHandIKPosition == Vector3.zero) return;
-        float leftHandWeight = _animator.GetFloat("LeftHandWeight");
+        float leftHandWeight = (leftHandIKPosition == Vector3.zero) ? 0 : _animator.GetFloat("LeftHandWeight");
         _animator.SetIKPositionWeight(AvatarIKGoal.LeftHand, leftHandWeight);
         _animator.SetIKPosition(AvatarIKGoal.LeftHand, leftHandIKPosition);
     }
 
     private void RightLegIK()
     {
-        if (rightLegIKPosition == Vector3.zero) return;
-        float leftLegWeight = _animator.GetFloat("RightLegWeight");
+        float leftLegWeight = (rightLegIKPosition == Vector3.zero) ? 0 : _animator.GetFloat("RightLegWeight");
         _animator.SetIKPositionWeight(AvatarIKGoal.RightFoot, leftLegWeight);
         _animator.SetIKPosition(AvatarIKGoal.RightFoot, rightLegIKPosition);
     }
 
     private void LeftLefIK()
     {
-        if (leftLegIKPosition == Vector3.zero) return;
-        float leftLegWeight = _animator.GetFloat("LeftLegWeight");
+        float leftLegWeight = (leftLegIKPosition == Vector3.zero) ? 0 : _animator.GetFloat("LeftLegWeight");
         _animator.SetIKPositionWeight(AvatarIKGoal.LeftFoot, leftLegWeight);
         _animator.SetIKPosition(AvatarIKGoal.LeftFoot, leftLegIKPosition);
     }

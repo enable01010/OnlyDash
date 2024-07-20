@@ -49,12 +49,16 @@ public partial class Player : SingletonActionListener<Player>
         [SerializeField] float CANT_CLIM_UPPOWER = 1.0f;
 
         //IK用変数
-        [SerializeField] Vector3 RIGHT_HAND_OFFSET;
-        [SerializeField] Vector3 LEFT_HAND_OFFSET;
-        [SerializeField] Vector3 RIGHT_LEG_OFFSET;
-        [SerializeField] Vector3 LEFT_LEG_OFFSET;
+        [SerializeField] Vector3 RIGHT_HAND_RAY_OFFSET_STOP;
+        [SerializeField] Vector3 LEFT_HAND_RAY_OFFSET_STOP;
+        [SerializeField] Vector3 RIGHT_LEG_RAY_OFFSET_STOP;
+        [SerializeField] Vector3 LEFT_LEG_RAY_OFFSET_STOP;
+        [SerializeField] Vector3 RIGHT_HAND_POS_OFFSET_STOP;
+        [SerializeField] Vector3 LEFT_HAND_POS_OFFSET_STOP;
+        [SerializeField] Vector3 RIGHT_LEG_POS_OFFSET_STOP;
+        [SerializeField] Vector3 LEFT_LEG_POSY_OFFSET_STOP;
         [SerializeField] float IK_CHECK_LENGTH = 0.3f;
-        [SerializeField] int LAYER_MASK;
+        [SerializeField] LayerMask LAYER_MASK;
 
         #region Enter
 
@@ -186,18 +190,31 @@ public partial class Player : SingletonActionListener<Player>
 
         private void SetAnimatorIK(Vector3 movePos, Vector3 moveDir)
         {
-            instance.rightHandIKPosition = IKRay(movePos, RIGHT_HAND_OFFSET);//右手
-            instance.leftHandIKPosition = IKRay(movePos, LEFT_HAND_OFFSET);//左手
-            instance.rightLegIKPosition = IKRay(movePos, RIGHT_LEG_OFFSET);//右足
-            instance.leftLegIKPosition = IKRay(movePos, LEFT_LEG_OFFSET);//左足
+            float dir = (moveDir.magnitude == 0) ? 0 : LibVector.HolizontalElementOfForwardToDir(instance.transform.forward, moveDir);
+            instance._animator.SetFloat(instance._animIDClimbing_x, dir);
+
+            if (Mathf.Abs(dir )< 0.1f || true)
+            {
+                instance.rightHandIKPosition = IKRay(movePos, RIGHT_HAND_RAY_OFFSET_STOP) + LibVector.RotationDirOfObjectFront(instance.transform, RIGHT_HAND_POS_OFFSET_STOP) * RIGHT_HAND_POS_OFFSET_STOP.magnitude;//右手
+                instance.leftHandIKPosition = IKRay(movePos, LEFT_HAND_RAY_OFFSET_STOP) + LibVector.RotationDirOfObjectFront(instance.transform, LEFT_HAND_POS_OFFSET_STOP) * LEFT_HAND_POS_OFFSET_STOP.magnitude; ;//左手
+                instance.rightLegIKPosition = IKRay(movePos, RIGHT_LEG_RAY_OFFSET_STOP) + LibVector.RotationDirOfObjectFront(instance.transform, RIGHT_LEG_POS_OFFSET_STOP) * RIGHT_LEG_POS_OFFSET_STOP.magnitude; ;//右足
+                instance.leftLegIKPosition = IKRay(movePos, LEFT_LEG_RAY_OFFSET_STOP) + LibVector.RotationDirOfObjectFront(instance.transform, LEFT_LEG_POSY_OFFSET_STOP) * LEFT_LEG_POSY_OFFSET_STOP.magnitude; ;//左足
+            }
+            //else
+            //{
+            //    instance.rightHandIKPosition = IKRay(instance._animator.GetIKPosition(AvatarIKGoal.RightHand), RIGHT_HAND_RAY_OFFSET_STOP) + LibVector.RotationDirOfObjectFront(instance.transform, RIGHT_HAND_POS_OFFSET_STOP) * RIGHT_HAND_POS_OFFSET_STOP.magnitude;//右手
+            //    instance.leftHandIKPosition = IKRay(instance._animator.GetIKPosition(AvatarIKGoal.LeftHand), LEFT_HAND_RAY_OFFSET_STOP) + LibVector.RotationDirOfObjectFront(instance.transform, LEFT_HAND_POS_OFFSET_STOP) * LEFT_HAND_POS_OFFSET_STOP.magnitude; ;//左手
+            //    instance.rightLegIKPosition = IKRay(movePos, RIGHT_LEG_RAY_OFFSET_STOP) + LibVector.RotationDirOfObjectFront(instance.transform, RIGHT_LEG_POS_OFFSET_STOP) * RIGHT_LEG_POS_OFFSET_STOP.magnitude; ;//右足
+            //    instance.leftLegIKPosition = IKRay(movePos, LEFT_LEG_RAY_OFFSET_STOP) + LibVector.RotationDirOfObjectFront(instance.transform, LEFT_LEG_POSY_OFFSET_STOP) * LEFT_LEG_POSY_OFFSET_STOP.magnitude; ;//左足
+            //}
         }
 
         private Vector3 IKRay(Vector3 movePos, Vector3 offset)
         {
-            Vector3 rayStartPos = movePos + LibVector.RotationDirOfObjectFront(instance.transform, offset);
+            Vector3 rayStartPos = movePos + LibVector.RotationDirOfObjectFront(instance.transform, offset) * offset.magnitude;
             Vector3 rayEndPos = rayStartPos + instance.transform.forward * IK_CHECK_LENGTH;
             RaycastHit hit = LibPhysics.Raycast(rayStartPos, instance.transform.forward, IK_CHECK_LENGTH, LAYER_MASK);
-            return (hit.IsHit() == true) ? hit.point:rayEndPos;
+            return (hit.IsHit() == true) ? hit.point: movePos;
         }
 
 

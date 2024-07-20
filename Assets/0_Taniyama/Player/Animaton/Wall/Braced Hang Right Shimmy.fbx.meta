@@ -61,25 +61,7 @@ ModelImporter:
           serializedVersion: 2
           curve:
           - serializedVersion: 3
-            time: 0.0041999817
-            value: 1
-            inSlope: 0
-            outSlope: 0
-            tangentMode: 0
-            weightedMode: 0
-            inWeight: 0
-            outWeight: 0
-          - serializedVersion: 3
-            time: 0.079906054
-            value: 0.0072577596
-            inSlope: -0.5407432
-            outSlope: -0.5407432
-            tangentMode: 0
-            weightedMode: 0
-            inWeight: 1
-            outWeight: 0.33333334
-          - serializedVersion: 3
-            time: 0.22457993
+            time: 0
             value: 0
             inSlope: 0
             outSlope: 0
@@ -88,25 +70,16 @@ ModelImporter:
             inWeight: 0
             outWeight: 0
           - serializedVersion: 3
-            time: 0.33712548
-            value: 0.98579025
-            inSlope: 0
-            outSlope: 0
-            tangentMode: 0
+            time: 1.0291748
+            value: -0.002357699
+            inSlope: -0.0022908635
+            outSlope: -0.0022908635
+            tangentMode: 34
             weightedMode: 0
-            inWeight: 0
+            inWeight: 0.33333334
             outWeight: 0
-          - serializedVersion: 3
-            time: 1.0083313
-            value: 1.0023499
-            inSlope: 0
-            outSlope: 0
-            tangentMode: 0
-            weightedMode: 0
-            inWeight: 0
-            outWeight: 0
-          preInfinity: 3
-          postInfinity: 3
+          preInfinity: 2
+          postInfinity: 2
           rotationOrder: 4
       - name: LeftHandWeight
         curve:
@@ -114,7 +87,7 @@ ModelImporter:
           curve:
           - serializedVersion: 3
             time: 0
-            value: 0.050231934
+            value: 0
             inSlope: 0
             outSlope: 0
             tangentMode: 0
@@ -122,61 +95,16 @@ ModelImporter:
             inWeight: 0
             outWeight: 0
           - serializedVersion: 3
-            time: 0.37789258
-            value: 0.04977417
-            inSlope: 0
-            outSlope: 0
-            tangentMode: 0
-            weightedMode: 0
-            inWeight: 0
-            outWeight: 0
-          - serializedVersion: 3
-            time: 0.4876872
-            value: 0.049521334
-            inSlope: 0
-            outSlope: 0
-            tangentMode: 0
+            time: 1
+            value: -0.0047187805
+            inSlope: -0.0047187805
+            outSlope: -0.0047187805
+            tangentMode: 34
             weightedMode: 0
             inWeight: 0.33333334
-            outWeight: 0.33333334
-          - serializedVersion: 3
-            time: 0.5400654
-            value: 0.0003969632
-            inSlope: -0.02811154
-            outSlope: -0.02811154
-            tangentMode: 0
-            weightedMode: 0
-            inWeight: 1
-            outWeight: 0.33333334
-          - serializedVersion: 3
-            time: 0.7336282
-            value: -0.00015604869
-            inSlope: 0
-            outSlope: 0
-            tangentMode: 0
-            weightedMode: 0
-            inWeight: 0
             outWeight: 0
-          - serializedVersion: 3
-            time: 0.7741116
-            value: 0.04998494
-            inSlope: 0
-            outSlope: 0
-            tangentMode: 0
-            weightedMode: 0
-            inWeight: 0
-            outWeight: 0
-          - serializedVersion: 3
-            time: 1.0041809
-            value: 0.04975891
-            inSlope: 0
-            outSlope: 0
-            tangentMode: 0
-            weightedMode: 0
-            inWeight: 0
-            outWeight: 0
-          preInfinity: 3
-          postInfinity: 3
+          preInfinity: 2
+          postInfinity: 2
           rotationOrder: 4
       - name: RightLegWeight
         curve:

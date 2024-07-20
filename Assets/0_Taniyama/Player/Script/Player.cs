@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using Unity.VisualScripting;
 using static Player;
+using UnityEngine.UI;
 
 [RequireComponent(typeof(Animator))]
 [RequireComponent(typeof(CharacterController))]
@@ -143,6 +144,8 @@ public partial class Player : SingletonActionListener<Player>
     //IKアニメーションの設定
     private Vector3 rightHandIKPosition;
     private Vector3 leftHandIKPosition;
+    private Vector3 rightLegIKPosition;
+    private Vector3 leftLegIKPosition;
 
     #endregion
 
@@ -431,12 +434,11 @@ public partial class Player : SingletonActionListener<Player>
     {
         if (GameData.G_AllCheck()) return;
         if (climbing.IsGuard() == true) return;
-
         base.OnSlow(context);
 
         if (context.phase == InputActionPhase.Started)
         {
-            CustomEvent.Trigger(gameObject, "ClimbingStart");
+            climbing.OnTrigger();
         }
 
     }
@@ -596,6 +598,8 @@ public partial class Player : SingletonActionListener<Player>
     {
         RightHandIK();
         LeftHandIK();
+        RightLegIK();
+        LeftLefIK();
     }
 
     private void RightHandIK()
@@ -612,6 +616,22 @@ public partial class Player : SingletonActionListener<Player>
         float leftHandWeight = _animator.GetFloat("LeftHandWeight");
         _animator.SetIKPositionWeight(AvatarIKGoal.LeftHand, leftHandWeight);
         _animator.SetIKPosition(AvatarIKGoal.LeftHand, leftHandIKPosition);
+    }
+
+    private void RightLegIK()
+    {
+        if (rightLegIKPosition == Vector3.zero) return;
+        float leftLegWeight = _animator.GetFloat("RightLegWeight");
+        _animator.SetIKPositionWeight(AvatarIKGoal.RightFoot, leftLegWeight);
+        _animator.SetIKPosition(AvatarIKGoal.RightFoot, rightLegIKPosition);
+    }
+
+    private void LeftLefIK()
+    {
+        if (leftLegIKPosition == Vector3.zero) return;
+        float leftLegWeight = _animator.GetFloat("LeftLegWeight");
+        _animator.SetIKPositionWeight(AvatarIKGoal.LeftFoot, leftLegWeight);
+        _animator.SetIKPosition(AvatarIKGoal.LeftFoot, leftLegIKPosition);
     }
 
     #endregion

@@ -2051,6 +2051,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6250606337119821870, guid: dc8965673a73a2b4b9783cb17af17c0f,
         type: 3}
+      propertyPath: managedReferences[1002].END_JUMP_ANIM_TIME
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6250606337119821870, guid: dc8965673a73a2b4b9783cb17af17c0f,
+        type: 3}
       propertyPath: managedReferences[1002].holizontalMoveSpeed
       value: 10
       objectReference: {fileID: 0}
@@ -2694,14 +2699,16 @@ MonoBehaviour:
     - rid: 3624697663625887755
       type: {class: Player/DefaultClimbing, ns: , asm: Assembly-CSharp}
       data:
+        END_JUMP_ANIM_TIME: 1
+        START_CLIM_ANIM_TIME: 0.5
         START_MOVE_SPEED: 5
         POSISION_OFFSET: {x: 0, y: 0.15, z: 0.15}
-        MAX_DISTANCE: 0.1
         SPLINE_MOVE_SPEED: 0
         RIGHT_HAND_OFFSET: {x: 0, y: 0, z: 0}
         LEFT_HAND_OFFSET: {x: 0, y: 0, z: 0}
         ROT_OFFSET: 0
         ROT_SPEED: 0
+        JUMP_HIGHT: 2
 --- !u!1001 &7470605951010592241
 PrefabInstance:
   m_ObjectHideFlags: 0

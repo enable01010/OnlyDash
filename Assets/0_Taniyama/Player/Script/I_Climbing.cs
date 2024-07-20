@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Mathematics;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Splines;
 using UnityEngine.UIElements;
@@ -13,6 +14,7 @@ public partial class Player : SingletonActionListener<Player>
         public void OnEnter();
         public void Climbing();
         public void OnExit();
+        public void OnTrigger();
         public void AddArea(WallArea wallArea);
         public void DeleteArea(WallArea wallArea);
     }
@@ -20,6 +22,12 @@ public partial class Player : SingletonActionListener<Player>
     [System.Serializable]
     public class DefaultClimbing : I_Climbing
     {
+        private bool isClimging = false;
+        [SerializeField] float END_JUMP_ANIM_TIME = 1.0f;
+        float nowEndTime = 0;
+        [SerializeField] float START_CLIM_ANIM_TIME = 0.5f;
+        float startAnimTime = 0;
+
         //壁用
         private List<WallArea> wallAreaList = new List<WallArea>();
         private WallArea wallArea;
@@ -34,51 +42,36 @@ public partial class Player : SingletonActionListener<Player>
 
         //移動用
         [SerializeField] float SPLINE_MOVE_SPEED;
-        [SerializeField] Vector3 RIGHT_HAND_OFFSET;
-        [SerializeField] Vector3 LEFT_HAND_OFFSET;
+        
         [SerializeField] float ROT_OFFSET;
         [SerializeField] float ROT_SPEED;
+        [SerializeField] float JUMP_HIGHT = 2;
+        [SerializeField] float CANT_CLIM_UPPOWER = 1.0f;
 
-        public virtual bool IsGuard()
-        {
-            if (wallAreaList.Count == 0) return true;
-            return false;
-        }
+        //IK用変数
+        [SerializeField] Vector3 RIGHT_HAND_OFFSET;
+        [SerializeField] Vector3 LEFT_HAND_OFFSET;
+        [SerializeField] Vector3 RIGHT_LEG_OFFSET;
+        [SerializeField] Vector3 LEFT_LEG_OFFSET;
+        [SerializeField] float IK_CHECK_LENGTH = 0.3f;
+        [SerializeField] int LAYER_MASK;
+
+        #region Enter
+
         public virtual void OnEnter()
         {
+            
+            SetStateData();
             SelectedWallArea();
             SetAnimator();
         }
-        public virtual void Climbing()
+
+        private void SetStateData()
         {
-            spline = new NativeSpline(wallArea._spline.Spline, wallArea._spline.transform.localToWorldMatrix);
-            Vector3 nowSplinePos = GetNowSplinePos();
-            Vector3 moveDir = GetMoveDir();
-            Vector3 movePos = CalNextPos(nowSplinePos, moveDir);
-            MoveManagement(movePos);
-            Rot();
-            SetAnimatorIK(movePos, moveDir);
-        }
-        public virtual void OnExit()
-        {
-            ClearWallArea();
-            ResetIKPosition();
-            splineRate = 0;
+            isClimging = true;
+            startAnimTime = START_CLIM_ANIM_TIME;
         }
 
-        public virtual void AddArea(WallArea wallArea)
-        {
-            wallAreaList.Add(wallArea);
-        }
-
-        public virtual void DeleteArea(WallArea wallArea)
-        {
-            wallAreaList.Remove(wallArea);
-        }
-
-        /// <summary>
-        /// WallAreaListの中から一番近いWallAreaを判定する
-        /// </summary>
         private void SelectedWallArea()
         {
             int minsNumber = -1;
@@ -87,7 +80,7 @@ public partial class Player : SingletonActionListener<Player>
             int length = wallAreaList.Count;
             for (int i = 0; i < length; i++)
             {
-                
+
                 float distance = SplineUtility.GetNearestPoint(
                     wallAreaList[i]._spline.Splines[0],
                     (instance.transform.position - wallAreaList[i]._spline.transform.position).ChangeFloat3(),
@@ -104,25 +97,52 @@ public partial class Player : SingletonActionListener<Player>
             }
 
             wallArea = wallAreaList[minsNumber];
-            
             splineLength = wallArea._spline.CalculateLength();
-        }
-        private void ClearWallArea()
-        {
-            wallArea = null;
         }
 
         private void SetAnimator()
         {
-            Player instance = Player.instance;
             instance._animator.SetTrigger(instance._animIDClimbingStart);
         }
 
-        private void ResetIKPosition()
+        #endregion
+
+        #region Update
+
+        public virtual void Climbing()
         {
-            Player instance = Player.instance;
-            instance.rightHandIKPosition = Vector3.zero;
-            instance.leftHandIKPosition = Vector3.zero;
+            if (EndCheck() == true) return;
+
+            TimeManagement();
+            spline = new NativeSpline(wallArea._spline.Spline, wallArea._spline.transform.localToWorldMatrix);
+            Vector3 nowSplinePos = GetNowSplinePos();
+            Vector3 moveDir = GetMoveDir();
+            Vector3 movePos = CalNextPos(nowSplinePos, moveDir);
+            MoveManagement(movePos);
+            Rot();
+            SetAnimatorIK(movePos, moveDir);
+        }
+
+        private bool EndCheck()
+        {
+            if (nowEndTime <= 0) return false;
+
+            nowEndTime -= Time.deltaTime;
+            if (nowEndTime <= 0)
+            {
+                CustomEvent.Trigger(instance.gameObject, "inClimingJump");
+                instance._verticalVelocity = Mathf.Sqrt(instance.JUMP_HEIGHT * -2f * instance.GRAVITY);
+            }
+
+            return true;
+        }
+
+        private void TimeManagement()
+        {
+            if(startAnimTime > 0)
+            {
+                startAnimTime -= Time.deltaTime;
+            }
         }
 
         private Vector3 GetNowSplinePos()
@@ -132,25 +152,14 @@ public partial class Player : SingletonActionListener<Player>
 
         private Vector3 GetMoveDir()
         {
-            Player instance = Player.instance;
             if (instance.playerMove.magnitude < 0.1f) return Vector3.zero;
 
             Vector3 moveDir = LibVector.RotationDirOfObjectFront(instance._mainCamera.transform, instance.playerMove);
-            Debug.Log(moveDir);
             return moveDir;
         }
 
         private Vector3 CalNextPos(Vector3 nowSplinePos, Vector3 moveDir)
         {
-            //if (inputDir.magnitude == 0) return nowSplinePos;
-            //Vector3 movedWoldPos = nowSplinePos + moveDir;
-            //SplineUtility.GetNearestPoint(
-            //  spline,
-            //  movedWoldPos,
-            //  out float3 movedSplinePos,
-            //  out splineRate);
-            //return movedSplinePos.ChengeVector3();
-
             if (moveDir.magnitude == 0) return nowSplinePos;
 
             float dir = LibVector.HolizontalElementOfForwardToDir(instance.transform.forward, moveDir);
@@ -162,32 +171,118 @@ public partial class Player : SingletonActionListener<Player>
 
         private void MoveManagement(Vector3 movePos)
         {
-            Player instance = Player.instance;
+
             Vector2 dir2D = new Vector2(POSISION_OFFSET.x, POSISION_OFFSET.z);
             Vector3 offset = LibVector.RotationDirOfObjectFront(instance.transform, dir2D) * dir2D.magnitude;
             offset.y += POSISION_OFFSET.y;
-            instance.transform.MoveFocusSpeed(movePos - offset, START_MOVE_SPEED);
-        }
-
-
-
-        private void SetAnimatorIK(Vector3 movePos, Vector3 moveDir)
-        {
-            Player instance = Player.instance;
-
-            //アニメーターに数値を入れる
-            float dir = (moveDir.magnitude == 0) ? 0 : LibVector.HolizontalElementOfForwardToDir(instance.transform.forward, moveDir);
-            instance._animator.SetFloat(instance._animIDClimbing_x, dir);
-
-            //IK用の情報を入れる
-            instance.rightHandIKPosition = movePos + RIGHT_HAND_OFFSET;
-            instance.leftHandIKPosition = movePos + LEFT_HAND_OFFSET;
+            instance.transform.MoveFocusSpeed(movePos - offset, START_MOVE_SPEED*Time.deltaTime);
         }
 
         private void Rot()
         {
             spline.Evaluate(splineRate, out float3 position, out float3 tangent, out float3 upVector);
             Player.instance.transform.RotFocusSpeed(Quaternion.LookRotation(tangent, Vector3.up) * Quaternion.Euler(0, ROT_OFFSET, 0), ROT_SPEED);
+        }
+
+        private void SetAnimatorIK(Vector3 movePos, Vector3 moveDir)
+        {
+            instance.rightHandIKPosition = IKRay(movePos, RIGHT_HAND_OFFSET);//右手
+            instance.leftHandIKPosition = IKRay(movePos, LEFT_HAND_OFFSET);//左手
+            instance.rightLegIKPosition = IKRay(movePos, RIGHT_LEG_OFFSET);//右足
+            instance.leftLegIKPosition = IKRay(movePos, LEFT_LEG_OFFSET);//左足
+        }
+
+        private Vector3 IKRay(Vector3 movePos, Vector3 offset)
+        {
+            Vector3 rayStartPos = movePos + LibVector.RotationDirOfObjectFront(instance.transform, offset);
+            Vector3 rayEndPos = rayStartPos + instance.transform.forward * IK_CHECK_LENGTH;
+            RaycastHit hit = LibPhysics.Raycast(rayStartPos, instance.transform.forward, IK_CHECK_LENGTH, LAYER_MASK);
+            return (hit.IsHit() == true) ? hit.point:rayEndPos;
+        }
+
+
+
+        #endregion
+
+        #region OnExit
+
+        public virtual void OnExit()
+        {
+            
+            ResetStateData();
+            ClearWallArea();
+            ResetIKPosition();
+        }
+
+        private void ResetStateData()
+        {
+            isClimging = false;
+            nowEndTime = 0;
+            startAnimTime = 0;
+        }
+
+        private void ClearWallArea()
+        {
+            wallArea = null;
+            splineRate = 0;
+            splineLength = 0;
+        }
+
+        private void ResetIKPosition()
+        {
+            instance.rightHandIKPosition = Vector3.zero;
+            instance.leftHandIKPosition = Vector3.zero;
+        }
+
+        #endregion
+
+        #region OnTrigger
+
+        public virtual void OnTrigger()
+        {
+            if (instance._verticalVelocity > CANT_CLIM_UPPOWER) return;
+            if (instance.isGrounded == true && instance._jumpTimeoutDelta > 0.0f) return;
+
+            if (isClimging == false)
+            {
+                StartClimbing();
+            }
+            else if(startAnimTime <= 0)
+            {
+                EndClimbing();
+            }
+        }
+
+        private void StartClimbing()
+        {
+            //TODO:トリガーのやつパクる
+            
+            CustomEvent.Trigger(instance.gameObject, "ClimbingStart");
+        }
+
+        private void EndClimbing()
+        {
+            if (nowEndTime > 0) return;
+
+            instance._animator.SetTrigger(instance._animIDClimbingDown);
+            nowEndTime = END_JUMP_ANIM_TIME;
+        }
+        #endregion
+
+        public virtual bool IsGuard()
+        {
+            if (wallAreaList.Count == 0) return true;
+            return false;
+        }
+
+        public virtual void AddArea(WallArea wallArea)
+        {
+            wallAreaList.Add(wallArea);
+        }
+
+        public virtual void DeleteArea(WallArea wallArea)
+        {
+            wallAreaList.Remove(wallArea);
         }
 
     }

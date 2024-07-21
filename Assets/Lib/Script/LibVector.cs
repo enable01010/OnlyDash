@@ -16,12 +16,10 @@ public static class LibVector
     /// <returns></returns>
     static public Vector3 Chenge_X(Vector3 vector, float value)
     {
-        Vector3 answer = Vector3.zero;
+       
+        vector.x = value;
 
-        answer = vector;
-        answer.x = value;
-
-        return answer;
+        return vector;
     }
 
     /// <summary>
@@ -32,12 +30,9 @@ public static class LibVector
     /// <returns></returns>
     static public Vector3 Chenge_Y(Vector3 vector, float value)
     {
-        Vector3 answer = Vector3.zero;
+        vector.y = value;
 
-        answer = vector;
-        answer.y = value;
-
-        return answer;
+        return vector;
     }
 
     /// <summary>
@@ -48,12 +43,9 @@ public static class LibVector
     /// <returns></returns>
     static public Vector3 Chenge_Z(Vector3 vector, float value)
     {
-        Vector3 answer = Vector3.zero;
+        vector.z = value;
 
-        answer = vector;
-        answer.z = value;
-
-        return answer;
+        return vector;
     }
 
     /// <summary>
@@ -404,6 +396,45 @@ public static class LibVector
         Vector3 startPos = transform.position;
         transform.position = Vector3.MoveTowards(transform.position, goalPos, speed);
         moveDir = transform.position - startPos;
+
+        return moveDir.magnitude < speed;
+    }
+
+    //指定のポイントまで時間管理で移動する
+    static public bool MoveFocusTime(this RectTransform transform, Vector3 goalPos, ref float time)
+    {
+        return transform.MoveFocusTime(goalPos, ref time, out Vector3 moveDir);
+    }
+
+    static public bool MoveFocusTime(this RectTransform transform, Vector3 goalPos, ref float time, out Vector3 moveDir)
+    {
+        if (time <= Time.deltaTime)
+        {
+            time = 0;
+            moveDir = goalPos - (Vector3)transform.anchoredPosition;
+            transform.anchoredPosition = goalPos;
+            return true;
+        }
+
+        float rate = Time.deltaTime / time;
+        Vector3 startPos = transform.anchoredPosition;
+        transform.anchoredPosition = Vector3.Lerp(transform.anchoredPosition, goalPos, rate);
+        moveDir = (Vector3)transform.anchoredPosition - startPos;
+        time -= Time.deltaTime;
+        return false;
+    }
+
+    //指定のポイントまで速度管理で移動する
+    static public bool MoveFocusSpeed(this RectTransform transform, Vector3 goalPos, float speed)
+    {
+        return transform.MoveFocusSpeed(goalPos, speed, out Vector3 moveDir);
+    }
+
+    static public bool MoveFocusSpeed(this RectTransform transform, Vector3 goalPos, float speed, out Vector3 moveDir)
+    {
+        Vector3 startPos = transform.anchoredPosition;
+        transform.anchoredPosition = Vector3.MoveTowards(transform.anchoredPosition, goalPos, speed);
+        moveDir = (Vector3)transform.anchoredPosition - startPos;
 
         return moveDir.magnitude < speed;
     }

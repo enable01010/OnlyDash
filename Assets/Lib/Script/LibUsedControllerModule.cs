@@ -63,30 +63,30 @@ public class LibUsedControllerModule : MonoBehaviour
     }
 }
 
-public class UsedControllerManager
+public class LibUsedControllerManager
 {
+
+    static private LibUsedControllerModule _instance;
     static public LibUsedControllerModule instance
     {
         get
         {
-            if (instance == null)
+            if (_instance == null)
             {
                 CreateInstance();
             }
-            return instance;
+            return _instance;
         }
-
-        private set => instance = value;
     }
     static public InputDevice lastUsedDevice { get { return instance.lastUsedDevice; } }
 
     static private void CreateInstance()
     {
-        GameObject pref = (GameObject)Resources.Load("Prefabs/UsedControllerInstance");
+        GameObject pref = (GameObject)Resources.Load("Prefabs/LibUsedControllerModule");
         GameObject ins = GameObject.Instantiate(pref);
         GameObject.DontDestroyOnLoad(ins);
-        instance = ins.GetComponent<LibUsedControllerModule>();
-        instance.Init();
+        _instance = ins.GetComponent<LibUsedControllerModule>();
+        _instance.Init();
     }
 
     static public void AddHnadler(I_UsedControllerHnadler handler)

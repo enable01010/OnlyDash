@@ -99,7 +99,6 @@ public class PlayerController : MonoBehaviour
         // ‘¬“xˆê’è‚¶‚á‚È‚¢
         if (isConstSpeed == false)
         {
-
             tempDir *= Mathf.Max(Mathf.Abs(moveDir.x), Mathf.Abs(moveDir.z));
         }
 

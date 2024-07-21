@@ -1,16 +1,19 @@
 using UnityEngine;
 using UnityEngine.Splines;
+using Unity.Mathematics;
 
-public class NearestPointExample : MonoBehaviour
+public class SplineNearestPos : MonoBehaviour
 {
+    #region Fields
+
     // スプライン
-    [SerializeField] private SplineContainer _spline;
+    [SerializeField] private SplineContainer spline;
 
     // 入力位置のゲームオブジェクト
-    [SerializeField] private Transform _inputPoint;
+    [SerializeField, ReadOnly] private Transform inputObject;
 
     // 出力位置（直近位置）を反映するゲームオブジェクト
-    [SerializeField] private Transform _outputPoint;
+    [SerializeField] private Transform outputObject;
 
     // 解像度
     // 内部的にPickResolutionMin～PickResolutionMaxの範囲に丸められる
@@ -24,52 +27,66 @@ public class NearestPointExample : MonoBehaviour
     [Range(1, 10)]
     private int _iterations = 2;
 
-
+    // 位置の割合
     public float rate;
+
+    //最短の距離
     public float distance;
+
+    #endregion
+
+
+    #region MonoBehaviourMethod
 
     private void Start()
     {
-        _inputPoint = GameObject.Find("Player").transform;
+        inputObject = GameObject.FindGameObjectWithTag("Player").transform;
 
         DistanceUpdate();
     }
-
 
     private void Update()
     {
         DistanceUpdate();
     }
 
+    private void FixedUpdate()
+    {
+
+    }
+
+    #endregion
+
+
+    #region CustomMethod
+
+    // 距離計算
     private void DistanceUpdate()
     {
-        // Nullチェック
-        if (_spline == null || _inputPoint == null/* || _outputPoint == null*/)
-            return;
+        if (spline == null || inputObject == null) return;
 
         // ワールド空間におけるスプラインを取得
         // スプラインはローカル空間なので、ローカル→ワールド変換行列を掛ける
         // Updateを抜けるタイミングでDisposeされる
-        using var spline = new NativeSpline(_spline.Spline, _spline.transform.localToWorldMatrix);
+        NativeSpline tempSpline = new(spline.Spline, spline.transform.localToWorldMatrix);
 
         // スプラインにおける直近位置を求める
-        var dis = SplineUtility.GetNearestPoint(
-            spline,
-            _inputPoint.position,
-            out var nearest,
-            out var t,
+        float dis = SplineUtility.GetNearestPoint(
+            tempSpline,
+            inputObject.position,
+            out float3 nearest,
+            out float t,
             _resolution,
             _iterations
         );
 
         // 結果を反映
-        if (_outputPoint != null) _outputPoint.position = nearest;
-
-
-
         rate = Mathf.Clamp01(t);
-        Vector3 temp = nearest;
-        distance = Vector3.Distance(temp, _inputPoint.position);
+        distance = dis;
+
+        // 出力位置（直近位置）を反映するゲームオブジェクト
+        if (outputObject != null) outputObject.position = nearest;
     }
 
+    #endregion
 }

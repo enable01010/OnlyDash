@@ -7,42 +7,54 @@ public class SplineMove : MonoBehaviour
 {
     #region Fields
 
+    // PlayerÇÃComponent
     private Rigidbody rbody;
+
+    // Splineä÷åW
+    private SplineNearestPos[] splinePos;// äeSplineÇÃPlayerÇ∆àÍî‘ãﬂÇ¢à íu
+    private SplineContainer[] splineContainer;// SplineÇÃComponent
+    private SplinePath<Spline>[] splinePath;// ÇÌÇ©ÇÁÇ»Ç¢
+    private float[] splineLength;// SplineÇÃí∑Ç≥
+
+    [SerializeField, ReadOnly] private int nearSplineNumber = 0;
+    [SerializeField, ReadOnly] private SplineNearestPos nearSplinePos;
+    [SerializeField, ReadOnly] private SplineContainer nearSplineContainer;
+    [SerializeField, ReadOnly] private SplinePath<Spline> nearSplinePath;// ÇÌÇ©ÇÁÇ»Ç¢
+    [SerializeField, ReadOnly] private float nearSplineLength;
+
+    // 
     private bool isInputKey = false;
     private bool isRide = false;
+    private bool isDirectionPlus = true;
+
+    // èÊÇËénÇﬂÇÈÇ∆Ç´ÇÃãóó£ä÷åW
     [SerializeField, ReadOnly] private bool isRideRange = false;
     [SerializeField, ReadOnly] private float nearDistance = 0f;
-
-    [SerializeField] private GameObject canvas;
-
     [SerializeField] private float rideRange = 10f;
-    
 
-    [SerializeField] private NearestPointExample nearZipLine;
-    private NearestPointExample[] zipLineArray;
-    [SerializeField] private SplineContainer m_Target;
-
+    // speedä÷åW
     [SerializeField] private float speed = 5f;
-    private float rideElapsedTime = 0f;
-    private float stopTime = 0.3f;
-    [SerializeField, ReadOnly] private float nowRate;
+    private float oneFrameRate;
+    [SerializeField, ReadOnly] private float rideElapsedTime = 0f;
+    private const float stopTime = 0.3f;
 
+    // 
+    [SerializeField, ReadOnly] private float nowRate;
     [SerializeField] private float dirFreezeLength = 10f;
     [SerializeField] private float edgeStartLength = 3f;
     [SerializeField] private float edgeEndLength = 3f;
 
-    private SplinePath<Spline> m_SplinePath;
-
-    [SerializeField, ReadOnly] private float splineLength;
-
+    // íÕÇﬁà íu
     [SerializeField] private Transform playerHandPos;
     private Vector3 offsetPlayerPos;
 
-    private bool isDirectionPlus = true;
-
+    // 
     [SerializeField] private bool isFreezeRotation = false;
+    [SerializeField] private float jumpPowerY = 10f;
+    [SerializeField] private float jumpPowerXZ = 10f;
 
-    [SerializeField] private float jumpPower = 10f;
+    // UI
+    [SerializeField] private GameObject canvas;
 
     #endregion
 
@@ -53,18 +65,26 @@ public class SplineMove : MonoBehaviour
     {
         rbody = this.gameObject.GetComponent<Rigidbody>();
 
-        m_SplinePath = new SplinePath<Spline>(m_Target.Splines);
-        splineLength = m_SplinePath.GetLength();
-
-        offsetPlayerPos = playerHandPos.transform.position - this.transform.position;
+        // ìríÜÇ≈ëÂÇ´Ç≥ïœÇÌÇÁÇ»Ç¢Ç»ÇÁStart
+        offsetPlayerPos.x = playerHandPos.transform.localPosition.x * this.transform.lossyScale.x;
+        offsetPlayerPos.y = playerHandPos.transform.localPosition.y * this.transform.lossyScale.y;
+        offsetPlayerPos.z = playerHandPos.transform.localPosition.z * this.transform.lossyScale.z;
 
         GameObject[] obj = GameObject.FindGameObjectsWithTag("ZipLine");
-        zipLineArray = new NearestPointExample[obj.Length];
+
+        splinePos = new SplineNearestPos[obj.Length];
+        splineContainer = new SplineContainer[obj.Length];
+        splinePath = new SplinePath<Spline>[obj.Length];
+        splineLength = new float[obj.Length];
+
         for (int i = 0; i < obj.Length; i++)
         {
-            zipLineArray[i] = obj[i].GetComponent<NearestPointExample>();
+            splinePos[i] = obj[i].GetComponent<SplineNearestPos>();
+
+            splineContainer[i] = obj[i].GetComponentInChildren<SplineContainer>();
+            splinePath[i] = new SplinePath<Spline>(splineContainer[i].Splines);
+            splineLength[i] = splinePath[i].GetLength();
         }
-        
     }
 
     private void Update()
@@ -74,6 +94,7 @@ public class SplineMove : MonoBehaviour
 
     private void FixedUpdate()
     {
+        NearZipLineUpdate();
         RideRangeUpdate();
 
         if (StartZipLineCheck() == true) StartZipLine();
@@ -117,11 +138,11 @@ public class SplineMove : MonoBehaviour
 
         if (isDirectionPlus == true)
         {
-            nowRate += Time.fixedDeltaTime / 5f;
+            nowRate += oneFrameRate;
         }
         else
         {
-            nowRate -= Time.fixedDeltaTime / 5f;
+            nowRate -= oneFrameRate;
         }
     }
 
@@ -139,8 +160,9 @@ public class SplineMove : MonoBehaviour
     {
         isRide = true;
         rbody.isKinematic = true;
-        nowRate = Mathf.Clamp(nearZipLine.rate, RangeToRate(edgeStartLength), 1f - RangeToRate(edgeStartLength));
-
+        nowRate = Mathf.Clamp(nearSplinePos.rate, RangeToRate(edgeStartLength), 1f - RangeToRate(edgeStartLength));
+        
+        StartZipLineOneFrameRate();
         StartZipLineDirection();
     }
 
@@ -157,9 +179,14 @@ public class SplineMove : MonoBehaviour
             return;
         }
 
-        Vector3 dir = m_Target.EvaluatePosition(m_SplinePath, nowRate + 0.01f) - m_Target.EvaluatePosition(m_SplinePath, nowRate);
+        Vector3 dir = nearSplineContainer.EvaluatePosition(nearSplinePath, nowRate + 0.01f) - nearSplineContainer.EvaluatePosition(nearSplinePath, nowRate);
         float angle = Vector3.Angle(this.transform.forward.normalized, dir.normalized);
         isDirectionPlus = angle <= 90;
+    }
+
+    private void StartZipLineOneFrameRate()
+    {
+        oneFrameRate = (speed / nearSplineLength) * Time.fixedDeltaTime;
     }
 
     private void EndZipLine()
@@ -167,9 +194,16 @@ public class SplineMove : MonoBehaviour
         isRide = false;
         rbody.isKinematic = false;
         this.transform.rotation = Quaternion.Euler(0, this.transform.localEulerAngles.y, 0);
-
-        rbody.AddForce(Vector3.up * jumpPower, ForceMode.Impulse);
         rideElapsedTime = 0f;
+
+        EndZipLineJump();
+    }
+
+    private void EndZipLineJump()
+    {
+        Vector3 tempForward = this.transform.forward.normalized;
+        Vector3 jumpPowe = tempForward * jumpPowerXZ + Vector3.up * jumpPowerY;
+        rbody.AddForce(jumpPowe, ForceMode.Impulse);
     }
 
     private bool EndZipLineCheck()
@@ -202,34 +236,37 @@ public class SplineMove : MonoBehaviour
         }
     }
 
-    private void RideRangeUpdate()
+    private void NearZipLineUpdate()
     {
-        if (nearZipLine == null)
-        {
-            isRideRange = false;
-            nearDistance = Mathf.Infinity;
+        nearDistance = Mathf.Infinity;
 
-            return;
+        for (int i = 0; i < splinePos.Length; i++)
+        {
+            if (splinePos[i].distance < nearDistance)
+            {
+                nearDistance = splinePos[i].distance;
+                nearSplineNumber = i;
+            }
         }
 
-        nearDistance = nearZipLine.distance;
+        nearSplinePos = splinePos[nearSplineNumber];
+        nearSplineContainer = splineContainer[nearSplineNumber];
+        nearSplinePath = splinePath[nearSplineNumber];
+        nearSplineLength = splineLength[nearSplineNumber];
+    }
+
+    private void RideRangeUpdate()
+    {
         isRideRange = nearDistance < rideRange;
         canvas.SetActive(isRideRange);
     }
 
-    private void MovePos()
-    {
-        this.transform.position = m_Target.EvaluatePosition(m_SplinePath, nowRate);
-
-        this.transform.position -= offsetPlayerPos;
-    }
-
     private void MoveRotation()
     {
-        Vector3 forward = m_Target.EvaluateTangent(m_SplinePath, nowRate);
+        Vector3 forward = nearSplineContainer.EvaluateTangent(nearSplinePath, nowRate);
         if (isDirectionPlus != true) forward *= -1f;
 
-        Vector3 up = m_Target.EvaluateUpVector(m_SplinePath, nowRate);
+        Vector3 up = nearSplineContainer.EvaluateUpVector(nearSplinePath, nowRate);
 
         this.transform.rotation = Quaternion.LookRotation(forward, up);
 
@@ -239,9 +276,21 @@ public class SplineMove : MonoBehaviour
         }
     }
 
+    private void MovePos()
+    {
+        this.transform.position = nearSplineContainer.EvaluatePosition(nearSplinePath, nowRate);
+
+        float rotX = this.transform.localEulerAngles.x;
+        float rotY = this.transform.localEulerAngles.y;
+        float rotZ = this.transform.localEulerAngles.z;
+
+        Quaternion rot = Quaternion.Euler(rotX, rotY, rotZ);
+        this.transform.position -= rot * offsetPlayerPos;
+    }
+
     private float RangeToRate(float num)
     {
-        return Mathf.Clamp01(num / splineLength);
+        return Mathf.Clamp01(num / nearSplineLength);
     }
 
     #endregion

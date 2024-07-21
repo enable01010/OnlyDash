@@ -59,6 +59,7 @@ public partial class Player : SingletonActionListener<Player>
     [Header("インターフェース")]
     [Tooltip("移動"), SerializeReference, SubclassSelector] I_Move move = new ControlledMove();
     [Tooltip("スライディング"), SerializeReference, SubclassSelector] I_Sliding sliding = new DefaultSliding();
+    [Tooltip("ジップライン"), SerializeReference, SubclassSelector] I_ZipLine zipLine = new DefaultZipLine();
     [Tooltip("クライミング"), SerializeReference, SubclassSelector] I_Climbing climbing = new DefaultClimbing();
 
     #endregion
@@ -123,6 +124,13 @@ public partial class Player : SingletonActionListener<Player>
 
     [SerializeField] private float JUMP_HEIGHT = 1.2f;
     [SerializeField] private float GRAVITY = -15.0f;
+
+    #endregion
+
+    #region ジップライン用の変数
+
+    //[SerializeField] private bool  = 1.2f;
+    //[SerializeField] private float GRAVITY = -15.0f;
 
     #endregion
 
@@ -411,11 +419,16 @@ public partial class Player : SingletonActionListener<Player>
     public override void OnZipLine(InputAction.CallbackContext context)
     {
         if (GameData.G_AllCheck() == true) return;
+        if (zipLine.IsGuard() == true) return;//ステート特有のガード節
 
         base.OnZipLine(context);
 
         if (context.phase == InputActionPhase.Started)
         {
+            zipLine.OnTrigger();
+
+
+
             // 乗るか、降りるかの判断する関数呼び出し
 
             // 乗る、降りる 初期設定関数呼び出し
@@ -423,10 +436,10 @@ public partial class Player : SingletonActionListener<Player>
             //Debug.Log("ZipLineボタンが押されたよ");
 
             // 乗る stateに切り替え
-            CustomEvent.Trigger(gameObject, "useZipLine");
+            //CustomEvent.Trigger(gameObject, "useZipLine");
 
             // 降りる stateに切り替え
-            CustomEvent.Trigger(gameObject, "endZipLine");
+            //CustomEvent.Trigger(gameObject, "endZipLine");
         }
     }
 
@@ -554,11 +567,20 @@ public partial class Player : SingletonActionListener<Player>
         sliding.OnExit();
     }
 
+    public void ZipLineEnter()
+    {
+        zipLine.OnEnter();
+    }
+
     public void ZipLineState()
     {
         // ZipLineStateのときにUpdateで呼ばれる関数
-        GameData.G_AllCheck();
+        zipLine.Climbing();
+    }
 
+    public void ZipLineExit()
+    {
+        zipLine.OnExit();
     }
 
     public void ClimbingEnter()

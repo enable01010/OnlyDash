@@ -24,4 +24,4 @@ MonoBehaviour:
     device: 3
   - sprite: {fileID: 192590113, guid: d7341ee1cd327084b9f3cc5afe06ca53, type: 3}
     device: 4
-  size: 100
+  size: 120

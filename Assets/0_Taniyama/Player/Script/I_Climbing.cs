@@ -31,6 +31,7 @@ public partial class Player : SingletonActionListener<Player>
         //•Ç—p
         private List<WallArea> wallAreaList = new List<WallArea>();
         private WallArea wallArea;
+        [SerializeField] Vector3 WALL_CHECK_OFFSEST;
 
         [SerializeField] float START_MOVE_SPEED = 5.0f;
         [SerializeField] Vector3 POSISION_OFFSET = new Vector3(0, 0.15f, 0.15f);
@@ -41,8 +42,7 @@ public partial class Player : SingletonActionListener<Player>
         private float splineLength;
 
         //ˆÚ“®—p
-        [SerializeField] float SPLINE_MOVE_SPEED;
-        
+        [SerializeField] float SPLINE_MOVE_SPEED; 
         [SerializeField] float ROT_OFFSET;
         [SerializeField] float ROT_SPEED;
         [SerializeField] float JUMP_HIGHT = 2;
@@ -87,7 +87,7 @@ public partial class Player : SingletonActionListener<Player>
 
                 float distance = SplineUtility.GetNearestPoint(
                     wallAreaList[i]._spline.Splines[0],
-                    (instance.transform.position - wallAreaList[i]._spline.transform.position).ChangeFloat3(),
+                    (instance.transform.position + WALL_CHECK_OFFSEST - wallAreaList[i]._spline.transform.position).ChangeFloat3(),
                     out float3 nearPos,
                     out float nearPosRate);
 
@@ -135,7 +135,7 @@ public partial class Player : SingletonActionListener<Player>
             if (nowEndTime <= 0)
             {
                 CustomEvent.Trigger(instance.gameObject, "inClimingJump");
-                instance._verticalVelocity = Mathf.Sqrt(instance.JUMP_HEIGHT * -2f * instance.GRAVITY);
+                instance._verticalVelocity = Mathf.Sqrt(JUMP_HIGHT * -2f * instance.GRAVITY);
             }
 
             return true;

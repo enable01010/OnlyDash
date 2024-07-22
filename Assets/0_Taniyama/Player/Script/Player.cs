@@ -178,6 +178,9 @@ public partial class Player : SingletonActionListener<Player>
         SettingCamera();
         SettingCharacterController();
         SettingPlayerParameter();
+
+
+        zipLine.PlayerStart();
     }
 
     private void Update()
@@ -185,8 +188,10 @@ public partial class Player : SingletonActionListener<Player>
         GroundCheck();
         CameraRotation();
 
+        zipLine.PlayerUpdate();
+
 #if UNITY_EDITOR
-        if(Input.GetKeyDown(KeyCode.Return))
+        if (Input.GetKeyDown(KeyCode.Return))
         {
             if(move.GetType() == typeof(ControlledMove))
             {
@@ -419,7 +424,7 @@ public partial class Player : SingletonActionListener<Player>
     public override void OnZipLine(InputAction.CallbackContext context)
     {
         if (GameData.G_AllCheck() == true) return;
-        if (zipLine.IsGuard() == true) return;//ステート特有のガード節
+        if (zipLine.IsGuardOnTrigger() == true) return;//ステート特有のガード節
 
         base.OnZipLine(context);
 
@@ -574,8 +579,7 @@ public partial class Player : SingletonActionListener<Player>
 
     public void ZipLineState()
     {
-        // ZipLineStateのときにUpdateで呼ばれる関数
-        zipLine.Climbing();
+        zipLine.OnUpdate();
     }
 
     public void ZipLineExit()

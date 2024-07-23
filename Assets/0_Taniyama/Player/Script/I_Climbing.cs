@@ -10,6 +10,7 @@ public partial class Player : SingletonActionListener<Player>
 {
     public interface I_Climbing
     {
+        public void CanUseCheck();
         public bool IsGuard();
         public void OnEnter();
         public void Climbing();
@@ -31,6 +32,9 @@ public partial class Player : SingletonActionListener<Player>
         //•Ç—p
         private List<WallArea> wallAreaList = new List<WallArea>();
         private WallArea wallArea;
+        [SerializeField] float CAN_USE_CLIMING_RANGE_START = 1.0f;
+        [SerializeField] float CAN_USE_CLIMING_RANGE_END = 1.2f;
+        bool canUse = false;
         [SerializeField] Vector3 WALL_CHECK_OFFSEST;
 
         [SerializeField] float START_MOVE_SPEED = 5.0f;
@@ -288,7 +292,7 @@ public partial class Player : SingletonActionListener<Player>
 
         public virtual bool IsGuard()
         {
-            if (wallAreaList.Count == 0) return true;
+            if (canUse == false) return true;
             return false;
         }
 
@@ -302,5 +306,67 @@ public partial class Player : SingletonActionListener<Player>
             wallAreaList.Remove(wallArea);
         }
 
+        #region CanUseCheck
+
+        public virtual void CanUseCheck()
+        {
+            if (isClimging == true) return;
+            if (wallAreaList.Count == 0) return;
+
+
+            if(canUse == false)
+            {
+                InAreaCheck();
+            }
+            else
+            {
+                OutAreaCheck();
+            }
+
+            
+        }
+
+        private void InAreaCheck()
+        {
+            foreach (WallArea wall in wallAreaList)
+            {
+                NativeSpline spline = new NativeSpline(wall._spline.Spline, wall._spline.transform.localToWorldMatrix);
+                float distance = SplineUtility.GetNearestPoint(
+                    spline,
+                    instance.transform.position + WALL_CHECK_OFFSEST,
+                    out float3 nearPos,
+                    out float nearPosRate);
+
+                if (distance < CAN_USE_CLIMING_RANGE_START)
+                {
+                    LibButtonUIInfoManager.PopIcon(ButtonType.Climbing);
+                    canUse = true;
+                    return;
+                }
+            }
+        }
+
+        private void OutAreaCheck()
+        {
+            foreach (WallArea wall in wallAreaList)
+            {
+                NativeSpline spline = new NativeSpline(wall._spline.Spline, wall._spline.transform.localToWorldMatrix);
+                float distance = SplineUtility.GetNearestPoint(
+                    spline,
+                    instance.transform.position + WALL_CHECK_OFFSEST,
+                    out float3 nearPos,
+                    out float nearPosRate);
+
+                if (distance < CAN_USE_CLIMING_RANGE_END)
+                {
+                    return;
+                }
+            }
+
+            LibButtonUIInfoManager.RemoveIcon(ButtonType.Climbing);
+            canUse = false;
+        }
+
+        #endregion
     }
 }

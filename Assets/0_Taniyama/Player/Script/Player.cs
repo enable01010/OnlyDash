@@ -148,6 +148,7 @@ public partial class Player : SingletonActionListener<Player>
     private int _animIDClimbingStart;
     private int _animIDClimbingUp;
     private int _animIDClimbingDown;
+    private int _animIDZipLine;
 
     //IKアニメーションの設定
     private Vector3 rightHandIKPosition;
@@ -228,6 +229,7 @@ public partial class Player : SingletonActionListener<Player>
         _animIDClimbingStart = Animator.StringToHash("ClimbingStart");
         _animIDClimbingUp = Animator.StringToHash("ClimbingEndUp");
         _animIDClimbingDown = Animator.StringToHash("ClimbingEndDown");
+        _animIDZipLine = Animator.StringToHash("ZipLine");
     }
 
     /// <summary>
@@ -431,20 +433,6 @@ public partial class Player : SingletonActionListener<Player>
         if (context.phase == InputActionPhase.Started)
         {
             zipLine.OnTrigger();
-
-
-
-            // 乗るか、降りるかの判断する関数呼び出し
-
-            // 乗る、降りる 初期設定関数呼び出し
-
-            //Debug.Log("ZipLineボタンが押されたよ");
-
-            // 乗る stateに切り替え
-            //CustomEvent.Trigger(gameObject, "useZipLine");
-
-            // 降りる stateに切り替え
-            //CustomEvent.Trigger(gameObject, "endZipLine");
         }
     }
 

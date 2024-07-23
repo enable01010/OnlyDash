@@ -2382,6 +2382,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 323769362}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1910123478
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1910123479}
+  m_Layer: 3
+  m_Name: HandPos
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1910123479
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1910123478}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 1.45, z: 0.15}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 577806840}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1938383942
 GameObject:
   m_ObjectHideFlags: 0
@@ -2907,6 +2938,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6250606337119821870, guid: dc8965673a73a2b4b9783cb17af17c0f,
         type: 3}
+      propertyPath: managedReferences[1002].rideRange
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6250606337119821870, guid: dc8965673a73a2b4b9783cb17af17c0f,
+        type: 3}
       propertyPath: managedReferences[1002].ROT_OFFSET
       value: -90
       objectReference: {fileID: 0}
@@ -2919,7 +2955,7 @@ PrefabInstance:
         type: 3}
       propertyPath: managedReferences[1002].playerHandPos
       value: 
-      objectReference: {fileID: 576014529}
+      objectReference: {fileID: 1910123479}
     - target: {fileID: 6250606337119821870, guid: dc8965673a73a2b4b9783cb17af17c0f,
         type: 3}
       propertyPath: managedReferences[1002].START_MOVE_SPEED
@@ -3126,6 +3162,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 576014529}
+    - targetCorrespondingSourceObject: {fileID: 7232723983279821239, guid: dc8965673a73a2b4b9783cb17af17c0f,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1910123479}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: dc8965673a73a2b4b9783cb17af17c0f, type: 3}
 --- !u!1 &4416926083347132227 stripped

@@ -156,10 +156,12 @@ public partial class Player : SingletonActionListener<Player>
         {
             if (isRide == false)
             {
+                instance._animator.SetBool(instance._animIDZipLine, true);
                 CustomEvent.Trigger(instance.gameObject, "useZipLine");
             }
             else
             {
+                instance._animator.SetBool(instance._animIDZipLine, false);
                 CustomEvent.Trigger(instance.gameObject, "endZipLine");
             }
         }
@@ -237,6 +239,7 @@ public partial class Player : SingletonActionListener<Player>
 
             if (tempNowRate > 1f - RangeToRate(edgeEndLength))
             {
+                instance._animator.SetBool(instance._animIDZipLine, false);
                 CustomEvent.Trigger(instance.gameObject, "endZipLine");
                 return true;
             }

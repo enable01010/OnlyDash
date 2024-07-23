@@ -59,8 +59,8 @@ public partial class Player : SingletonActionListener<Player>
         // 
         [SerializeField, ReadOnly] private float nowRate;
         [SerializeField] private float dirFreezeLength = 10f;
-        [SerializeField] private float edgeStartLength = 3f;
-        [SerializeField] private float edgeEndLength = 3f;
+        [SerializeField] private float edgeStartLength = 1f;
+        [SerializeField] private float edgeEndLength = 1f;
 
         // �͂ވʒu
         [SerializeField] private Transform playerHandPos;

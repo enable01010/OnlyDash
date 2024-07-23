@@ -2467,7 +2467,7 @@ MonoBehaviour:
   m_Sides: 8
   m_SegmentsPerUnit: 4
   m_Capped: 1
-  m_Radius: 0.1
+  m_Radius: 0.05
   m_Range: {x: 0, y: 1}
 --- !u!23 &1938383945
 MeshRenderer:
@@ -2489,7 +2489,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: 2773108750f273346a45ef81ef5d3ff6, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -2953,9 +2953,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6250606337119821870, guid: dc8965673a73a2b4b9783cb17af17c0f,
         type: 3}
+      propertyPath: managedReferences[1002].edgeEndLength
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6250606337119821870, guid: dc8965673a73a2b4b9783cb17af17c0f,
+        type: 3}
       propertyPath: managedReferences[1002].playerHandPos
       value: 
       objectReference: {fileID: 1910123479}
+    - target: {fileID: 6250606337119821870, guid: dc8965673a73a2b4b9783cb17af17c0f,
+        type: 3}
+      propertyPath: managedReferences[1002].edgeStartLength
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6250606337119821870, guid: dc8965673a73a2b4b9783cb17af17c0f,
         type: 3}
       propertyPath: managedReferences[1002].START_MOVE_SPEED
@@ -3773,6 +3783,9 @@ MonoBehaviour:
       data:
         END_JUMP_ANIM_TIME: 1
         START_CLIM_ANIM_TIME: 0.5
+        CAN_USE_CLIMING_RANGE_START: 1
+        CAN_USE_CLIMING_RANGE_END: 1.2
+        WALL_CHECK_OFFSEST: {x: 0, y: 0, z: 0}
         START_MOVE_SPEED: 5
         POSISION_OFFSET: {x: 0, y: 0.15, z: 0.15}
         SPLINE_MOVE_SPEED: 0

@@ -2389,7 +2389,7 @@ PrefabInstance:
     - target: {fileID: 6250606337119821870, guid: dc8965673a73a2b4b9783cb17af17c0f,
         type: 3}
       propertyPath: managedReferences[1002].START_MOVE_SPEED
-      value: 10
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 6250606337119821870, guid: dc8965673a73a2b4b9783cb17af17c0f,
         type: 3}
@@ -3173,6 +3173,8 @@ MonoBehaviour:
       data:
         END_JUMP_ANIM_TIME: 1
         START_CLIM_ANIM_TIME: 0.5
+        CAN_USE_CLIMING_RANGE_START: 1
+        CAN_USE_CLIMING_RANGE_END: 1.2
         WALL_CHECK_OFFSEST: {x: 0, y: 0, z: 0}
         START_MOVE_SPEED: 5
         POSISION_OFFSET: {x: 0, y: 0.15, z: 0.15}

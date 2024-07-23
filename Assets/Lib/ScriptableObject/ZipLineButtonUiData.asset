@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: ZipLineButtonUiData
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonUIData
+  type: 0
+  sprites:
+  - sprite: {fileID: 2122760703, guid: d7341ee1cd327084b9f3cc5afe06ca53, type: 3}
+    device: 0
+  - sprite: {fileID: 2122760703, guid: d7341ee1cd327084b9f3cc5afe06ca53, type: 3}
+    device: 1
+  - sprite: {fileID: -40925897, guid: d7341ee1cd327084b9f3cc5afe06ca53, type: 3}
+    device: 2
+  - sprite: {fileID: -1081741859, guid: d7341ee1cd327084b9f3cc5afe06ca53, type: 3}
+    device: 3
+  - sprite: {fileID: 192590113, guid: d7341ee1cd327084b9f3cc5afe06ca53, type: 3}
+    device: 4
+  size: 120

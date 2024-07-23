@@ -10,6 +10,7 @@ public partial class Player : SingletonActionListener<Player>
 {
     public interface I_Climbing
     {
+        public void CanUseCheck();
         public bool IsGuard();
         public void OnEnter();
         public void Climbing();
@@ -31,6 +32,10 @@ public partial class Player : SingletonActionListener<Player>
         //壁用
         private List<WallArea> wallAreaList = new List<WallArea>();
         private WallArea wallArea;
+        [SerializeField] float CAN_USE_CLIMING_RANGE_START = 1.0f;
+        [SerializeField] float CAN_USE_CLIMING_RANGE_END = 1.2f;
+        bool canUse = false;
+        [SerializeField] Vector3 WALL_CHECK_OFFSEST;
 
         [SerializeField] float START_MOVE_SPEED = 5.0f;
         [SerializeField] Vector3 POSISION_OFFSET = new Vector3(0, 0.15f, 0.15f);
@@ -41,8 +46,7 @@ public partial class Player : SingletonActionListener<Player>
         private float splineLength;
 
         //移動用
-        [SerializeField] float SPLINE_MOVE_SPEED;
-        
+        [SerializeField] float SPLINE_MOVE_SPEED; 
         [SerializeField] float ROT_OFFSET;
         [SerializeField] float ROT_SPEED;
         [SerializeField] float JUMP_HIGHT = 2;
@@ -87,7 +91,7 @@ public partial class Player : SingletonActionListener<Player>
 
                 float distance = SplineUtility.GetNearestPoint(
                     wallAreaList[i]._spline.Splines[0],
-                    (instance.transform.position - wallAreaList[i]._spline.transform.position).ChangeFloat3(),
+                    (instance.transform.position + WALL_CHECK_OFFSEST - wallAreaList[i]._spline.transform.position).ChangeFloat3(),
                     out float3 nearPos,
                     out float nearPosRate);
 
@@ -135,7 +139,7 @@ public partial class Player : SingletonActionListener<Player>
             if (nowEndTime <= 0)
             {
                 CustomEvent.Trigger(instance.gameObject, "inClimingJump");
-                instance._verticalVelocity = Mathf.Sqrt(instance.JUMP_HEIGHT * -2f * instance.GRAVITY);
+                instance._verticalVelocity = Mathf.Sqrt(JUMP_HIGHT * -2f * instance.GRAVITY);
             }
 
             return true;
@@ -193,20 +197,13 @@ public partial class Player : SingletonActionListener<Player>
             float dir = (moveDir.magnitude == 0) ? 0 : LibVector.HolizontalElementOfForwardToDir(instance.transform.forward, moveDir);
             instance._animator.SetFloat(instance._animIDClimbing_x, dir);
 
-            if (Mathf.Abs(dir )< 0.1f || true)
+            if (Mathf.Abs(dir )< 0.1f)
             {
                 instance.rightHandIKPosition = IKRay(movePos, RIGHT_HAND_RAY_OFFSET_STOP) + LibVector.RotationDirOfObjectFront(instance.transform, RIGHT_HAND_POS_OFFSET_STOP) * RIGHT_HAND_POS_OFFSET_STOP.magnitude;//右手
                 instance.leftHandIKPosition = IKRay(movePos, LEFT_HAND_RAY_OFFSET_STOP) + LibVector.RotationDirOfObjectFront(instance.transform, LEFT_HAND_POS_OFFSET_STOP) * LEFT_HAND_POS_OFFSET_STOP.magnitude; ;//左手
                 instance.rightLegIKPosition = IKRay(movePos, RIGHT_LEG_RAY_OFFSET_STOP) + LibVector.RotationDirOfObjectFront(instance.transform, RIGHT_LEG_POS_OFFSET_STOP) * RIGHT_LEG_POS_OFFSET_STOP.magnitude; ;//右足
                 instance.leftLegIKPosition = IKRay(movePos, LEFT_LEG_RAY_OFFSET_STOP) + LibVector.RotationDirOfObjectFront(instance.transform, LEFT_LEG_POSY_OFFSET_STOP) * LEFT_LEG_POSY_OFFSET_STOP.magnitude; ;//左足
             }
-            //else
-            //{
-            //    instance.rightHandIKPosition = IKRay(instance._animator.GetIKPosition(AvatarIKGoal.RightHand), RIGHT_HAND_RAY_OFFSET_STOP) + LibVector.RotationDirOfObjectFront(instance.transform, RIGHT_HAND_POS_OFFSET_STOP) * RIGHT_HAND_POS_OFFSET_STOP.magnitude;//右手
-            //    instance.leftHandIKPosition = IKRay(instance._animator.GetIKPosition(AvatarIKGoal.LeftHand), LEFT_HAND_RAY_OFFSET_STOP) + LibVector.RotationDirOfObjectFront(instance.transform, LEFT_HAND_POS_OFFSET_STOP) * LEFT_HAND_POS_OFFSET_STOP.magnitude; ;//左手
-            //    instance.rightLegIKPosition = IKRay(movePos, RIGHT_LEG_RAY_OFFSET_STOP) + LibVector.RotationDirOfObjectFront(instance.transform, RIGHT_LEG_POS_OFFSET_STOP) * RIGHT_LEG_POS_OFFSET_STOP.magnitude; ;//右足
-            //    instance.leftLegIKPosition = IKRay(movePos, LEFT_LEG_RAY_OFFSET_STOP) + LibVector.RotationDirOfObjectFront(instance.transform, LEFT_LEG_POSY_OFFSET_STOP) * LEFT_LEG_POSY_OFFSET_STOP.magnitude; ;//左足
-            //}
         }
 
         private Vector3 IKRay(Vector3 movePos, Vector3 offset)
@@ -288,7 +285,7 @@ public partial class Player : SingletonActionListener<Player>
 
         public virtual bool IsGuard()
         {
-            if (wallAreaList.Count == 0) return true;
+            if (canUse == false) return true;
             return false;
         }
 
@@ -302,5 +299,67 @@ public partial class Player : SingletonActionListener<Player>
             wallAreaList.Remove(wallArea);
         }
 
+        #region CanUseCheck
+
+        public virtual void CanUseCheck()
+        {
+            if (isClimging == true) return;
+            if (wallAreaList.Count == 0) return;
+
+
+            if(canUse == false)
+            {
+                InAreaCheck();
+            }
+            else
+            {
+                OutAreaCheck();
+            }
+
+            
+        }
+
+        private void InAreaCheck()
+        {
+            foreach (WallArea wall in wallAreaList)
+            {
+                NativeSpline spline = new NativeSpline(wall._spline.Spline, wall._spline.transform.localToWorldMatrix);
+                float distance = SplineUtility.GetNearestPoint(
+                    spline,
+                    instance.transform.position + WALL_CHECK_OFFSEST,
+                    out float3 nearPos,
+                    out float nearPosRate);
+
+                if (distance < CAN_USE_CLIMING_RANGE_START)
+                {
+                    LibButtonUIInfoManager.PopIcon(ButtonType.Climbing);
+                    canUse = true;
+                    return;
+                }
+            }
+        }
+
+        private void OutAreaCheck()
+        {
+            foreach (WallArea wall in wallAreaList)
+            {
+                NativeSpline spline = new NativeSpline(wall._spline.Spline, wall._spline.transform.localToWorldMatrix);
+                float distance = SplineUtility.GetNearestPoint(
+                    spline,
+                    instance.transform.position + WALL_CHECK_OFFSEST,
+                    out float3 nearPos,
+                    out float nearPosRate);
+
+                if (distance < CAN_USE_CLIMING_RANGE_END)
+                {
+                    return;
+                }
+            }
+
+            LibButtonUIInfoManager.RemoveIcon(ButtonType.Climbing);
+            canUse = false;
+        }
+
+        #endregion
     }
 }

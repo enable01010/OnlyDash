@@ -63,16 +63,13 @@ public partial class Player : SingletonActionListener<Player>
         [SerializeField] private float edgeEndLength = 1f;
 
         // 掴む位置
-        [SerializeField] private Transform playerHandPos;
+        [SerializeField] private Vector3 playerHandPos;
         private Vector3 offsetPlayerPos;
 
         // 
         [SerializeField] private bool isFreezeRotation = false;
         [SerializeField] private float jumpPowerY = 10f;
         [SerializeField] private float jumpPowerXZ = 10f;
-
-        // UI
-        [SerializeField] private GameObject canvas;
 
         #endregion
 
@@ -84,9 +81,9 @@ public partial class Player : SingletonActionListener<Player>
             //rbody = instance.gameObject.GetComponent<Rigidbody>();
 
             // 途中で大きさ変わらないならStart
-            offsetPlayerPos.x = playerHandPos.transform.localPosition.x * instance.transform.lossyScale.x;
-            offsetPlayerPos.y = playerHandPos.transform.localPosition.y * instance.transform.lossyScale.y;
-            offsetPlayerPos.z = playerHandPos.transform.localPosition.z * instance.transform.lossyScale.z;
+            offsetPlayerPos.x = playerHandPos.x * instance.transform.lossyScale.x;
+            offsetPlayerPos.y = playerHandPos.y * instance.transform.lossyScale.y;
+            offsetPlayerPos.z = playerHandPos.z * instance.transform.lossyScale.z;
 
             GameObject[] obj = GameObject.FindGameObjectsWithTag("ZipLine");
 
@@ -118,13 +115,11 @@ public partial class Player : SingletonActionListener<Player>
             isRideRange = nearDistance < rideRange;
             if (temp == false && isRideRange == true)
             {
-                // Addに書き換え！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！
-                canvas.SetActive(true);
+                LibButtonUIInfoManager.PopIcon(ButtonType.ZipLine);
             }
             else if (temp == true && isRideRange == false)
             {
-                // Deleteに書き換え！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！
-                canvas.SetActive(false);
+                LibButtonUIInfoManager.RemoveIcon(ButtonType.ZipLine);
             }
         }
 
@@ -141,10 +136,13 @@ public partial class Player : SingletonActionListener<Player>
                 }
             }
 
-            nearSplinePos = splinePos[nearSplineNumber];
-            nearSplineContainer = splineContainer[nearSplineNumber];
-            nearSplinePath = splinePath[nearSplineNumber];
-            nearSplineLength = splineLength[nearSplineNumber];
+            if (splinePos.Length != 0)
+            {
+                nearSplinePos = splinePos[nearSplineNumber];
+                nearSplineContainer = splineContainer[nearSplineNumber];
+                nearSplinePath = splinePath[nearSplineNumber];
+                nearSplineLength = splineLength[nearSplineNumber];
+            }
         }
 
         #endregion

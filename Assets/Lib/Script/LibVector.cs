@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Mathematics;
 using UnityEngine;
 
 /// <summary>
@@ -15,12 +16,10 @@ public static class LibVector
     /// <returns></returns>
     static public Vector3 Chenge_X(Vector3 vector, float value)
     {
-        Vector3 answer = Vector3.zero;
+       
+        vector.x = value;
 
-        answer = vector;
-        answer.x = value;
-
-        return answer;
+        return vector;
     }
 
     /// <summary>
@@ -31,12 +30,9 @@ public static class LibVector
     /// <returns></returns>
     static public Vector3 Chenge_Y(Vector3 vector, float value)
     {
-        Vector3 answer = Vector3.zero;
+        vector.y = value;
 
-        answer = vector;
-        answer.y = value;
-
-        return answer;
+        return vector;
     }
 
     /// <summary>
@@ -47,12 +43,9 @@ public static class LibVector
     /// <returns></returns>
     static public Vector3 Chenge_Z(Vector3 vector, float value)
     {
-        Vector3 answer = Vector3.zero;
+        vector.z = value;
 
-        answer = vector;
-        answer.z = value;
-
-        return answer;
+        return vector;
     }
 
     /// <summary>
@@ -187,7 +180,7 @@ public static class LibVector
     {
         float answer = 0;
 
-        float raian = ChengeVectorToRadian_2D(x,y);
+        float raian = ChengeVectorToRadian_2D(x, y);
         answer = raian * Mathf.Rad2Deg;
 
         return answer;
@@ -233,7 +226,7 @@ public static class LibVector
     {
         Vector3 answer = Vector3.zero;
 
-        float degree = ChengeVectorToDegree_2D(x,y);
+        float degree = ChengeVectorToDegree_2D(x, y);
         answer = Chenge_Z(answer, degree);
 
         return answer;
@@ -318,5 +311,168 @@ public static class LibVector
         transform.position = Add_Z(transform.position, value);
 
         return transform;
+    }
+
+    static public Vector3 Only_X(this Vector3 vec)
+    {
+        vec.y = 0;
+        vec.z = 0;
+        return vec;
+    }
+
+    static public Vector3 Only_Y(this Vector3 vec)
+    {
+        vec.x = 0;
+        vec.z = 0;
+        return vec;
+    }
+
+    static public Vector3 Only_Z(this Vector3 vec)
+    {
+        vec.y = 0;
+        vec.x = 0;
+        return vec;
+    }
+
+    static public Vector3 Only_X(this float value)
+    {
+        return new Vector3(value, 0, 0);
+    }
+
+    static public Vector3 Only_Y(this float value)
+    {
+        return new Vector3(0, value, 0);
+    }
+
+    static public Vector3 Only_Z(this float value)
+    {
+        return new Vector3(0, 0, value);
+    }
+
+    static public float3 ChangeFloat3(this Vector3 vec)
+    {
+        return new float3(vec.x, vec.y, vec.z);
+    }
+
+    static public Vector3 ChengeVector3(this float3 value)
+    {
+        return new Vector3(value.x, value.y, value.z);
+    }
+
+    //Trasnform
+
+    //指定のポイントまで時間管理で移動する
+    static public bool MoveFocusTime(this Transform transform, Vector3 goalPos, ref float time)
+    {
+        return transform.MoveFocusTime(goalPos, ref time, out Vector3 moveDir);
+    }
+
+    static public bool MoveFocusTime(this Transform transform, Vector3 goalPos, ref float time, out Vector3 moveDir)
+    {
+        if (time <= Time.deltaTime)
+        {
+            time = 0;
+            moveDir = goalPos - transform.position;
+            transform.position = goalPos;
+            return true;
+        }
+
+        float rate = Time.deltaTime / time;
+        Vector3 startPos = transform.position;
+        transform.position = Vector3.Lerp(transform.position, goalPos, rate);
+        moveDir = transform.position - startPos;
+        time -= Time.deltaTime;
+        return false;
+    }
+
+    //指定のポイントまで速度管理で移動する
+    static public bool MoveFocusSpeed(this Transform transform, Vector3 goalPos, float speed)
+    {
+        return transform.MoveFocusSpeed(goalPos, speed, out Vector3 moveDir);
+    }
+
+    static public bool MoveFocusSpeed(this Transform transform, Vector3 goalPos, float speed, out Vector3 moveDir)
+    {
+        Vector3 startPos = transform.position;
+        transform.position = Vector3.MoveTowards(transform.position, goalPos, speed);
+        moveDir = transform.position - startPos;
+
+        return moveDir.magnitude < speed;
+    }
+
+    //指定のポイントまで時間管理で移動する
+    static public bool MoveFocusTime(this RectTransform transform, Vector3 goalPos, ref float time)
+    {
+        return transform.MoveFocusTime(goalPos, ref time, out Vector3 moveDir);
+    }
+
+    static public bool MoveFocusTime(this RectTransform transform, Vector3 goalPos, ref float time, out Vector3 moveDir)
+    {
+        if (time <= Time.deltaTime)
+        {
+            time = 0;
+            moveDir = goalPos - (Vector3)transform.anchoredPosition;
+            transform.anchoredPosition = goalPos;
+            return true;
+        }
+
+        float rate = Time.deltaTime / time;
+        Vector3 startPos = transform.anchoredPosition;
+        transform.anchoredPosition = Vector3.Lerp(transform.anchoredPosition, goalPos, rate);
+        moveDir = (Vector3)transform.anchoredPosition - startPos;
+        time -= Time.deltaTime;
+        return false;
+    }
+
+    //指定のポイントまで速度管理で移動する
+    static public bool MoveFocusSpeed(this RectTransform transform, Vector3 goalPos, float speed)
+    {
+        return transform.MoveFocusSpeed(goalPos, speed, out Vector3 moveDir);
+    }
+
+    static public bool MoveFocusSpeed(this RectTransform transform, Vector3 goalPos, float speed, out Vector3 moveDir)
+    {
+        Vector3 startPos = transform.anchoredPosition;
+        transform.anchoredPosition = Vector3.MoveTowards(transform.anchoredPosition, goalPos, speed);
+        moveDir = (Vector3)transform.anchoredPosition - startPos;
+
+        return moveDir.magnitude < speed;
+    }
+
+    //指定の方向を一定速度で振り向く
+    static public void RotFocusSpeed(this Transform transform, Quaternion targetRotation, float speed)
+    {
+        transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, speed);
+    }
+
+
+    //Vecgtor3
+
+    //Forwardベクトル（正面）に対して別のベクトルが前後どちらにあるか判定する(1が前-1が後）
+    static public float VerticalElementOfForwardToDir(Vector3 forward, Vector3 dir)
+    {
+        float angle = Vector3.Angle(forward.normalized, dir.normalized);
+        float vertical = LibMath.GetRangeToValue(angle, 0, 180) * 2 - 1;
+        return vertical;
+    }
+
+    //Forwardベクトル（正面）に対して別のベクトルが左右どちらにあるか判定する(1が右-1が左）
+    static public float HolizontalElementOfForwardToDir(Vector3 forward, Vector3 dir)
+    {
+        float holizontal = (Vector3.Cross(forward.normalized, dir.normalized).y < 0 ? -1 : 1);
+        return Vector3.Cross(forward, dir).y;
+    }
+
+    //ベクトルを特定のY軸角度で回転させる（カメラの向きを考慮した入力方向の検知等）
+    static public Vector3 RotationDirOfObjectFront(Transform obj, Vector3 dir)
+    {
+        Quaternion _targetRotation = Quaternion.AngleAxis(obj.eulerAngles.y, Vector3.up);
+        Vector3 targetDirection = _targetRotation * dir.normalized;
+        return targetDirection;
+    }
+
+    static public Vector3 RotationDirOfObjectFront(Transform obj, Vector2 dir)
+    {
+        return RotationDirOfObjectFront(obj, new Vector3(dir.x, 0, dir.y));
     }
 }

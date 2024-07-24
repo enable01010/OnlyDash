@@ -85,6 +85,24 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "ZipLine",
+                    "type": "Button",
+                    "id": "476b7edf-25c9-4852-993b-6059d5cc8d77",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Climbing",
+                    "type": "Button",
+                    "id": "6e0506ca-09b8-49c3-85c0-a63a27b24ba0",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -190,7 +208,7 @@
                 {
                     "name": "",
                     "id": "b29b32e9-4159-451a-8e3b-8420f146593f",
-                    "path": "",
+                    "path": "<Gamepad>/buttonSouth",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -261,6 +279,28 @@
                     "processors": "InvertVector2(invertX=false),ScaleVector2(x=300,y=300)",
                     "groups": "",
                     "action": "CamMove",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "50921657-9526-4331-bb07-b4cf7744e1d8",
+                    "path": "<Gamepad>/buttonEast",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ZipLine",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "144206d2-479c-4857-a785-50063d04127a",
+                    "path": "<Gamepad>/buttonWest",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Climbing",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

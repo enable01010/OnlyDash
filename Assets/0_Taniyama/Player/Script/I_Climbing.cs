@@ -190,6 +190,7 @@ public partial class Player : SingletonActionListener<Player>
         {
             spline.Evaluate(splineRate, out float3 position, out float3 tangent, out float3 upVector);
             Player.instance.transform.RotFocusSpeed(Quaternion.LookRotation(tangent, Vector3.up) * Quaternion.Euler(0, ROT_OFFSET, 0), ROT_SPEED);
+            Player.instance.transform.eulerAngles= Player.instance.transform.eulerAngles.Only_Y();
         }
 
         private void SetAnimatorIK(Vector3 movePos, Vector3 moveDir)

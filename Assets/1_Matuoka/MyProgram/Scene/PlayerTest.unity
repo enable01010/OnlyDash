@@ -3637,9 +3637,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6250606337119821870, guid: dc8965673a73a2b4b9783cb17af17c0f,
         type: 3}
+      propertyPath: managedReferences[1002].speed
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 6250606337119821870, guid: dc8965673a73a2b4b9783cb17af17c0f,
+        type: 3}
       propertyPath: managedReferences[1002].canvas
       value: 
       objectReference: {fileID: 563907365}
+    - target: {fileID: 6250606337119821870, guid: dc8965673a73a2b4b9783cb17af17c0f,
+        type: 3}
+      propertyPath: managedReferences[1002].andPos.y
+      value: 0.15
+      objectReference: {fileID: 0}
     - target: {fileID: 6250606337119821870, guid: dc8965673a73a2b4b9783cb17af17c0f,
         type: 3}
       propertyPath: managedReferences[1002].ROT_SPEED
@@ -3648,7 +3658,7 @@ PrefabInstance:
     - target: {fileID: 6250606337119821870, guid: dc8965673a73a2b4b9783cb17af17c0f,
         type: 3}
       propertyPath: managedReferences[1002].rideRange
-      value: 5
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 6250606337119821870, guid: dc8965673a73a2b4b9783cb17af17c0f,
         type: 3}
@@ -3688,7 +3698,7 @@ PrefabInstance:
     - target: {fileID: 6250606337119821870, guid: dc8965673a73a2b4b9783cb17af17c0f,
         type: 3}
       propertyPath: managedReferences[1002].playerHandPos.x
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6250606337119821870, guid: dc8965673a73a2b4b9783cb17af17c0f,
         type: 3}
@@ -3759,6 +3769,16 @@ PrefabInstance:
         type: 3}
       propertyPath: managedReferences[1002].holizontalMoveSpeed
       value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 6250606337119821870, guid: dc8965673a73a2b4b9783cb17af17c0f,
+        type: 3}
+      propertyPath: managedReferences[1002].playerHandPosition.y
+      value: 1.45
+      objectReference: {fileID: 0}
+    - target: {fileID: 6250606337119821870, guid: dc8965673a73a2b4b9783cb17af17c0f,
+        type: 3}
+      propertyPath: managedReferences[1002].playerHandPosition.z
+      value: 0.15
       objectReference: {fileID: 0}
     - target: {fileID: 6250606337119821870, guid: dc8965673a73a2b4b9783cb17af17c0f,
         type: 3}
@@ -4497,16 +4517,17 @@ MonoBehaviour:
         nearSplinePos: {fileID: 0}
         nearSplineContainer: {fileID: 0}
         nearSplineLength: 0
-        isRideRange: 0
         nearDistance: 0
         rideRange: 10
+        startWaitTime: 2
+        endWaitTime: 2
         speed: 5
         rideElapsedTime: 0
         nowRate: 0
         dirFreezeLength: 10
         edgeStartLength: 3
         edgeEndLength: 3
-        playerHandPos: {x: 0, y: 0, z: 0}
+        playerHandPosition: {x: 0, y: 0, z: 0}
         isFreezeRotation: 0
         jumpPowerY: 10
         jumpPowerXZ: 10

@@ -1208,8 +1208,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 269146df88ef48f479bdb73e486414f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <rot>k__BackingField: {x: 0, y: 0, z: 0}
-  <pos>k__BackingField: {fileID: 0}
   <_spline>k__BackingField: {fileID: 1595218755}
 --- !u!1001 &1221041499
 PrefabInstance:
@@ -2189,8 +2187,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 269146df88ef48f479bdb73e486414f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <rot>k__BackingField: {x: 0, y: 0, z: 0}
-  <pos>k__BackingField: {fileID: 0}
   <_spline>k__BackingField: {fileID: 427965477}
 --- !u!65 &1799972142
 BoxCollider:
@@ -2467,12 +2463,22 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6250606337119821870, guid: dc8965673a73a2b4b9783cb17af17c0f,
         type: 3}
+      propertyPath: managedReferences[1003].ROT_SPEED
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6250606337119821870, guid: dc8965673a73a2b4b9783cb17af17c0f,
+        type: 3}
       propertyPath: managedReferences[1002].JUMP_HIGHT
       value: 2.5
       objectReference: {fileID: 0}
     - target: {fileID: 6250606337119821870, guid: dc8965673a73a2b4b9783cb17af17c0f,
         type: 3}
       propertyPath: managedReferences[1002].ROT_OFFSET
+      value: -90
+      objectReference: {fileID: 0}
+    - target: {fileID: 6250606337119821870, guid: dc8965673a73a2b4b9783cb17af17c0f,
+        type: 3}
+      propertyPath: managedReferences[1003].ROT_OFFSET
       value: -90
       objectReference: {fileID: 0}
     - target: {fileID: 6250606337119821870, guid: dc8965673a73a2b4b9783cb17af17c0f,
@@ -2484,6 +2490,11 @@ PrefabInstance:
         type: 3}
       propertyPath: managedReferences[1002].START_MOVE_SPEED
       value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6250606337119821870, guid: dc8965673a73a2b4b9783cb17af17c0f,
+        type: 3}
+      propertyPath: managedReferences[1003].START_MOVE_SPEED
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 6250606337119821870, guid: dc8965673a73a2b4b9783cb17af17c0f,
         type: 3}
@@ -2512,6 +2523,26 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6250606337119821870, guid: dc8965673a73a2b4b9783cb17af17c0f,
         type: 3}
+      propertyPath: managedReferences[1003].LAYER_MASK.m_Bits
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6250606337119821870, guid: dc8965673a73a2b4b9783cb17af17c0f,
+        type: 3}
+      propertyPath: managedReferences[1003].POSISION_OFFSET.y
+      value: 1.65
+      objectReference: {fileID: 0}
+    - target: {fileID: 6250606337119821870, guid: dc8965673a73a2b4b9783cb17af17c0f,
+        type: 3}
+      propertyPath: managedReferences[1003].POSISION_OFFSET.z
+      value: 0.38
+      objectReference: {fileID: 0}
+    - target: {fileID: 6250606337119821870, guid: dc8965673a73a2b4b9783cb17af17c0f,
+        type: 3}
+      propertyPath: managedReferences[1003].SPLINE_MOVE_SPEED
+      value: 0.45
+      objectReference: {fileID: 0}
+    - target: {fileID: 6250606337119821870, guid: dc8965673a73a2b4b9783cb17af17c0f,
+        type: 3}
       propertyPath: managedReferences[1002].END_JUMP_ANIM_TIME
       value: 0.2
       objectReference: {fileID: 0}
@@ -2527,6 +2558,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6250606337119821870, guid: dc8965673a73a2b4b9783cb17af17c0f,
         type: 3}
+      propertyPath: managedReferences[1003].END_JUMP_ANIM_TIME
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6250606337119821870, guid: dc8965673a73a2b4b9783cb17af17c0f,
+        type: 3}
       propertyPath: managedReferences[1002].RIGHT_HAND_OFFSET.z
       value: -0.15
       objectReference: {fileID: 0}
@@ -2539,6 +2575,21 @@ PrefabInstance:
         type: 3}
       propertyPath: managedReferences[1002].WALL_CHECK_OFFSEST.y
       value: 1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6250606337119821870, guid: dc8965673a73a2b4b9783cb17af17c0f,
+        type: 3}
+      propertyPath: managedReferences[1003].START_CLIM_ANIM_TIME
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6250606337119821870, guid: dc8965673a73a2b4b9783cb17af17c0f,
+        type: 3}
+      propertyPath: managedReferences[1003].WALL_CHECK_OFFSEST.y
+      value: 1.65
+      objectReference: {fileID: 0}
+    - target: {fileID: 6250606337119821870, guid: dc8965673a73a2b4b9783cb17af17c0f,
+        type: 3}
+      propertyPath: managedReferences[1003].WALL_CHECK_OFFSEST.z
+      value: 0.38
       objectReference: {fileID: 0}
     - target: {fileID: 6250606337119821870, guid: dc8965673a73a2b4b9783cb17af17c0f,
         type: 3}
@@ -2612,6 +2663,21 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6250606337119821870, guid: dc8965673a73a2b4b9783cb17af17c0f,
         type: 3}
+      propertyPath: managedReferences[1003].LEFT_HAND_POS_OFFSET_STOP.z
+      value: -0.05
+      objectReference: {fileID: 0}
+    - target: {fileID: 6250606337119821870, guid: dc8965673a73a2b4b9783cb17af17c0f,
+        type: 3}
+      propertyPath: managedReferences[1003].LEFT_HAND_RAY_OFFSET_STOP.x
+      value: -0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6250606337119821870, guid: dc8965673a73a2b4b9783cb17af17c0f,
+        type: 3}
+      propertyPath: managedReferences[1003].LEFT_HAND_RAY_OFFSET_STOP.z
+      value: -0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6250606337119821870, guid: dc8965673a73a2b4b9783cb17af17c0f,
+        type: 3}
       propertyPath: managedReferences[1002].RIGHT_HAND_POS_OFFSET_STOP.z
       value: -0.1
       objectReference: {fileID: 0}
@@ -2623,6 +2689,21 @@ PrefabInstance:
     - target: {fileID: 6250606337119821870, guid: dc8965673a73a2b4b9783cb17af17c0f,
         type: 3}
       propertyPath: managedReferences[1002].RIGHT_HAND_RAY_OFFSET_STOP.z
+      value: -0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6250606337119821870, guid: dc8965673a73a2b4b9783cb17af17c0f,
+        type: 3}
+      propertyPath: managedReferences[1003].RIGHT_HAND_POS_OFFSET_STOP.z
+      value: -0.05
+      objectReference: {fileID: 0}
+    - target: {fileID: 6250606337119821870, guid: dc8965673a73a2b4b9783cb17af17c0f,
+        type: 3}
+      propertyPath: managedReferences[1003].RIGHT_HAND_RAY_OFFSET_STOP.x
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6250606337119821870, guid: dc8965673a73a2b4b9783cb17af17c0f,
+        type: 3}
+      propertyPath: managedReferences[1003].RIGHT_HAND_RAY_OFFSET_STOP.z
       value: -0.1
       objectReference: {fileID: 0}
     - target: {fileID: 7232723983279821239, guid: dc8965673a73a2b4b9783cb17af17c0f,
@@ -3307,11 +3388,10 @@ MonoBehaviour:
         dirFreezeLength: 10
         edgeStartLength: 3
         edgeEndLength: 3
-        playerHandPos: {fileID: 0}
+        playerHandPos: {x: 0, y: 0, z: 0}
         isFreezeRotation: 0
         jumpPowerY: 10
         jumpPowerXZ: 10
-        canvas: {fileID: 0}
 --- !u!1001 &7470605951010592241
 PrefabInstance:
   m_ObjectHideFlags: 0

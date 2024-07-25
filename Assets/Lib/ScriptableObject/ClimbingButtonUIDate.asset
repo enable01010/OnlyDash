@@ -9,9 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: ClimbingButtonUiData
-  m_EditorClassIdentifier: Assembly-CSharp::ButtonUIData
+  m_Script: {fileID: 11500000, guid: fed86f806c2d0ff49bcf9399390ea37d, type: 3}
+  m_Name: ClimbingButtonUIDate
+  m_EditorClassIdentifier: 
   type: 1
   sprites:
   - sprite: {fileID: -1711921147, guid: d7341ee1cd327084b9f3cc5afe06ca53, type: 3}

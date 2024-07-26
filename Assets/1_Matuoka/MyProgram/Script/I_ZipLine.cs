@@ -79,6 +79,9 @@ public partial class Player : SingletonActionListener<Player>
         [SerializeField] private float jumpPowerY = 10f;
         [SerializeField] private float jumpPowerXZ = 10f;
 
+
+        [SerializeField] float JUMP_HIGHT = 2;
+
         #endregion
 
 
@@ -345,9 +348,10 @@ public partial class Player : SingletonActionListener<Player>
 
         private void EndZipLineJump()
         {
-            Vector3 tempForward = instance.transform.forward.normalized;
-            Vector3 jumpPowe = tempForward * jumpPowerXZ + Vector3.up * jumpPowerY;
+            //Vector3 tempForward = instance.transform.forward.normalized;
+            //ctor3 jumpPowe = tempForward * jumpPowerXZ + Vector3.up * jumpPowerY;
             //rbody.AddForce(jumpPowe, ForceMode.Impulse);
+            instance._verticalVelocity = Mathf.Sqrt(JUMP_HIGHT * -2f * instance.GRAVITY);
         }
 
         #endregion

@@ -26,9 +26,6 @@ public partial class Player : SingletonActionListener<Player>
     {
         #region ïœêî
 
-        // PlayerÇÃComponent
-        //private Rigidbody rbody;
-
         // Splineä÷åW
         private SplineNearestPos[] splinePos;// äeSplineÇÃPlayerÇ∆àÍî‘ãﬂÇ¢à íu
         private SplineContainer[] splineContainer;// SplineÇÃComponent
@@ -61,8 +58,9 @@ public partial class Player : SingletonActionListener<Player>
 
         // speedä÷åW
         [SerializeField] private float speed = 5f;
-        [SerializeField, ReadOnly] private float rideElapsedTime = 0f;
-        private const float stopTime = 1.0f;
+        [SerializeField, ReadOnly] private float rideStopElapsedTime = 0f;
+        [SerializeField] private float stopTime = 1f;
+        [SerializeField] private float stopTimeRotSpeed = 1f;
 
         // 
         [SerializeField, ReadOnly] private float nowRate;
@@ -89,8 +87,6 @@ public partial class Player : SingletonActionListener<Player>
 
         public virtual void PlayerStart()
         {
-            //rbody = instance.gameObject.GetComponent<Rigidbody>();
-  
             // ìríÜÇ≈ëÂÇ´Ç≥ïœÇÌÇÁÇ»Ç¢Ç»ÇÁStart
             offsetPlayerPos.x = playerHandPosition.x * instance.transform.lossyScale.x;
             offsetPlayerPos.y = playerHandPosition.y * instance.transform.lossyScale.y;
@@ -220,9 +216,9 @@ public partial class Player : SingletonActionListener<Player>
         public virtual void OnEnter()
         {
             isRide = true;
-            //rbody.isKinematic = true;
             nowRate = Mathf.Clamp(nearSplinePos.rate, RangeToRate(edgeStartLength), 1f - RangeToRate(edgeStartLength));
 
+            rideStopElapsedTime = stopTime;
             nowWaitTime = startWaitTime;
             LibButtonUIInfoManager.RemoveIcon(ButtonType.ZipLine);
 
@@ -257,7 +253,8 @@ public partial class Player : SingletonActionListener<Player>
         {
             if (EdgeEndLengthCheck() == true) return;
 
-            NowRateUpdate();
+            if(NowRateUpdate() == false) return;
+
             MoveRotation();
             MovePos();
         }
@@ -282,50 +279,70 @@ public partial class Player : SingletonActionListener<Player>
             }
         }
 
-        private void NowRateUpdate()
+        private bool NowRateUpdate()
         {
-            rideElapsedTime += Time.deltaTime;
-            if (rideElapsedTime < stopTime)
+            if (rideStopElapsedTime <= 0)
             {
-                return;
+                if (isDirectionPlus == true)
+                {
+                    nowRate += (speed / nearSplineLength) * Time.deltaTime;
+                }
+                else
+                {
+                    nowRate -= (speed / nearSplineLength) * Time.deltaTime;
+                }
+
+                return true;
             }
 
-            if (isDirectionPlus == true)
-            {
-                nowRate += (speed / nearSplineLength) * Time.deltaTime;
-            }
-            else
-            {
-                nowRate -= (speed / nearSplineLength) * Time.deltaTime;
-            }
+
+            instance.transform.RotFocusSpeed(MoveQuaternion(), stopTimeRotSpeed);
+
+            instance.transform.MoveFocusTime((Vector3)nearSplineContainer.EvaluatePosition(nearSplinePath, nowRate) - OffsetPlayerPos(), ref rideStopElapsedTime);
+            
+            return false;
         }
 
         private void MoveRotation()
+        {
+            instance.transform.rotation = MoveQuaternion();
+        }
+
+        private Quaternion MoveQuaternion()
         {
             Vector3 forward = nearSplineContainer.EvaluateTangent(nearSplinePath, nowRate);
             if (isDirectionPlus != true) forward *= -1f;
 
             Vector3 up = nearSplineContainer.EvaluateUpVector(nearSplinePath, nowRate);
 
-            instance.transform.rotation = Quaternion.LookRotation(forward, up);
+            Quaternion quaternion = Quaternion.LookRotation(forward, up);
 
             if (isFreezeRotation == true)
             {
-                instance.transform.rotation = Quaternion.Euler(0, instance.transform.localEulerAngles.y, 0);
+                quaternion *= Quaternion.Euler(0, instance.transform.localEulerAngles.y, 0);
             }
+
+            return quaternion;
         }
 
         private void MovePos()
         {
             instance.transform.position = nearSplineContainer.EvaluatePosition(nearSplinePath, nowRate);
 
+            instance.transform.position -= OffsetPlayerPos();
+        }
+
+        private Vector3 OffsetPlayerPos()
+        {
             float rotX = instance.transform.localEulerAngles.x;
             float rotY = instance.transform.localEulerAngles.y;
             float rotZ = instance.transform.localEulerAngles.z;
 
             Quaternion rot = Quaternion.Euler(rotX, rotY, rotZ);
-            instance.transform.position -= rot * offsetPlayerPos;
+            return rot * offsetPlayerPos;
         }
+
+
 
         #endregion
 
@@ -335,9 +352,8 @@ public partial class Player : SingletonActionListener<Player>
         public virtual void OnExit()
         {
             isRide = false;
-            //rbody.isKinematic = false;
             instance.transform.rotation = Quaternion.Euler(0, instance.transform.localEulerAngles.y, 0);
-            rideElapsedTime = 0f;
+            rideStopElapsedTime = 0f;
 
             nowWaitTime = endWaitTime;
             LibButtonUIInfoManager.RemoveIcon(ButtonType.ZipLine);
@@ -349,7 +365,7 @@ public partial class Player : SingletonActionListener<Player>
         private void EndZipLineJump()
         {
             //Vector3 tempForward = instance.transform.forward.normalized;
-            //ctor3 jumpPowe = tempForward * jumpPowerXZ + Vector3.up * jumpPowerY;
+            //Vector3 jumpPowe = tempForward * jumpPowerXZ + Vector3.up * jumpPowerY;
             //rbody.AddForce(jumpPowe, ForceMode.Impulse);
             instance._verticalVelocity = Mathf.Sqrt(JUMP_HIGHT * -2f * instance.GRAVITY);
         }

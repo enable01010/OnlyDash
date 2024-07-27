@@ -24,7 +24,7 @@ public partial class Player : SingletonActionListener<Player>
     public class DefaultClimbing : I_Climbing
     {
         private bool isClimging = false;
-        [SerializeField] float END_JUMP_ANIM_TIME = 1.0f;
+        [SerializeField] float END_JUMP_ANIM_TIME = 0.2f;
         float nowEndTime = 0;
         [SerializeField] float START_CLIM_ANIM_TIME = 0.5f;
         float startAnimTime = 0;
@@ -35,10 +35,10 @@ public partial class Player : SingletonActionListener<Player>
         [SerializeField] float CAN_USE_CLIMING_RANGE_START = 1.0f;
         [SerializeField] float CAN_USE_CLIMING_RANGE_END = 1.2f;
         bool canUse = false;
-        [SerializeField] Vector3 WALL_CHECK_OFFSEST;
+        [SerializeField] Vector3 WALL_CHECK_OFFSEST = new Vector3(0,1.65f,0.38f);
 
-        [SerializeField] float START_MOVE_SPEED = 5.0f;
-        [SerializeField] Vector3 POSISION_OFFSET = new Vector3(0, 0.15f, 0.15f);
+        [SerializeField] float START_MOVE_SPEED = 10.0f;
+        [SerializeField] Vector3 POSISION_OFFSET = new Vector3(0, 1.65f, 0.38f);
         
         //スプライン用
         private float splineRate;
@@ -46,19 +46,19 @@ public partial class Player : SingletonActionListener<Player>
         private float splineLength;
 
         //移動用
-        [SerializeField] float SPLINE_MOVE_SPEED; 
-        [SerializeField] float ROT_OFFSET;
-        [SerializeField] float ROT_SPEED;
-        [SerializeField] float JUMP_HIGHT = 2;
+        [SerializeField] float SPLINE_MOVE_SPEED = 0.45f; 
+        [SerializeField] float ROT_OFFSET = -90.0f;
+        [SerializeField] float ROT_SPEED = 5.0f;
+        [SerializeField] float JUMP_HIGHT = 2 ;
         [SerializeField] float CANT_CLIM_UPPOWER = 1.0f;
 
         //IK用変数
-        [SerializeField] Vector3 RIGHT_HAND_RAY_OFFSET_STOP;
-        [SerializeField] Vector3 LEFT_HAND_RAY_OFFSET_STOP;
+        [SerializeField] Vector3 RIGHT_HAND_RAY_OFFSET_STOP = new Vector3(0.2f,0,-0.1f);
+        [SerializeField] Vector3 LEFT_HAND_RAY_OFFSET_STOP = new Vector3(-0.2f, 0, -0.1f);
         [SerializeField] Vector3 RIGHT_LEG_RAY_OFFSET_STOP;
         [SerializeField] Vector3 LEFT_LEG_RAY_OFFSET_STOP;
-        [SerializeField] Vector3 RIGHT_HAND_POS_OFFSET_STOP;
-        [SerializeField] Vector3 LEFT_HAND_POS_OFFSET_STOP;
+        [SerializeField] Vector3 RIGHT_HAND_POS_OFFSET_STOP = new Vector3(0,0,-0.05f);
+        [SerializeField] Vector3 LEFT_HAND_POS_OFFSET_STOP = new Vector3(0, 0, -0.05f);
         [SerializeField] Vector3 RIGHT_LEG_POS_OFFSET_STOP;
         [SerializeField] Vector3 LEFT_LEG_POSY_OFFSET_STOP;
         [SerializeField] float IK_CHECK_LENGTH = 0.3f;
@@ -190,6 +190,7 @@ public partial class Player : SingletonActionListener<Player>
         {
             spline.Evaluate(splineRate, out float3 position, out float3 tangent, out float3 upVector);
             Player.instance.transform.RotFocusSpeed(Quaternion.LookRotation(tangent, Vector3.up) * Quaternion.Euler(0, ROT_OFFSET, 0), ROT_SPEED);
+            Player.instance.transform.eulerAngles= Player.instance.transform.eulerAngles.Only_Y();
         }
 
         private void SetAnimatorIK(Vector3 movePos, Vector3 moveDir)

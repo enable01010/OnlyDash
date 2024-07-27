@@ -2963,6 +2963,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6881878722462646811, guid: ac6b745bcf9cfeb4895b75d179581b50,
         type: 3}
+      propertyPath: move
+      value: 3624697933927284736
+      objectReference: {fileID: 0}
+    - target: {fileID: 6881878722462646811, guid: ac6b745bcf9cfeb4895b75d179581b50,
+        type: 3}
       propertyPath: SLIDING_SPEED
       value: 10
       objectReference: {fileID: 0}
@@ -2975,6 +2980,11 @@ PrefabInstance:
         type: 3}
       propertyPath: managedReferences[1003].ROT_OFFSET
       value: -90
+      objectReference: {fileID: 0}
+    - target: {fileID: 6881878722462646811, guid: ac6b745bcf9cfeb4895b75d179581b50,
+        type: 3}
+      propertyPath: managedReferences[3624697933927284736]
+      value: Assembly-CSharp Player/AutoMove
       objectReference: {fileID: 0}
     - target: {fileID: 6881878722462646811, guid: ac6b745bcf9cfeb4895b75d179581b50,
         type: 3}

@@ -12,8 +12,7 @@ public class DebugEditor : EditorWindow
 {
     [SerializeField] private VisualTreeAsset _rootVisualTreeAsset;
     [SerializeField] private StyleSheet _rootStyleSheet;
-    [SerializeField] private VisualTreeAsset _log;
-    [SerializeField] private VisualTreeAsset _info;
+
     private List<LogInfo> logList;
     private List<string> rayList;
 
@@ -178,8 +177,11 @@ public class DebugEditor : EditorWindow
 
     private void AddEditor(LogInfo info)
     {
+        VisualTreeAsset treeAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/Lib/LibDebug/Log.uxml");
+        VisualElement logElement = treeAsset.CloneTree();
+
         ScrollView view = rootVisualElement.Q<ScrollView>("LogArea");
-        VisualElement logElement = _log.CloneTree();
+        
         view.Add(logElement);
         info.AddElement(logElement);
     }
@@ -192,6 +194,9 @@ public class DebugEditor : EditorWindow
         List<OutputData> outputs;
         int count = 0;
         VisualElement element;
+        bool isOpen = false;
+        ScrollView items;
+        VisualTreeAsset info;
 
         private LogInfo() { }
 
@@ -201,6 +206,7 @@ public class DebugEditor : EditorWindow
             this.line = line;
             this.user = user;
             outputs = new List<OutputData>();
+            info = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/Lib/LibDebug/Info.uxml");
         }
 
 
@@ -215,6 +221,7 @@ public class DebugEditor : EditorWindow
 
         public void Add(object output)
         {
+            count++;
             bool isSame = CheckIsSameOutputData(output,out OutputData data);
 
             data.AddCount();
@@ -222,6 +229,15 @@ public class DebugEditor : EditorWindow
             if(isSame == false)
             {
                 outputs.Add(data);
+            }
+            
+            if(isOpen == true)
+            {
+                VisualElement infoElement = info.CloneTree();
+                items.Add(infoElement);
+
+                Label label = infoElement.Q<Label>("Label");
+                label.text = data.output.ToString();
             }
         }
 
@@ -232,6 +248,7 @@ public class DebugEditor : EditorWindow
             old.clicked += ChangeViewOld;
             Button script = element.Q<Button>("script");
             script.clicked += OpenScript;
+            items = element.Q<ScrollView>("newItems");
         }
 
         private bool CheckIsSameOutputData(object output,out OutputData outputData)
@@ -259,7 +276,26 @@ public class DebugEditor : EditorWindow
 
         private void ChangeViewOld()
         {
+            if(isOpen == false)
+            {
+                //OpenEditor();
 
+                foreach(OutputData data in outputs)
+                {
+                    VisualElement infoElement = info.CloneTree();
+                    items.Add(infoElement);
+
+                    Label label = infoElement.Q<Label>("Label");
+                    label.text = data.output.ToString();
+                }
+            }
+            else
+            {
+                //CloseEditor();
+                items.Clear();
+            }
+
+            isOpen =! isOpen;
         }
 
         private void OpenScript()
@@ -271,7 +307,7 @@ public class DebugEditor : EditorWindow
         {
             int count = 0;
             int timing;
-            object output;
+            public object output { get; private set; }
 
             public OutputData(int timing, object output)
             {

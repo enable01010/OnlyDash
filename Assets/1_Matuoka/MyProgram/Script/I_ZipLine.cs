@@ -45,22 +45,22 @@ public partial class Player : SingletonActionListener<Player>
 
         // èÊÇËénÇﬂÇÈÇ∆Ç´ÇÃãóó£ä÷åW
         [SerializeField, ReadOnly] private float nearDistance = 0f;
-        [SerializeField] private float rideRange = 10f;
+        [SerializeField] private float rideRange = 3f;
 
         // åªç›égÇÌÇÍÇƒÇ¢Ç»Ç¢(SplineNearestPosíºèëÇ´)
         private Vector3 rideRangeCenterPos = new Vector3(0f, 1.2f, 0f);
         private Vector3 offsetRideRangeCenterPos;
 
         // çdíºéûä‘
-        [SerializeField] private float startWaitTime = 2f;
-        [SerializeField] private float endWaitTime = 2f;
+        [SerializeField] private float startWaitTime = 0.5f;
+        [SerializeField] private float endWaitTime = 0.5f;
         private float nowWaitTime = 0f;
 
         // speedä÷åW
-        [SerializeField] private float speed = 5f;
+        [SerializeField] private float speed = 15f;
         [SerializeField, ReadOnly] private float rideStopElapsedTime = 0f;
-        [SerializeField] private float stopTime = 1f;
-        [SerializeField] private float stopTimeRotSpeed = 1f;
+        [SerializeField] private float stopTime = 0.2f;
+        [SerializeField] private float stopTimeRotSpeed = 10f;
 
         // 
         [SerializeField, ReadOnly] private float nowRate;
@@ -69,13 +69,13 @@ public partial class Player : SingletonActionListener<Player>
         [SerializeField] private float edgeEndLength = 1f;
 
         // íÕÇﬁà íu
-        [SerializeField] private Vector3 playerHandPosition;
+        [SerializeField] private Vector3 playerHandPosition = new Vector3(0f, 1.45f, 0.15f);
         private Vector3 offsetPlayerPos;
 
         // 
         [SerializeField] private bool isFreezeRotation = false;
-        [SerializeField] private float jumpPowerY = 10f;
-        [SerializeField] private float jumpPowerXZ = 10f;
+        //[SerializeField] private float jumpPowerY = 10f;
+        //[SerializeField] private float jumpPowerXZ = 10f;
 
 
         [SerializeField] float JUMP_HIGHT = 2;

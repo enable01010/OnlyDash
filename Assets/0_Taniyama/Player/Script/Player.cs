@@ -190,6 +190,7 @@ public partial class Player : SingletonActionListener<Player>
         CameraRotation();
 
         zipLine.PlayerUpdate();
+        climbing.CanUseCheck();
 
 #if UNITY_EDITOR
         if (Input.GetKeyDown(KeyCode.Return))
@@ -440,7 +441,7 @@ public partial class Player : SingletonActionListener<Player>
     {
         if (GameData.G_AllCheck()) return;
         if (climbing.IsGuard() == true) return;
-        base.OnSlow(context);
+        base.OnClimbing(context);
 
         if (context.phase == InputActionPhase.Started)
         {

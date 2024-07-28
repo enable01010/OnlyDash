@@ -219,7 +219,6 @@ public class ButtonUIObj
     public void Move()
     {
         transform.MoveFocusTime(goalPos, ref moveTime);
-        Debug.Log("Move" + goalPos);
     }
 
     #region SpriteChange

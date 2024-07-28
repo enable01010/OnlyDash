@@ -50,8 +50,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   buttonUiDatas:
-  - {fileID: 11400000, guid: 325349cb816fab241b0f46c7c62de4d5, type: 2}
-  - {fileID: 11400000, guid: 0de2b35e66eeeb1479e1f064614a6725, type: 2}
+  - {fileID: 11400000, guid: 895cae1975888fd41abae4dc36257c5a, type: 2}
+  - {fileID: 11400000, guid: d2040efc29a227144a0bb8481f306b00, type: 2}
   spriteBase: {fileID: 7837013480433092918, guid: 04493d451b20f174da4204cdc30fce8d,
     type: 3}
   OBJ_VERTICAL_POS: 50

@@ -11,6 +11,7 @@ public class SplineNearestPos : MonoBehaviour
 
     // 入力位置のゲームオブジェクト
     [SerializeField, ReadOnly] private Transform inputObject;
+    private Vector3 offsetPos = new Vector3(0f, 1.2f, 0f);
 
     // 出力位置（直近位置）を反映するゲームオブジェクト
     [SerializeField] private Transform outputObject;
@@ -73,7 +74,7 @@ public class SplineNearestPos : MonoBehaviour
         // スプラインにおける直近位置を求める
         float dis = SplineUtility.GetNearestPoint(
             tempSpline,
-            inputObject.position,
+            inputObject.position + offsetPos,
             out float3 nearest,
             out float t,
             _resolution,

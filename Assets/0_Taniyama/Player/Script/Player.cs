@@ -595,6 +595,16 @@ public partial class Player : SingletonActionListener<Player>
 
     #region インターフェース呼び出し用関数
 
+    public void SetZipLineArea(ZipLineArea zipLineArea)
+    {
+        zipLine.AddArea(zipLineArea);
+    }
+
+    public void DeleteZipLineArea(ZipLineArea zipLineArea)
+    {
+        zipLine.DeleteArea(zipLineArea);
+    }
+
     public void SetWallArea(WallArea wallArea)
     {
         climbing.AddArea(wallArea);

@@ -17,8 +17,8 @@ public partial class Player : SingletonActionListener<Player>
         public void OnUpdate();
         public void OnExit();
 
-        //public void AddArea(WallArea wallArea);
-        //public void DeleteArea(WallArea wallArea);
+        public void AddArea(ZipLineArea zipLineArea);
+        public void DeleteArea(ZipLineArea zipLineArea);
     }
 
     [System.Serializable]
@@ -26,11 +26,13 @@ public partial class Player : SingletonActionListener<Player>
     {
         #region 変数
 
+        private List<ZipLineArea> zipLineAreaList = new List<ZipLineArea>();
+
         // Spline関係
-        private SplineNearestPos[] splinePos;// 各SplineのPlayerと一番近い位置
-        private SplineContainer[] splineContainer;// SplineのComponent
-        private SplinePath<Spline>[] splinePath;// わからない
-        private float[] splineLength;// Splineの長さ
+        //private SplineNearestPos[] splinePos;// 各SplineのPlayerと一番近い位置
+        //private SplineContainer[] splineContainer;// SplineのComponent
+        //private SplinePath<Spline>[] splinePath;// わからない
+        //private float[] splineLength;// Splineの長さ
 
         [SerializeField, ReadOnly] private int nearSplineNumber = 0;
         [SerializeField, ReadOnly] private SplineNearestPos nearSplinePos;
@@ -96,21 +98,21 @@ public partial class Player : SingletonActionListener<Player>
             offsetRideRangeCenterPos.y = rideRangeCenterPos.y * instance.transform.lossyScale.y;
             offsetRideRangeCenterPos.z = rideRangeCenterPos.z * instance.transform.lossyScale.z;
 
-            GameObject[] obj = GameObject.FindGameObjectsWithTag("ZipLine");
+            //GameObject[] obj = GameObject.FindGameObjectsWithTag("ZipLine");
 
-            splinePos = new SplineNearestPos[obj.Length];
-            splineContainer = new SplineContainer[obj.Length];
-            splinePath = new SplinePath<Spline>[obj.Length];
-            splineLength = new float[obj.Length];
+            //splinePos = new SplineNearestPos[obj.Length];
+            //splineContainer = new SplineContainer[obj.Length];
+            //splinePath = new SplinePath<Spline>[obj.Length];
+            //splineLength = new float[obj.Length];
 
-            for (int i = 0; i < obj.Length; i++)
-            {
-                splinePos[i] = obj[i].GetComponent<SplineNearestPos>();
+            //for (int i = 0; i < obj.Length; i++)
+            //{
+            //    splinePos[i] = obj[i].GetComponent<SplineNearestPos>();
 
-                splineContainer[i] = obj[i].GetComponentInChildren<SplineContainer>();
-                splinePath[i] = new SplinePath<Spline>(splineContainer[i].Splines);
-                splineLength[i] = splinePath[i].GetLength();
-            }
+            //    splineContainer[i] = obj[i].GetComponentInChildren<SplineContainer>();
+            //    splinePath[i] = new SplinePath<Spline>(splineContainer[i].Splines);
+            //    splineLength[i] = splinePath[i].GetLength();
+            //}
         }
 
         #endregion
@@ -140,21 +142,38 @@ public partial class Player : SingletonActionListener<Player>
         {
             nearDistance = Mathf.Infinity;
 
-            for (int i = 0; i < splinePos.Length; i++)
+            //for (int i = 0; i < splinePos.Length; i++)
+            //{
+            //    if (splinePos[i].distance < nearDistance)
+            //    {
+            //        nearDistance = splinePos[i].distance;
+            //        nearSplineNumber = i;
+            //    }
+            //}
+
+            //if (splinePos.Length != 0)
+            //{
+            //    nearSplinePos = splinePos[nearSplineNumber];
+            //    nearSplineContainer = splineContainer[nearSplineNumber];
+            //    nearSplinePath = splinePath[nearSplineNumber];
+            //    nearSplineLength = splineLength[nearSplineNumber];
+            //}
+
+            for (int i = 0; i < zipLineAreaList.Count; i++)
             {
-                if (splinePos[i].distance < nearDistance)
+                if (zipLineAreaList[i].splinePos.distance < nearDistance)
                 {
-                    nearDistance = splinePos[i].distance;
+                    nearDistance = zipLineAreaList[i].splinePos.distance;
                     nearSplineNumber = i;
                 }
             }
 
-            if (splinePos.Length != 0)
+            if (zipLineAreaList.Count != 0)
             {
-                nearSplinePos = splinePos[nearSplineNumber];
-                nearSplineContainer = splineContainer[nearSplineNumber];
-                nearSplinePath = splinePath[nearSplineNumber];
-                nearSplineLength = splineLength[nearSplineNumber];
+                nearSplinePos = zipLineAreaList[nearSplineNumber].splinePos;
+                nearSplineContainer = zipLineAreaList[nearSplineNumber].splineContainer;
+                nearSplinePath = zipLineAreaList[nearSplineNumber].splinePath;
+                nearSplineLength = zipLineAreaList[nearSplineNumber].splineLength;
             }
         }
 
@@ -372,6 +391,25 @@ public partial class Player : SingletonActionListener<Player>
 
         #endregion
 
+
+        #region AddArea
+
+        public virtual void AddArea(ZipLineArea zipLineArea)
+        {
+            zipLineAreaList.Add(zipLineArea);
+        }
+
+        #endregion
+
+
+        #region DeleteArea
+
+        public virtual void DeleteArea(ZipLineArea zipLineArea)
+        {
+            zipLineAreaList.Remove(zipLineArea);
+        }
+
+        #endregion
 
         #region Other
 

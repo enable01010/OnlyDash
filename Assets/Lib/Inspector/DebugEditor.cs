@@ -12,6 +12,8 @@ public class DebugEditor : EditorWindow
 {
     [SerializeField] private VisualTreeAsset _rootVisualTreeAsset;
     [SerializeField] private StyleSheet _rootStyleSheet;
+    [SerializeField] private VisualTreeAsset _log;
+    [SerializeField] private VisualTreeAsset _info;
     private List<LogInfo> logList;
     private List<string> rayList;
 
@@ -149,11 +151,14 @@ public class DebugEditor : EditorWindow
 
         bool isSame = CheckIsSameLogInfo(obj, filePath, line, user, out LogInfo info);
         info.Add(obj);
-
+        
         if (isSame == false)
         {
             logList.Add(info);
+            AddEditor(info);
         }
+
+        info.RefreshEditor(obj);
     }
 
     private bool CheckIsSameLogInfo(object output,string filePath,int line,DebugUser user ,out LogInfo info)
@@ -171,6 +176,14 @@ public class DebugEditor : EditorWindow
         return false;
     }
 
+    private void AddEditor(LogInfo info)
+    {
+        ScrollView view = rootVisualElement.Q<ScrollView>("LogArea");
+        VisualElement logElement = _log.CloneTree();
+        view.Add(logElement);
+        info.AddElement(logElement);
+    }
+
     public class LogInfo
     {
         string filePath;
@@ -178,6 +191,7 @@ public class DebugEditor : EditorWindow
         DebugUser user;
         List<OutputData> outputs;
         int count = 0;
+        VisualElement element;
 
         private LogInfo() { }
 
@@ -211,6 +225,15 @@ public class DebugEditor : EditorWindow
             }
         }
 
+        public void AddElement(VisualElement element)
+        {
+            this.element = element;
+            Button old = element.Q<Button>("old");
+            old.clicked += ChangeViewOld;
+            Button script = element.Q<Button>("script");
+            script.clicked += OpenScript;
+        }
+
         private bool CheckIsSameOutputData(object output,out OutputData outputData)
         {
             foreach(OutputData data in outputs)
@@ -224,6 +247,24 @@ public class DebugEditor : EditorWindow
 
             outputData = new OutputData(count, output);
             return false;
+        }
+
+        public void RefreshEditor(object obj)
+        {
+            Label output = element.Q<Label>("Message");
+            output.text = obj.ToString();
+            Label count = element.Q<Label>("Count");
+            count.text = this.count.ToString();
+        }
+
+        private void ChangeViewOld()
+        {
+
+        }
+
+        private void OpenScript()
+        {
+            UnityEditorInternal.InternalEditorUtility.OpenFileAtLineExternal(filePath,line);
         }
 
         public class OutputData

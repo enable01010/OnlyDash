@@ -44,7 +44,7 @@ PrefabInstance:
     - target: {fileID: 362905443229596479, guid: ac6b745bcf9cfeb4895b75d179581b50,
         type: 3}
       propertyPath: serializeData2.selectionData.maxConnectionDistance
-      value: 0.15414277
+      value: 0.15414278
       objectReference: {fileID: 0}
     - target: {fileID: 362905443229596479, guid: ac6b745bcf9cfeb4895b75d179581b50,
         type: 3}
@@ -1959,7 +1959,7 @@ PrefabInstance:
     - target: {fileID: 2277511047825791456, guid: ac6b745bcf9cfeb4895b75d179581b50,
         type: 3}
       propertyPath: serializeData2.selectionData.maxConnectionDistance
-      value: 0.23305401
+      value: 0.233054
       objectReference: {fileID: 0}
     - target: {fileID: 2277511047825791456, guid: ac6b745bcf9cfeb4895b75d179581b50,
         type: 3}
@@ -2973,6 +2973,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6881878722462646811, guid: ac6b745bcf9cfeb4895b75d179581b50,
         type: 3}
+      propertyPath: managedReferences[1002].speed
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 6881878722462646811, guid: ac6b745bcf9cfeb4895b75d179581b50,
+        type: 3}
       propertyPath: managedReferences[1003].ROT_SPEED
       value: 5
       objectReference: {fileID: 0}
@@ -2980,6 +2985,16 @@ PrefabInstance:
         type: 3}
       propertyPath: managedReferences[1003].ROT_OFFSET
       value: -90
+      objectReference: {fileID: 0}
+    - target: {fileID: 6881878722462646811, guid: ac6b745bcf9cfeb4895b75d179581b50,
+        type: 3}
+      propertyPath: managedReferences[1002].endWaitTime
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6881878722462646811, guid: ac6b745bcf9cfeb4895b75d179581b50,
+        type: 3}
+      propertyPath: managedReferences[1002].startWaitTime
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 6881878722462646811, guid: ac6b745bcf9cfeb4895b75d179581b50,
         type: 3}

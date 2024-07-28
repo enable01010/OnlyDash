@@ -1,4 +1,4 @@
-<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="True">
     <ui:VisualElement name="MenuGroup" style="flex-grow: 1; height: 66px; background-color: rgb(26, 26, 26); position: absolute; top: 2px; left: 2px; right: 2px;">
         <ui:Label tabindex="-1" text="Menu" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Menu" style="opacity: 1; height: 20px; font-size: 10px; position: absolute; top: -2px; right: 0; left: 0; background-color: rgb(94, 94, 94);" />
         <ui:Button text="Clear" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Clear" style="height: 37px; width: 118px; position: absolute; top: 21px; left: -1px;" />
@@ -14,6 +14,6 @@
     </ui:VisualElement>
     <ui:VisualElement name="ContentGroup" style="flex-grow: 1; background-color: rgb(26, 26, 26); position: absolute; top: 126px; left: 2px; right: 2px; bottom: 4px;">
         <ui:Label tabindex="-1" text="SelectedGroup" parse-escape-sequences="true" display-tooltip-when-elided="true" name="SelectedGroup" style="opacity: 1; height: 20px; font-size: 10px; position: absolute; top: 6px; right: 0; left: 1px; background-color: rgb(94, 94, 94);" />
-        <ui:ScrollView name="ScrollView" style="position: absolute; right: 5px; left: 4px; top: 38px; bottom: 5px; background-color: rgb(94, 94, 94);" />
+        <ui:ScrollView name="LogArea" style="position: absolute; right: 5px; left: 4px; top: 38px; bottom: 5px; background-color: rgb(94, 94, 94);" />
     </ui:VisualElement>
 </ui:UXML>

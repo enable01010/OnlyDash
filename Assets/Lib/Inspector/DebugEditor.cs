@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -6,15 +7,71 @@ using System.Security.Cryptography;
 using System.Threading;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Analytics;
 using UnityEngine.UIElements;
 
 public class DebugEditor : EditorWindow
 {
-    [SerializeField] private VisualTreeAsset _rootVisualTreeAsset;
-    [SerializeField] private StyleSheet _rootStyleSheet;
 
-    private List<LogInfo> logList;
+    #region UIBuilder
+
+    static private VisualTreeAsset rootVisualTreeAsset;
+    static private VisualTreeAsset logVisualTreeAsset;
+    static private VisualTreeAsset infoVisualTreeAsset;
+    static private StyleSheet rootStyleSheet;
+    ScrollView view;
+
+    static private VisualTreeAsset _rootVisualTreeAsset
+    {
+        get
+        {
+            if (rootVisualTreeAsset == null)
+                rootVisualTreeAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/Lib/LibDebug/Debug.uxml");
+
+            return rootVisualTreeAsset;
+        }
+    }
+
+    static private VisualTreeAsset _logVisualTreeAsset
+    {
+        get
+        {
+            if(logVisualTreeAsset == null) 
+                logVisualTreeAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/Lib/LibDebug/Log.uxml");
+
+            return logVisualTreeAsset;
+        }
+    }
+
+    static private VisualTreeAsset _infoVisualTreeAsset
+    {
+        get
+        {
+            if (infoVisualTreeAsset == null)
+                infoVisualTreeAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/Lib/LibDebug/Info.uxml");
+
+            return infoVisualTreeAsset;
+        }
+    }
+
+    static private StyleSheet _rootStyleSheet
+    {
+        get
+        {
+            if (rootStyleSheet == null)
+                rootStyleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/Lib/LibDebug/Debug.uxml");
+
+            return rootStyleSheet;
+        }
+    }
+
+    #endregion
+
+    private List<LogInfo> logList = new List<LogInfo>();
     private List<string> rayList;
+
+    DebugUser user = DebugUser.All;
+    DebugWindowMenu menu = DebugWindowMenu.Log;
 
     #region 描画更新
 
@@ -38,12 +95,7 @@ public class DebugEditor : EditorWindow
         //リストの設定
         ListSetting();
     }
-
-    private void RefreshWindow()
-    {
-
-    }
-
+    
     #endregion
 
     #region 初期設定
@@ -52,6 +104,8 @@ public class DebugEditor : EditorWindow
     {
         _rootVisualTreeAsset.CloneTree(rootVisualElement);
         rootVisualElement.styleSheets.Add(_rootStyleSheet);
+
+        view = rootVisualElement.Q<ScrollView>("LogArea");
     }
 
     private void ButtonSetting()
@@ -89,7 +143,13 @@ public class DebugEditor : EditorWindow
 
     private void ClearButtonOnClick()
     {
-        UnityEngine.Debug.Log("クリアボタンが押されたよ");
+        ViewReset();
+        switch(menu)
+        {
+            case DebugWindowMenu.Log:
+                logList.Clear();
+                break;
+        }
     }
 
 
@@ -111,27 +171,42 @@ public class DebugEditor : EditorWindow
     private void AllButtonClick()
     {
         UnityEngine.Debug.Log("オールボタンが押されたよ");
+        ViewReset();
+        user = DebugUser.All;
+        LogVeiw();
     }
 
     private void TaniButtonOnClick()
     {
         UnityEngine.Debug.Log("谷ボタンが押されたよ");
+        ViewReset();
+        user = DebugUser.Taniyama;
+        LogVeiw();
     }
 
     private void MathuButtonOnClick()
     {
         UnityEngine.Debug.Log("松ボタンが押されたよ");
+        ViewReset();
+        user = DebugUser.Matuoka;
+        LogVeiw();
     }
 
     #endregion
 
     #region Libデバックから呼び出す用
 
-    public void Log(object obj,DebugUser user, [CallerFilePath] string filePath = "", [CallerLineNumber] int line = 0)
+    public void Log(object obj,DebugUser user)
     {
 #if UNITY_EDITOR
+        const int LAPPER_COUNT = 2;//呼び出し関数→LibDebug.Log→ここ
+
+        //呼び出し元情報の調整
+        StackFrame caller = new StackFrame(LAPPER_COUNT, true);
+        string filePath = caller.GetFileName();
+        int line = caller.GetFileLineNumber();
+
         LogListUpdate(obj, filePath, line, user);
-        RefreshWindow();
 #endif
     }
 
@@ -148,16 +223,17 @@ public class DebugEditor : EditorWindow
     {
         if (logList == null) return;
 
+        //リストの更新
         bool isSame = CheckIsSameLogInfo(obj, filePath, line, user, out LogInfo info);
         info.Add(obj);
-        
-        if (isSame == false)
-        {
-            logList.Add(info);
-            AddEditor(info);
-        }
+        if (isSame == false) logList.Add(info);
 
-        info.RefreshEditor(obj);
+        //見た目の更新
+        if(menu == DebugWindowMenu.Log)
+        {   
+            if(isSame == false && info.CheckOutputUser(user) == true) AddEditor(info);
+            if (info.CheckOutputUser(user) == true) info.RefreshEditor(obj);
+        }
     }
 
     private bool CheckIsSameLogInfo(object output,string filePath,int line,DebugUser user ,out LogInfo info)
@@ -177,11 +253,7 @@ public class DebugEditor : EditorWindow
 
     private void AddEditor(LogInfo info)
     {
-        VisualTreeAsset treeAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/Lib/LibDebug/Log.uxml");
-        VisualElement logElement = treeAsset.CloneTree();
-
-        ScrollView view = rootVisualElement.Q<ScrollView>("LogArea");
-        
+        VisualElement logElement = DebugEditor._logVisualTreeAsset.CloneTree();
         view.Add(logElement);
         info.AddElement(logElement);
     }
@@ -190,13 +262,13 @@ public class DebugEditor : EditorWindow
     {
         string filePath;
         int line;
+        object lastObj;
         DebugUser user;
         List<OutputData> outputs;
         int count = 0;
         VisualElement element;
         bool isOpen = false;
         ScrollView items;
-        VisualTreeAsset info;
 
         private LogInfo() { }
 
@@ -206,7 +278,6 @@ public class DebugEditor : EditorWindow
             this.line = line;
             this.user = user;
             outputs = new List<OutputData>();
-            info = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/Lib/LibDebug/Info.uxml");
         }
 
 
@@ -233,7 +304,7 @@ public class DebugEditor : EditorWindow
             
             if(isOpen == true)
             {
-                VisualElement infoElement = info.CloneTree();
+                VisualElement infoElement = DebugEditor._infoVisualTreeAsset.CloneTree();
                 items.Add(infoElement);
 
                 Label label = infoElement.Q<Label>("Label");
@@ -268,8 +339,17 @@ public class DebugEditor : EditorWindow
 
         public void RefreshEditor(object obj)
         {
+            lastObj = obj;
             Label output = element.Q<Label>("Message");
             output.text = obj.ToString();
+            Label count = element.Q<Label>("Count");
+            count.text = this.count.ToString();
+        }
+
+        public void RefreshEditor()
+        {
+            Label output = element.Q<Label>("Message");
+            output.text = lastObj.ToString();
             Label count = element.Q<Label>("Count");
             count.text = this.count.ToString();
         }
@@ -282,7 +362,7 @@ public class DebugEditor : EditorWindow
 
                 foreach(OutputData data in outputs)
                 {
-                    VisualElement infoElement = info.CloneTree();
+                    VisualElement infoElement = DebugEditor._infoVisualTreeAsset.CloneTree();
                     items.Add(infoElement);
 
                     Label label = infoElement.Q<Label>("Label");
@@ -301,6 +381,12 @@ public class DebugEditor : EditorWindow
         private void OpenScript()
         {
             UnityEditorInternal.InternalEditorUtility.OpenFileAtLineExternal(filePath,line);
+        }
+
+        public bool CheckOutputUser(DebugUser user)
+        {
+            if (user == DebugUser.All) return true;
+            return this.user == user;
         }
 
         public class OutputData
@@ -328,4 +414,30 @@ public class DebugEditor : EditorWindow
     }
 
     #endregion
+
+    #region 全体的に使う関数
+
+    private void ViewReset()
+    {
+        view.Clear();
+    }
+
+    private void LogVeiw()
+    {
+        foreach(LogInfo log in logList)
+        {
+            if (log.CheckOutputUser(user) == false) continue;
+            AddEditor(log);
+            log.RefreshEditor();
+        }
+    }
+
+    #endregion
+}
+
+public enum DebugWindowMenu
+{
+    Log,
+    Ray,
+    Method,
 }

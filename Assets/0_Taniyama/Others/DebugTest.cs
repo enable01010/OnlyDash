@@ -15,27 +15,21 @@ public class DebugTest : MonoBehaviour
 
     void Update()
     {
-        if(Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Space))
         {
 #if UNITY_EDITOR
-            DebugEditor window = (DebugEditor)EditorWindow.GetWindow(typeof(DebugEditor), false,null,false);
-            if (window != null)
-            {
-                i++;
-                window.Log(i+"‰ñ‰Ÿ‚³‚ê‚½‚æ",DebugUser.Taniyama);
-            }
+
+            i++;
+            LibDebug.Log(i + "Mtuoka", DebugUser.Matuoka);
+
 #endif
         }
 
         if (Input.GetKeyDown(KeyCode.Return))
         {
 #if UNITY_EDITOR
-            DebugEditor window = (DebugEditor)EditorWindow.GetWindow(typeof(DebugEditor), false, null, false);
-            if (window != null)
-            {
-                j++;
-                window.Log(j + "‰ñ‰Ÿ‚³‚ê‚½‚æ!", DebugUser.Taniyama);
-            }
+            j++;
+            LibDebug.Log(j + "Taniyama", DebugUser.Taniyama);
 #endif
         }
     }

@@ -2,76 +2,64 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
+using System;
+using UnityEditor.PackageManager.UI;
 
-public class LibDebugModule : MonoBehaviour
-{
-    [SerializeField] public DebugUser outputs;
-    public void Log(string text, DebugUser user)
-    {
-        int flag = (int)user & (int)outputs;
-        if (flag != 0)
-        {
-            Debug.Log(user.ToString() + ":" + text);
-        }
-    }
-}
-
-#if UNITY_EDITOR
-[CustomEditor(typeof(LibDebugModule))]
-public class LibDebugEditor : Editor
-{
-    public override void OnInspectorGUI()
-    {
-        LibDebugModule libDebug = target as LibDebugModule;
-
-        libDebug.outputs =
-            (DebugUser)EditorGUILayout.EnumMaskField("ï\é¶Ç∑ÇÈÉçÉO", libDebug.outputs);
-    }
-}
-#endif
 public class LibDebug
 {
-    private static LibDebug instance
-    {
-        get
-        {
-            if (m_Instance == null)
-            {
-                m_Instance = new LibDebug();
-            }
-            return m_Instance;
-        }
+
+    static private DebugEditor _window;
+    static private DebugEditor window 
+    { get 
+        { 
+            if (_window == null) 
+                _window = (DebugEditor)EditorWindow.GetWindow(typeof(DebugEditor), false, null, false);
+            return _window; 
+        } 
     }
 
-    private static LibDebug m_Instance;
-    LibDebugModule obj;
-
-    private LibDebug()
-    {
-        GameObject pref = (GameObject)Resources.Load("Prefabs/DebugModule");
-        obj = GameObject.Instantiate(pref).GetComponent<LibDebugModule>();
-        GameObject.DontDestroyOnLoad(pref);
-    }
-
-    private void DellLog(string text, DebugUser user)
-    {
-        obj.Log(text, user);
-    }
-
-
-    public static void Log(string text, DebugUser user)
+    static public void ButtonLog(object obj, Action action, bool isStopAndView = false)
     {
 #if UNITY_EDITOR
+        //window.AddButtonLog(obj, action);
 
-        instance.DellLog(text, user);
+        if (isStopAndView == true) StopAndView();
 #endif
     }
 
+    static public void LogIf(object obj, DebugUser user, Func<bool> whenUse, bool isStopAndView = false)
+    {
+#if UNITY_EDITOR
+        if (whenUse.Invoke() == false) return;
+
+        window.Log(obj, user);
+
+        if (isStopAndView == true) StopAndView();
+#endif
+    }
+
+    static public void Log(object obj, DebugUser user,bool isStopAndView = false)
+    {
+#if UNITY_EDITOR
+        window.Log(obj, user);
+
+        if (isStopAndView == true) StopAndView();
+#endif
+    }
+
+    static private void StopAndView()
+    {
+#if UNITY_EDITOR
+        EditorWindow.GetWindow(typeof(DebugEditor));
+        UnityEditor.EditorApplication.isPaused = true;
+#endif
+    }
 
 }
 
 public enum DebugUser
 {
-    Taniyama = 1 << 0,
-    Matuoka = 1 << 1,
+    All,
+    Taniyama,
+    Matuoka,
 }

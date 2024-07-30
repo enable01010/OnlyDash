@@ -2,14 +2,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 
 public class DebugTest : MonoBehaviour
 {
 
     void Start()
     {
-        
+        LibDebug.ButtonLog("テスト",() => Debug.Log("ボタンが押されたよ"),DebugUser.Taniyama);
+        LibDebug.ButtonLog("テスト", () => Debug.Log("ボタンが押されたよ"), DebugUser.Taniyama);
+        LibDebug.ButtonLog("テスト", () => Debug.Log("ボタンが押されたよ"), DebugUser.Taniyama);
     }
+
     int i;
     int j;
 

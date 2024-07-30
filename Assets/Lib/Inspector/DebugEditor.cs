@@ -9,6 +9,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.Analytics;
 using UnityEngine.UIElements;
+using static UnityEditor.Rendering.FilterWindow;
 
 public class DebugEditor : EditorWindow
 {
@@ -18,6 +19,7 @@ public class DebugEditor : EditorWindow
     static private VisualTreeAsset rootVisualTreeAsset;
     static private VisualTreeAsset logVisualTreeAsset;
     static private VisualTreeAsset infoVisualTreeAsset;
+    static private VisualTreeAsset buttonVisualTreeAsset;
     static private StyleSheet rootStyleSheet;
     ScrollView view;
 
@@ -54,6 +56,17 @@ public class DebugEditor : EditorWindow
         }
     }
 
+    static private VisualTreeAsset _buttonVisualTreeAsset
+    {
+        get
+        {
+            if (buttonVisualTreeAsset == null)
+                buttonVisualTreeAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/Lib/LibDebug/Button.uxml");
+
+            return buttonVisualTreeAsset;
+        }
+    }
+
     static private StyleSheet _rootStyleSheet
     {
         get
@@ -69,6 +82,7 @@ public class DebugEditor : EditorWindow
 
     private List<LogInfo> logList = new List<LogInfo>();
     private List<string> rayList;
+    private List<ButtonInfo> buttonList = new List<ButtonInfo>();
 
     DebugUser user = DebugUser.All;
     DebugWindowMenu menu = DebugWindowMenu.Log;
@@ -100,8 +114,10 @@ public class DebugEditor : EditorWindow
 
     #region 初期設定
 
-    private void SheetSetting()
+    public void SheetSetting()
     {
+        if (view != null) return;
+
         _rootVisualTreeAsset.CloneTree(rootVisualElement);
         rootVisualElement.styleSheets.Add(_rootStyleSheet);
 
@@ -144,52 +160,57 @@ public class DebugEditor : EditorWindow
     private void ClearButtonOnClick()
     {
         ViewReset();
-        switch(menu)
+        Action action = menu switch
         {
-            case DebugWindowMenu.Log:
-                logList.Clear();
-                break;
-        }
+            DebugWindowMenu.Log => () => logList.Clear(),
+            DebugWindowMenu.Ray => () => rayList.Clear(),
+            DebugWindowMenu.Method => () => buttonList.Clear(),
+            _ => () => { }
+        };
+        action.Invoke();
     }
 
 
     private void LogButtonOnClick()
     {
-        UnityEngine.Debug.Log("ログボタンが押されたよ");
+        ViewReset();
+        menu = DebugWindowMenu.Log;
+        ViewUpdate();
     }
 
     private void RayButtonOnClick()
     {
-        UnityEngine.Debug.Log("レイボタンが押されたよ");
+        ViewReset();
+        menu = DebugWindowMenu.Ray;
+        ViewUpdate();
     }
 
     private void MethodButtonOnClick()
     {
-        UnityEngine.Debug.Log("メソッドボタンが押されたよ");
+        ViewReset();
+        menu = DebugWindowMenu.Method;
+        ViewUpdate();
     }
 
     private void AllButtonClick()
     {
-        UnityEngine.Debug.Log("オールボタンが押されたよ");
         ViewReset();
         user = DebugUser.All;
-        LogVeiw();
+        ViewUpdate();
     }
 
     private void TaniButtonOnClick()
     {
-        UnityEngine.Debug.Log("谷ボタンが押されたよ");
         ViewReset();
         user = DebugUser.Taniyama;
-        LogVeiw();
+        ViewUpdate();
     }
 
     private void MathuButtonOnClick()
     {
-        UnityEngine.Debug.Log("松ボタンが押されたよ");
         ViewReset();
         user = DebugUser.Matuoka;
-        LogVeiw();
+        ViewUpdate();
     }
 
     #endregion
@@ -199,20 +220,29 @@ public class DebugEditor : EditorWindow
     public void Log(object obj,DebugUser user)
     {
 #if UNITY_EDITOR
-        const int LAPPER_COUNT = 2;//呼び出し関数→LibDebug.Log→ここ
+        const int LAPPER_COUNT = 3;//呼び出し関数→LibDebug.Log→ここ
 
         //呼び出し元情報の調整
-        StackFrame caller = new StackFrame(LAPPER_COUNT, true);
-        string filePath = caller.GetFileName();
-        int line = caller.GetFileLineNumber();
+        (String filePath, int line) methodData = GetMethodData(LAPPER_COUNT);
 
-        LogListUpdate(obj, filePath, line, user);
+        LogListUpdate(obj, methodData.filePath, methodData.line, user);
 #endif
     }
 
     public void Ray()
     {
 
+    }
+
+    public void Button(object obj,Action action,DebugUser user)
+    {
+#if UNITY_EDITOR
+        const int LAPPER_COUNT = 3;//呼び出し関数→LibDebug.ButtonLog→ここ
+
+        (String filePath, int line) methodData = GetMethodData(LAPPER_COUNT);
+
+        ButtonListUpdate(obj,action,user, methodData.filePath, methodData.line);
+#endif
     }
 
     #endregion
@@ -231,7 +261,7 @@ public class DebugEditor : EditorWindow
         //見た目の更新
         if(menu == DebugWindowMenu.Log)
         {   
-            if(isSame == false && info.CheckOutputUser(user) == true) AddEditor(info);
+            if(isSame == false && info.CheckOutputUser(user) == true) AddEditor_Log(info);
             if (info.CheckOutputUser(user) == true) info.RefreshEditor(obj);
         }
     }
@@ -251,7 +281,7 @@ public class DebugEditor : EditorWindow
         return false;
     }
 
-    private void AddEditor(LogInfo info)
+    private void AddEditor_Log(LogInfo info)
     {
         VisualElement logElement = DebugEditor._logVisualTreeAsset.CloneTree();
         view.Add(logElement);
@@ -415,6 +445,91 @@ public class DebugEditor : EditorWindow
 
     #endregion
 
+    #region Button関係のprivate
+
+    private void ButtonListUpdate(object obj,Action action,DebugUser user,string filePath,int line)
+    {
+        if (buttonList == null) return;
+
+        //リストの更新
+        bool isSame = CheckIsSameButtonInfo(obj, action,user,filePath, line, out ButtonInfo info);
+        if (isSame == false) buttonList.Add(info);
+
+        //見た目の更新
+        if (menu == DebugWindowMenu.Method)
+        {
+            if (isSame == false && info.CheckOutputUser(user) == true) AddEditor_Button(info);
+        }
+    }
+    
+    private bool CheckIsSameButtonInfo(object obj, Action action, DebugUser user, string filePath, int line,out ButtonInfo info)
+    {
+        foreach (ButtonInfo buttonInfo in buttonList)
+        {
+            if (buttonInfo.GetIsSameGroup(filePath, line) == true)
+            {
+                info = buttonInfo;
+                return true;
+            }
+        }
+
+        info = new ButtonInfo(obj,action, user, filePath, line);
+        return false;
+    }
+
+    private void AddEditor_Button(ButtonInfo info)
+    {
+        VisualElement logElement = DebugEditor._buttonVisualTreeAsset.CloneTree();
+        view.Add(logElement);
+        info.AddElement(logElement);
+    }
+
+    public class ButtonInfo
+    {
+        object obj;
+        Action action;
+        DebugUser user;
+        string filePath;
+        int line;
+        
+        private ButtonInfo() { }
+        public ButtonInfo(object obj, Action action, DebugUser user, string filePath, int line)
+        {
+            this.obj = obj;
+            this.action = action;
+            this.user = user;
+            this.filePath = filePath;
+            this.line = line;
+        }
+        
+        public bool GetIsSameGroup(string filePath,int line)
+        {
+            return (this.filePath.Equals(filePath) && this.line == line);
+        }
+
+        public bool CheckOutputUser(DebugUser user)
+        {
+            if (user == DebugUser.All) return true;
+            return this.user == user;
+        }
+
+        public void AddElement(VisualElement logElement)
+        {
+            Button actionButton = logElement.Q<Button>("action");
+            actionButton.clicked += action;
+            actionButton.text = obj.ToString();
+            Button script = logElement.Q<Button>("script");
+            script.clicked += OpenScript;
+        }
+
+        private void OpenScript()
+        {
+            UnityEditorInternal.InternalEditorUtility.OpenFileAtLineExternal(filePath, line);
+        }
+    }
+
+    #endregion
+
     #region 全体的に使う関数
 
     private void ViewReset()
@@ -422,16 +537,53 @@ public class DebugEditor : EditorWindow
         view.Clear();
     }
 
+    private void ViewUpdate()
+    {
+        Action action = menu switch
+        {
+            DebugWindowMenu.Log => LogVeiw,
+            DebugWindowMenu.Ray => RayVeiw,
+            DebugWindowMenu.Method => MethodView,
+            _ => () => { }
+        };
+
+        action.Invoke();
+    }
+
     private void LogVeiw()
     {
         foreach(LogInfo log in logList)
         {
             if (log.CheckOutputUser(user) == false) continue;
-            AddEditor(log);
+            AddEditor_Log(log);
             log.RefreshEditor();
         }
     }
 
+    private void RayVeiw()
+    {
+
+    }
+
+    private void MethodView()
+    {
+        foreach (ButtonInfo log in buttonList)
+        {
+            if (log.CheckOutputUser(user) == false) continue;
+            AddEditor_Button(log);
+            log.AddElement(view);
+        }
+    }
+
+    private (string filePath,int line) GetMethodData(int before)
+    {
+        //呼び出し元情報の調整
+        StackFrame caller = new StackFrame(before, true);
+        string filePath = caller.GetFileName();
+        int line = caller.GetFileLineNumber();
+
+        return (filePath, line);
+    }
     #endregion
 }
 

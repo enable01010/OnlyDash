@@ -5,7 +5,6 @@ using UnityEngine.Splines;
 
 public class ZipLineArea : MonoBehaviour
 {
-    //[field: SerializeField] public SplineContainer _spline { get; private set; }
     public SplineNearestPos splinePos { get; private set; }// ŠeSpline‚ÌPlayer‚Æˆê”Ô‹ß‚¢ˆÊ’u
     public SplineContainer splineContainer { get; private set; }// Spline‚ÌComponent
     public SplinePath<Spline> splinePath { get; private set; }// ‚í‚©‚ç‚È‚¢
@@ -21,6 +20,7 @@ public class ZipLineArea : MonoBehaviour
         splineLength = splinePath.GetLength();
     }
 
+
     private void OnTriggerEnter(Collider other)
     {
         if (other.TryGetComponent<Player>(out Player player))
@@ -28,6 +28,7 @@ public class ZipLineArea : MonoBehaviour
             player.SetZipLineArea(this);
         }
     }
+
 
     private void OnTriggerExit(Collider other)
     {

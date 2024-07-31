@@ -26,14 +26,8 @@ public partial class Player : SingletonActionListener<Player>
     {
         #region 変数
 
-        private List<ZipLineArea> zipLineAreaList = new List<ZipLineArea>();
-
         // Spline関係
-        //private SplineNearestPos[] splinePos;// 各SplineのPlayerと一番近い位置
-        //private SplineContainer[] splineContainer;// SplineのComponent
-        //private SplinePath<Spline>[] splinePath;// わからない
-        //private float[] splineLength;// Splineの長さ
-
+        [SerializeField, ReadOnly] private List<ZipLineArea> zipLineAreaList = new List<ZipLineArea>();
         [SerializeField, ReadOnly] private int nearSplineNumber = 0;
         [SerializeField, ReadOnly] private SplineNearestPos nearSplinePos;
         [SerializeField, ReadOnly] private SplineContainer nearSplineContainer;
@@ -71,8 +65,7 @@ public partial class Player : SingletonActionListener<Player>
         [SerializeField] private float edgeEndLength = 1f;
 
         // 掴む位置
-        [SerializeField] private Vector3 playerHandPosition = new Vector3(0f, 1.45f, 0.15f);
-        private Vector3 offsetPlayerPos;
+        [SerializeField] private Vector3 playerHandPosition = new Vector3(0f, 1.62f, 0.15f);
 
         // 
         [SerializeField] private bool isFreezeRotation = false;
@@ -82,6 +75,15 @@ public partial class Player : SingletonActionListener<Player>
 
         [SerializeField] float JUMP_HIGHT = 2;
 
+
+        //IK用変数
+        [SerializeField] Vector3 RIGHT_HAND = new Vector3(-1.3f, 5f, 4f);
+        [SerializeField] Vector3 LEFT_HAND = new Vector3(1.3f, 5f, 4f);
+        [SerializeField] Vector3 RIGHT_LEG = new Vector3(0.06f, -1.15f, 0f);
+        [SerializeField] Vector3 LEF_LEGD = new Vector3(-0.06f, -1.2f, 0f);
+
+
+
         #endregion
 
 
@@ -90,29 +92,9 @@ public partial class Player : SingletonActionListener<Player>
         public virtual void PlayerStart()
         {
             // 途中で大きさ変わらないならStart
-            offsetPlayerPos.x = playerHandPosition.x * instance.transform.lossyScale.x;
-            offsetPlayerPos.y = playerHandPosition.y * instance.transform.lossyScale.y;
-            offsetPlayerPos.z = playerHandPosition.z * instance.transform.lossyScale.z;
-
             offsetRideRangeCenterPos.x = rideRangeCenterPos.x * instance.transform.lossyScale.x;
             offsetRideRangeCenterPos.y = rideRangeCenterPos.y * instance.transform.lossyScale.y;
             offsetRideRangeCenterPos.z = rideRangeCenterPos.z * instance.transform.lossyScale.z;
-
-            //GameObject[] obj = GameObject.FindGameObjectsWithTag("ZipLine");
-
-            //splinePos = new SplineNearestPos[obj.Length];
-            //splineContainer = new SplineContainer[obj.Length];
-            //splinePath = new SplinePath<Spline>[obj.Length];
-            //splineLength = new float[obj.Length];
-
-            //for (int i = 0; i < obj.Length; i++)
-            //{
-            //    splinePos[i] = obj[i].GetComponent<SplineNearestPos>();
-
-            //    splineContainer[i] = obj[i].GetComponentInChildren<SplineContainer>();
-            //    splinePath[i] = new SplinePath<Spline>(splineContainer[i].Splines);
-            //    splineLength[i] = splinePath[i].GetLength();
-            //}
         }
 
         #endregion
@@ -141,23 +123,6 @@ public partial class Player : SingletonActionListener<Player>
         private void NearZipLineUpdate()
         {
             nearDistance = Mathf.Infinity;
-
-            //for (int i = 0; i < splinePos.Length; i++)
-            //{
-            //    if (splinePos[i].distance < nearDistance)
-            //    {
-            //        nearDistance = splinePos[i].distance;
-            //        nearSplineNumber = i;
-            //    }
-            //}
-
-            //if (splinePos.Length != 0)
-            //{
-            //    nearSplinePos = splinePos[nearSplineNumber];
-            //    nearSplineContainer = splineContainer[nearSplineNumber];
-            //    nearSplinePath = splinePath[nearSplineNumber];
-            //    nearSplineLength = splineLength[nearSplineNumber];
-            //}
 
             for (int i = 0; i < zipLineAreaList.Count; i++)
             {
@@ -276,6 +241,7 @@ public partial class Player : SingletonActionListener<Player>
 
             MoveRotation();
             MovePos();
+            MoveIKPos();
         }
 
         private bool EdgeEndLengthCheck()
@@ -353,15 +319,28 @@ public partial class Player : SingletonActionListener<Player>
 
         private Vector3 OffsetPlayerPos()
         {
-            float rotX = instance.transform.localEulerAngles.x;
-            float rotY = instance.transform.localEulerAngles.y;
-            float rotZ = instance.transform.localEulerAngles.z;
+            Quaternion rot = Quaternion.Euler(instance.transform.localEulerAngles);
 
-            Quaternion rot = Quaternion.Euler(rotX, rotY, rotZ);
+            Vector3 offsetPlayerPos;
+            offsetPlayerPos.x = playerHandPosition.x * instance.transform.lossyScale.x;
+            offsetPlayerPos.y = playerHandPosition.y * instance.transform.lossyScale.y;
+            offsetPlayerPos.z = playerHandPosition.z * instance.transform.lossyScale.z;
+
+            
             return rot * offsetPlayerPos;
         }
 
+        private void MoveIKPos()
+        {
+            Quaternion rot = Quaternion.Euler(instance.transform.localEulerAngles);
 
+            Vector3 temp = instance.transform.position + OffsetPlayerPos();
+
+            instance.rightHandIKPosition = (Vector3.zero == RIGHT_HAND) ? Vector3.zero : temp + rot * RIGHT_HAND;
+            instance.leftHandIKPosition = (Vector3.zero == LEFT_HAND) ? Vector3.zero : temp + rot * LEFT_HAND;
+            instance.rightLegIKPosition = (Vector3.zero == RIGHT_LEG) ? Vector3.zero : temp + rot * RIGHT_LEG;
+            instance.leftLegIKPosition = (Vector3.zero == LEF_LEGD) ? Vector3.zero : temp + rot * LEF_LEGD;
+        }
 
         #endregion
 
@@ -410,6 +389,7 @@ public partial class Player : SingletonActionListener<Player>
         }
 
         #endregion
+
 
         #region Other
 

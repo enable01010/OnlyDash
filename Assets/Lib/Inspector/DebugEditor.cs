@@ -299,7 +299,9 @@ public class DebugEditor : EditorWindow
         VisualElement element;
         bool isOpen = false;
         ScrollView items;
-
+        bool colorSwitcher = false;
+        Color WHITE = new Color(75 / 255f, 75 / 255f, 75 / 255f, 75 / 255f);
+        Color BLACK = new Color(50 / 255f, 50 / 255f, 50 / 255f, 255 / 255f);
         private LogInfo() { }
 
         public LogInfo(string filePath,int line,DebugUser user)
@@ -339,6 +341,7 @@ public class DebugEditor : EditorWindow
 
                 Label label = infoElement.Q<Label>("Label");
                 label.text = data.output.ToString();
+                label.style.backgroundColor = data.myColor;
             }
         }
 
@@ -363,7 +366,9 @@ public class DebugEditor : EditorWindow
                 }
             }
 
-            outputData = new OutputData(count, output);
+            Color col = (colorSwitcher) ? WHITE : BLACK;
+            colorSwitcher = !colorSwitcher;
+            outputData = new OutputData(count, output, col);
             return false;
         }
 
@@ -397,6 +402,7 @@ public class DebugEditor : EditorWindow
 
                     Label label = infoElement.Q<Label>("Label");
                     label.text = data.output.ToString();
+                    label.style.backgroundColor = data.myColor;
                 }
             }
             else
@@ -421,14 +427,18 @@ public class DebugEditor : EditorWindow
 
         public class OutputData
         {
+            
+            public Color myColor { get; private set; }
             int count = 0;
             int timing;
+            
             public object output { get; private set; }
 
-            public OutputData(int timing, object output)
+            public OutputData(int timing, object output,Color col)
             {
                 this.timing = timing;
                 this.output = output;
+                myColor = col;
             }
 
             public bool GetIsSmaeOutput(object output)

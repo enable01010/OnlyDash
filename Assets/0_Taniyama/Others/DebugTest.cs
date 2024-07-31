@@ -19,12 +19,14 @@ public class DebugTest : MonoBehaviour
 
     void Update()
     {
+        LibDebug.LogIf("if‚¾‚æ", DebugUser.Matuoka ,() => Input.GetKey(KeyCode.A));
+
         if (Input.GetKeyDown(KeyCode.Space))
         {
 #if UNITY_EDITOR
 
             i++;
-            LibDebug.Log(i + "Mtuoka", DebugUser.Matuoka);
+            LibDebug.Log(i + "Mtuoka\naaaa", DebugUser.Matuoka);
 
 #endif
         }

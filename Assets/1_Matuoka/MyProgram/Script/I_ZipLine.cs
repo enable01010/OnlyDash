@@ -78,7 +78,7 @@ public partial class Player : SingletonActionListener<Player>
 
         //IKópïœêî
         [SerializeField] Vector3 RIGHT_HAND = new Vector3(-1.3f, 5f, 4f);
-        [SerializeField] Vector3 LEFT_HAND = new Vector3(1.3f, 5f, 4f);
+        [SerializeField] Vector3 LEFT_HAND = new Vector3(1f, 5f, 3f);
         [SerializeField] Vector3 RIGHT_LEG = new Vector3(0.06f, -1.15f, 0f);
         [SerializeField] Vector3 LEF_LEGD = new Vector3(-0.06f, -1.2f, 0f);
 
@@ -284,7 +284,9 @@ public partial class Player : SingletonActionListener<Player>
             instance.transform.RotFocusSpeed(MoveQuaternion(), stopTimeRotSpeed);
 
             instance.transform.MoveFocusTime((Vector3)nearSplineContainer.EvaluatePosition(nearSplinePath, nowRate) - OffsetPlayerPos(), ref rideStopElapsedTime);
-            
+
+            MoveIKPos();
+
             return false;
         }
 
@@ -355,9 +357,17 @@ public partial class Player : SingletonActionListener<Player>
 
             nowWaitTime = endWaitTime;
             LibButtonUIInfoManager.RemoveIcon(ButtonType.ZipLine);
-            
 
+            //IKPosReset();
             EndZipLineJump();
+        }
+
+        private void IKPosReset()
+        {
+            instance.rightHandIKPosition = Vector3.zero;
+            instance.leftHandIKPosition = Vector3.zero;
+            instance.rightLegIKPosition = Vector3.zero;
+            instance.leftLegIKPosition = Vector3.zero;
         }
 
         private void EndZipLineJump()

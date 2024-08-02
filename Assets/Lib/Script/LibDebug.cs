@@ -38,6 +38,17 @@ public class LibDebug:Singleton<LibDebug>
 #endif
     }
 
+    static public void LogIf(object obj, DebugUser user, bool whenUse, bool isStopAndView = false)
+    {
+#if UNITY_EDITOR
+        if (whenUse == false) return;
+
+        instance.window.Log(obj, user);
+
+        if (isStopAndView == true) StopAndView();
+#endif
+    }
+
     static public void Log(object obj, DebugUser user,bool isStopAndView = false)
     {
 #if UNITY_EDITOR

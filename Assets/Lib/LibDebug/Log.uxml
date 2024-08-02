@@ -1,6 +1,6 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
-    <ui:ScrollView name="ScrollView" style="height: auto;">
-        <ui:VisualElement name="Background" style="flex-grow: 1; background-color: rgb(64, 64, 64);">
+    <ui:ScrollView name="ScrollView" style="height: auto; left: 0; top: 0; right: 0; bottom: 0; width: auto; transform-origin: center; scale: 1 1; border-top-color: rgb(255, 255, 255); border-top-width: 5px; border-right-width: 5px; border-bottom-width: 5px; border-left-width: 5px; border-left-color: rgb(255, 255, 255); border-right-color: rgb(255, 255, 255); border-bottom-color: rgb(255, 255, 255);">
+        <ui:VisualElement name="Background" style="flex-grow: 1; background-color: rgb(64, 64, 64); -unity-background-scale-mode: stretch-to-fill;">
             <ui:VisualElement name="MessageGroup" style="flex-grow: 1; flex-direction: row; -unity-text-align: upper-left; align-items: flex-start; align-self: auto;">
                 <ui:Label tabindex="-1" text="Message" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Message" style="align-items: auto; width: 75%; white-space: normal;" />
                 <ui:Label tabindex="-1" text="count" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Count" style="align-items: auto; width: 20%; -unity-text-align: upper-right; background-color: rgb(88, 88, 88);" />

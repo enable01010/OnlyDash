@@ -31,7 +31,7 @@ public partial class Player : SingletonActionListener<Player>
         [SerializeField, ReadOnly] private int nearSplineNumber = 0;
         [SerializeField, ReadOnly] private SplineNearestPos nearSplinePos;
         [SerializeField, ReadOnly] private SplineContainer nearSplineContainer;
-        [SerializeField, ReadOnly] private SplinePath<Spline> nearSplinePath;// ÇÌÇ©ÇÁÇ»Ç¢
+        //[SerializeField, ReadOnly] private SplinePath<Spline> nearSplinePath;// ÇÌÇ©ÇÁÇ»Ç¢
         [SerializeField, ReadOnly] private float nearSplineLength;
 
         // 
@@ -73,7 +73,7 @@ public partial class Player : SingletonActionListener<Player>
         //[SerializeField] private float jumpPowerXZ = 10f;
 
 
-        [SerializeField] float JUMP_HIGHT = 2;
+        [SerializeField] float JUMP_HIGHT = 3;
 
 
         //IKópïœêî
@@ -137,7 +137,7 @@ public partial class Player : SingletonActionListener<Player>
             {
                 nearSplinePos = zipLineAreaList[nearSplineNumber].splinePos;
                 nearSplineContainer = zipLineAreaList[nearSplineNumber].splineContainer;
-                nearSplinePath = zipLineAreaList[nearSplineNumber].splinePath;
+                //nearSplinePath = zipLineAreaList[nearSplineNumber].splinePath;
                 nearSplineLength = zipLineAreaList[nearSplineNumber].splineLength;
             }
         }
@@ -223,7 +223,7 @@ public partial class Player : SingletonActionListener<Player>
             }
 
             // 0.01f ... è≠ÇµëOï˚
-            Vector3 dir = nearSplineContainer.EvaluatePosition(nearSplinePath, nowRate + 0.01f) - nearSplineContainer.EvaluatePosition(nearSplinePath, nowRate);
+            Vector3 dir = nearSplineContainer.EvaluatePosition(nowRate + 0.01f) - nearSplineContainer.EvaluatePosition(nowRate);
             float angle = Vector3.Angle(instance.transform.forward.normalized, dir.normalized);
             isDirectionPlus = angle <= 90;
         }
@@ -283,7 +283,7 @@ public partial class Player : SingletonActionListener<Player>
 
             instance.transform.RotFocusSpeed(MoveQuaternion(), stopTimeRotSpeed);
 
-            instance.transform.MoveFocusTime((Vector3)nearSplineContainer.EvaluatePosition(nearSplinePath, nowRate) - OffsetPlayerPos(), ref rideStopElapsedTime);
+            instance.transform.MoveFocusTime((Vector3)nearSplineContainer.EvaluatePosition(nowRate) - OffsetPlayerPos(), ref rideStopElapsedTime);
 
             MoveIKPos();
 
@@ -293,28 +293,28 @@ public partial class Player : SingletonActionListener<Player>
         private void MoveRotation()
         {
             instance.transform.rotation = MoveQuaternion();
+
+            if (isFreezeRotation == true)
+            {
+                instance.transform.rotation = Quaternion.Euler(0, instance.transform.localEulerAngles.y, 0);
+            }
         }
 
         private Quaternion MoveQuaternion()
         {
-            Vector3 forward = nearSplineContainer.EvaluateTangent(nearSplinePath, nowRate);
+            Vector3 forward = nearSplineContainer.EvaluateTangent(nowRate);
             if (isDirectionPlus != true) forward *= -1f;
 
-            Vector3 up = nearSplineContainer.EvaluateUpVector(nearSplinePath, nowRate);
+            Vector3 up = nearSplineContainer.EvaluateUpVector(nowRate);
 
             Quaternion quaternion = Quaternion.LookRotation(forward, up);
-
-            if (isFreezeRotation == true)
-            {
-                quaternion *= Quaternion.Euler(0, instance.transform.localEulerAngles.y, 0);
-            }
 
             return quaternion;
         }
 
         private void MovePos()
         {
-            instance.transform.position = nearSplineContainer.EvaluatePosition(nearSplinePath, nowRate);
+            instance.transform.position = nearSplineContainer.EvaluatePosition(nowRate);
 
             instance.transform.position -= OffsetPlayerPos();
         }

@@ -3458,6 +3458,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6250606337119821870, guid: dc8965673a73a2b4b9783cb17af17c0f,
         type: 3}
+      propertyPath: managedReferences[1002].JUMP_HIGHT
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6250606337119821870, guid: dc8965673a73a2b4b9783cb17af17c0f,
+        type: 3}
       propertyPath: managedReferences[1002].LEF_LEGD.x
       value: -0.06
       objectReference: {fileID: 0}
@@ -3570,6 +3575,11 @@ PrefabInstance:
         type: 3}
       propertyPath: managedReferences[1002].START_MOVE_SPEED
       value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 6250606337119821870, guid: dc8965673a73a2b4b9783cb17af17c0f,
+        type: 3}
+      propertyPath: managedReferences[1002].isFreezeRotation
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6250606337119821870, guid: dc8965673a73a2b4b9783cb17af17c0f,
         type: 3}

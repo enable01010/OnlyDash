@@ -21,10 +21,14 @@ public class ZipLineArea : MonoBehaviour
         //splineLength = splinePath.GetLength();
         splineLength = splineContainer.CalculateLength();
 
-        //List<Vector3> vertex = new List<Vector3>();
+        Vector3 startPos = splineContainer.EvaluatePosition(0f);
+
+        Vector3 offset = splineContainer.Spline[0].Position;
+        offset = new Vector3(0f, offset.y, 0f);
+
         foreach (var splin in splineContainer.Spline)
         {
-            vertex.Add(splin.Position);
+            vertex.Add((Vector3)splin.Position + startPos - offset);
         }
 
         //BoxCollider boxCollider = parentObj.GetComponent<BoxCollider>();

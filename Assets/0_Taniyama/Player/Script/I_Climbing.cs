@@ -155,14 +155,14 @@ public partial class Player : SingletonActionListener<Player>
 
         private Vector3 GetNowSplinePos()
         {
-            return SplineUtility.EvaluatePosition(spline, splineRate).ChengeVector3();
+            return SplineUtility.EvaluatePosition(spline, splineRate).ChangeVector3();
         }
 
         private Vector3 GetMoveDir()
         {
             if (instance.playerMove.magnitude < 0.1f) return Vector3.zero;
 
-            Vector3 moveDir = LibVector.RotationDirOfObjectFront(instance._mainCamera.transform, instance.playerMove);
+            Vector3 moveDir = LibTransform.RotationDirOfObjectFront(instance._mainCamera.transform, instance.playerMove);
             return moveDir;
         }
 
@@ -170,18 +170,18 @@ public partial class Player : SingletonActionListener<Player>
         {
             if (moveDir.magnitude == 0) return nowSplinePos;
 
-            float dir = LibVector.HolizontalElementOfForwardToDir(instance.transform.forward, moveDir);
+            float dir = LibTransform.HolizontalElementOfForwardToDir(instance.transform.forward, moveDir);
             splineRate += SPLINE_MOVE_SPEED * Time.deltaTime * dir / splineLength;
             splineRate = LibMath.CastLimit(splineRate, 0, 1);
 
-            return spline.EvaluatePosition(splineRate).ChengeVector3();
+            return spline.EvaluatePosition(splineRate).ChangeVector3();
         }
 
         private void MoveManagement(Vector3 movePos)
         {
 
             Vector2 dir2D = new Vector2(POSISION_OFFSET.x, POSISION_OFFSET.z);
-            Vector3 offset = LibVector.RotationDirOfObjectFront(instance.transform, dir2D) * dir2D.magnitude;
+            Vector3 offset = LibTransform.RotationDirOfObjectFront(instance.transform, dir2D) * dir2D.magnitude;
             offset.y += POSISION_OFFSET.y;
             instance.transform.MoveFocusSpeed(movePos - offset, START_MOVE_SPEED*Time.deltaTime);
         }
@@ -195,21 +195,21 @@ public partial class Player : SingletonActionListener<Player>
 
         private void SetAnimatorIK(Vector3 movePos, Vector3 moveDir)
         {
-            float dir = (moveDir.magnitude == 0) ? 0 : LibVector.HolizontalElementOfForwardToDir(instance.transform.forward, moveDir);
+            float dir = (moveDir.magnitude == 0) ? 0 : LibTransform.HolizontalElementOfForwardToDir(instance.transform.forward, moveDir);
             instance._animator.SetFloat(instance._animIDClimbing_x, dir);
 
             if (Mathf.Abs(dir )< 0.1f)
             {
-                instance.rightHandIKPosition = IKRay(movePos, RIGHT_HAND_RAY_OFFSET_STOP) + LibVector.RotationDirOfObjectFront(instance.transform, RIGHT_HAND_POS_OFFSET_STOP) * RIGHT_HAND_POS_OFFSET_STOP.magnitude;//右手
-                instance.leftHandIKPosition = IKRay(movePos, LEFT_HAND_RAY_OFFSET_STOP) + LibVector.RotationDirOfObjectFront(instance.transform, LEFT_HAND_POS_OFFSET_STOP) * LEFT_HAND_POS_OFFSET_STOP.magnitude; ;//左手
-                instance.rightLegIKPosition = IKRay(movePos, RIGHT_LEG_RAY_OFFSET_STOP) + LibVector.RotationDirOfObjectFront(instance.transform, RIGHT_LEG_POS_OFFSET_STOP) * RIGHT_LEG_POS_OFFSET_STOP.magnitude; ;//右足
-                instance.leftLegIKPosition = IKRay(movePos, LEFT_LEG_RAY_OFFSET_STOP) + LibVector.RotationDirOfObjectFront(instance.transform, LEFT_LEG_POSY_OFFSET_STOP) * LEFT_LEG_POSY_OFFSET_STOP.magnitude; ;//左足
+                instance.rightHandIKPosition = IKRay(movePos, RIGHT_HAND_RAY_OFFSET_STOP) + LibTransform.RotationDirOfObjectFront(instance.transform, RIGHT_HAND_POS_OFFSET_STOP) * RIGHT_HAND_POS_OFFSET_STOP.magnitude;//右手
+                instance.leftHandIKPosition = IKRay(movePos, LEFT_HAND_RAY_OFFSET_STOP) + LibTransform.RotationDirOfObjectFront(instance.transform, LEFT_HAND_POS_OFFSET_STOP) * LEFT_HAND_POS_OFFSET_STOP.magnitude; ;//左手
+                instance.rightLegIKPosition = IKRay(movePos, RIGHT_LEG_RAY_OFFSET_STOP) + LibTransform.RotationDirOfObjectFront(instance.transform, RIGHT_LEG_POS_OFFSET_STOP) * RIGHT_LEG_POS_OFFSET_STOP.magnitude; ;//右足
+                instance.leftLegIKPosition = IKRay(movePos, LEFT_LEG_RAY_OFFSET_STOP) + LibTransform.RotationDirOfObjectFront(instance.transform, LEFT_LEG_POSY_OFFSET_STOP) * LEFT_LEG_POSY_OFFSET_STOP.magnitude; ;//左足
             }
         }
 
         private Vector3 IKRay(Vector3 movePos, Vector3 offset)
         {
-            Vector3 rayStartPos = movePos + LibVector.RotationDirOfObjectFront(instance.transform, offset) * offset.magnitude;
+            Vector3 rayStartPos = movePos + LibTransform.RotationDirOfObjectFront(instance.transform, offset) * offset.magnitude;
             Vector3 rayEndPos = rayStartPos + instance.transform.forward * IK_CHECK_LENGTH;
             RaycastHit hit = LibPhysics.Raycast(rayStartPos, instance.transform.forward, IK_CHECK_LENGTH, LAYER_MASK);
             return (hit.IsHit() == true) ? hit.point: movePos;

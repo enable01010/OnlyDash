@@ -4,19 +4,21 @@ using UnityEngine;
 using UnityEditor;
 using System;
 using UnityEditor.PackageManager.UI;
+using Unity.VisualScripting;
 
 public class LibDebug:Singleton<LibDebug>
 {
      private DebugEditor _window = null;
-     private DebugEditor window 
-    { get 
-        { 
-            if (_window == null) 
+     private DebugEditor window
+     { 
+        get
+        {
+            if (_window == null)
                 _window = (DebugEditor)EditorWindow.GetWindow(typeof(DebugEditor), false, null, false);
-                _window.SheetSetting();//先に呼び出さないとバグが発生するため
-            return _window; 
-        } 
-    }
+            _window.SheetSetting();//先に呼び出さないとバグが発生するため
+            return _window;
+        }
+     }
 
     static public void ButtonLog(object obj, Action action, DebugUser user,bool isStopAndView = false)
     {

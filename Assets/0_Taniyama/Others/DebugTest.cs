@@ -19,6 +19,11 @@ public class DebugTest : MonoBehaviour
         Debug.Log("ボタンが押されたよ");
     }
 
+    private void Test3()
+    {
+        Debug.Log("テストが押されたよ3");
+    }
+
     int i;
     int j;
 

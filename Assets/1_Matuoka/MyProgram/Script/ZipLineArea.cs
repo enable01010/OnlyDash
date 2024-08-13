@@ -10,30 +10,33 @@ public class ZipLineArea : MonoBehaviour
     //public SplinePath<Spline> splinePath { get; private set; }// わからない
     public float splineLength { get; private set; }// Splineの長さ
 
-    public List<Vector3> vertex = new List<Vector3>();
+    public Vector3[] vertexes;
+
+    [SerializeField] float margin = 5f;
+    public Vector3 min;
+    public Vector3 max;
+
 
     private void Awake()
     {
-        GameObject parentObj = transform.parent.gameObject;
-        splinePos = parentObj.GetComponent<SplineNearestPos>();
-        splineContainer = parentObj.GetComponentInChildren<SplineContainer>();
-        //splinePath = new SplinePath<Spline>(splineContainer.Splines);
-        //splineLength = splinePath.GetLength();
+        splinePos = this.GetComponent<SplineNearestPos>();
+        splineContainer = this.GetComponentInChildren<SplineContainer>();// これでも可
         splineLength = splineContainer.CalculateLength();
 
-        Vector3 startPos = splineContainer.EvaluatePosition(0f);
-
-        Vector3 offset = splineContainer.Spline[0].Position;
-        offset = new Vector3(0f, offset.y, 0f);
-
+        List<Vector3> tempVertexes = new List<Vector3>();
         foreach (var splin in splineContainer.Spline)
         {
-            vertex.Add((Vector3)splin.Position + startPos - offset);
+            tempVertexes.Add(splin.Position);
         }
+        vertexes = tempVertexes.ToArray();
 
-        //BoxCollider boxCollider = parentObj.GetComponent<BoxCollider>();
+        LibVector.GetRange(vertexes, out min, out max);
+        LibVector.AddSpaceToRange(margin, ref min, ref max);
+        
+
+        BoxCollider boxCollider = this.GetComponent<BoxCollider>();
+        BoxColliderInit(boxCollider, min, max);
     }
-
 
     private void OnTriggerEnter(Collider other)
     {
@@ -51,4 +54,16 @@ public class ZipLineArea : MonoBehaviour
             player.DeleteZipLineArea(this);
         }
     }
+
+    // 親にCollider付いてる
+    // min, max は　親のTransformの Position, Rotation, Scale が0のときの相対位置
+    // 親のTransformの Position, Rotation, Scale 0じゃなくてOK
+    private void BoxColliderInit(BoxCollider boxCollider, Vector3 min, Vector3 max)
+    {
+        Vector3 midpoint = Vector3.Lerp(min, max, 0.5f);
+        boxCollider.center = midpoint;
+        boxCollider.size = max - min;
+        
+    }
+
 }

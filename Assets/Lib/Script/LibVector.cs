@@ -282,4 +282,50 @@ public static class LibVector
     {
         return new Vector3(value.x, value.y, value.z);
     }
+
+    static public void GetRange(Vector3[] points, out Vector3 min, out Vector3 max)
+    {
+        min = Vector3.positiveInfinity;
+        max = Vector3.negativeInfinity;
+
+        foreach (Vector3 point in points)
+        {
+            min = SelectMinData(point, min);
+            max = SelectMaxData(point, max);
+        }
+    }
+
+    static public void GetRange(Vector3 firstPos, Vector3 secondPos, out Vector3 min, out Vector3 max)
+    {
+        Vector3[] points = new Vector3[2];
+        points[0] = firstPos;
+        points[1] = secondPos;
+        GetRange(points, out min, out max);
+    }
+
+    static public Vector3 SelectMinData(Vector3 value1, Vector3 value2)
+    {
+        float x = Mathf.Min(value1.x, value2.x);
+        float y = Mathf.Min(value1.y, value2.y);
+        float z = Mathf.Min(value1.z, value2.z);
+        return new Vector3(x, y, z);
+    }
+
+    static public Vector3 SelectMaxData(Vector3 value1, Vector3 value2)
+    {
+        float x = Mathf.Max(value1.x, value2.x);
+        float y = Mathf.Max(value1.y, value2.y);
+        float z = Mathf.Max(value1.z, value2.z);
+        return new Vector3(x, y, z);
+    }
+
+    static public void AddSpaceToRange(float space, ref Vector3 min, ref Vector3 max)
+    {
+        min.x -= space;
+        min.y -= space;
+        min.z -= space;
+        max.x += space;
+        max.y += space;
+        max.z += space;
+    }
 }

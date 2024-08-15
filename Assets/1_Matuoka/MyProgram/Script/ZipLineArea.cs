@@ -7,20 +7,19 @@ public class ZipLineArea : MonoBehaviour
 {
     public SplineNearestPos splinePos { get; private set; }// 各SplineのPlayerと一番近い位置
     public SplineContainer splineContainer { get; private set; }// SplineのComponent
-    //public SplinePath<Spline> splinePath { get; private set; }// わからない
     public float splineLength { get; private set; }// Splineの長さ
 
-    public Vector3[] vertexes;
+    private Vector3[] vertexes;
 
     [SerializeField] float margin = 5f;
-    public Vector3 min;
-    public Vector3 max;
+    private Vector3 min;
+    private Vector3 max;
 
 
     private void Awake()
     {
         splinePos = this.GetComponent<SplineNearestPos>();
-        splineContainer = this.GetComponentInChildren<SplineContainer>();// これでも可
+        splineContainer = this.GetComponentInChildren<SplineContainer>();// InChildrenでも可
         splineLength = splineContainer.CalculateLength();
 
         List<Vector3> tempVertexes = new List<Vector3>();
@@ -35,7 +34,7 @@ public class ZipLineArea : MonoBehaviour
         
 
         BoxCollider boxCollider = this.GetComponent<BoxCollider>();
-        BoxColliderInit(boxCollider, min, max);
+        boxCollider.SetColliderAreaOfLocal(min, max);
     }
 
     private void OnTriggerEnter(Collider other)
@@ -54,16 +53,4 @@ public class ZipLineArea : MonoBehaviour
             player.DeleteZipLineArea(this);
         }
     }
-
-    // 親にCollider付いてる
-    // min, max は　親のTransformの Position, Rotation, Scale が0のときの相対位置
-    // 親のTransformの Position, Rotation, Scale 0じゃなくてOK
-    private void BoxColliderInit(BoxCollider boxCollider, Vector3 min, Vector3 max)
-    {
-        Vector3 midpoint = Vector3.Lerp(min, max, 0.5f);
-        boxCollider.center = midpoint;
-        boxCollider.size = max - min;
-        
-    }
-
 }

@@ -14,14 +14,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   type: 0
   sprites:
-  - sprite: {fileID: 21300000, guid: ef83f3bd09ad231438b008172e4a95e6, type: 3}
+  - sprite: {fileID: 21300000, guid: 49262cad1d097b645a2f5aef235a78be, type: 3}
     device: 0
-  - sprite: {fileID: 21300000, guid: ef83f3bd09ad231438b008172e4a95e6, type: 3}
+  - sprite: {fileID: 21300000, guid: 49262cad1d097b645a2f5aef235a78be, type: 3}
     device: 1
-  - sprite: {fileID: 21300000, guid: ef83f3bd09ad231438b008172e4a95e6, type: 3}
+  - sprite: {fileID: 21300000, guid: 49262cad1d097b645a2f5aef235a78be, type: 3}
     device: 2
-  - sprite: {fileID: 21300000, guid: ab3551a0e36aa654499611022a41c753, type: 3}
+  - sprite: {fileID: 21300000, guid: 6d47bfc358a0355459507953d2eeb595, type: 3}
     device: 3
-  - sprite: {fileID: 21300000, guid: ef83f3bd09ad231438b008172e4a95e6, type: 3}
+  - sprite: {fileID: 21300000, guid: 49262cad1d097b645a2f5aef235a78be, type: 3}
     device: 4
   size: 120

@@ -298,6 +298,11 @@ public partial class Player : SingletonActionListener<Player>
         public virtual void DeleteArea(WallArea wallArea)
         {
             wallAreaList.Remove(wallArea);
+            if(wallAreaList.Count == 0)
+            {
+                LibButtonUIInfoManager.RemoveIcon(ButtonType.Climbing);
+                canUse = false;
+            }
         }
 
         #region CanUseCheck

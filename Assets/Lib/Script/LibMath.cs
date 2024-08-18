@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 
 /// <summary>
@@ -169,5 +170,20 @@ public class LibMath
         if (lfAngle < -360f) lfAngle += 360f;
         if (lfAngle > 360f) lfAngle -= 360f;
         return Mathf.Clamp(lfAngle, lfMin, lfMax);
+    }
+
+    /// <summary>
+    /// value‚ğÅ‚‘¬“x‚Ü‚Å‚Ì•Ï‰»—Ê‚Å–Ú•W’l‚É‹ß‚Ã‚¯‚é
+    /// </summary>
+    /// <param name="value"></param>
+    /// <param name="goal"></param>
+    /// <param name="maxSpeed"></param>
+    /// <returns></returns>
+    public static float MoveForcusSpeed(float value,float goal,float maxSpeed)
+    {
+        if (Mathf.Abs(value - goal) < maxSpeed) return goal;
+
+        float direction = (value > goal) ? -1 : 1;
+        return value + maxSpeed * direction;
     }
 }

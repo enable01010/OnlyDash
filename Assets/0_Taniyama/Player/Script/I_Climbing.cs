@@ -63,6 +63,8 @@ public partial class Player : SingletonActionListener<Player>
         [SerializeField] Vector3 LEFT_LEG_POSY_OFFSET_STOP;
         [SerializeField] float IK_CHECK_LENGTH = 0.3f;
         [SerializeField] LayerMask LAYER_MASK;
+        [SerializeField] float ANIMATION_MOVE_MAX_SPEED = 3.0f;
+        float nowAnimationSpeed = 0;
 
         #region Enter
 
@@ -196,7 +198,8 @@ public partial class Player : SingletonActionListener<Player>
         private void SetAnimatorIK(Vector3 movePos, Vector3 moveDir)
         {
             float dir = (moveDir.magnitude == 0) ? 0 : LibTransform.HolizontalElementOfForwardToDir(instance.transform.forward, moveDir);
-            instance._animator.SetFloat(instance._animIDClimbing_x, dir);
+            nowAnimationSpeed = LibMath.MoveForcusSpeed(nowAnimationSpeed, dir, ANIMATION_MOVE_MAX_SPEED*Time.deltaTime);
+            instance._animator.SetFloat(instance._animIDClimbing_x, nowAnimationSpeed);
 
             if (Mathf.Abs(dir )< 0.1f)
             {

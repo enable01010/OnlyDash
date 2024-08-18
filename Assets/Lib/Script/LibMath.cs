@@ -186,4 +186,19 @@ public class LibMath
         float direction = (value > goal) ? -1 : 1;
         return value + maxSpeed * direction;
     }
+
+    public static float ZeroOrOne(float value)
+    {
+        float answer = 0;
+        if(value > 0)
+        {
+            answer = 1;
+        }
+        else if(value < 0)
+        {
+            answer = -1;
+        }
+
+        return answer;
+    }
 }

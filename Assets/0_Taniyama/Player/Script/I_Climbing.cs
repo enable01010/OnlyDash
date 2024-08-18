@@ -198,6 +198,7 @@ public partial class Player : SingletonActionListener<Player>
         private void SetAnimatorIK(Vector3 movePos, Vector3 moveDir)
         {
             float dir = (moveDir.magnitude == 0) ? 0 : LibTransform.HolizontalElementOfForwardToDir(instance.transform.forward, moveDir);
+            dir = LibMath.ZeroOrOne(dir);
             nowAnimationSpeed = LibMath.MoveForcusSpeed(nowAnimationSpeed, dir, ANIMATION_MOVE_MAX_SPEED*Time.deltaTime);
             instance._animator.SetFloat(instance._animIDClimbing_x, nowAnimationSpeed);
 

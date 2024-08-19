@@ -11,7 +11,6 @@ public class SplineNearestPos : MonoBehaviour
 
     // 入力位置のゲームオブジェクト
     [SerializeField, ReadOnly] private Transform inputObject;
-    private Vector3 offsetPos = new Vector3(0f, 1.2f, 0f);
 
     // 出力位置（直近位置）を反映するゲームオブジェクト
     [SerializeField] private Transform outputObject;
@@ -43,12 +42,12 @@ public class SplineNearestPos : MonoBehaviour
     {
         inputObject = GameObject.FindGameObjectWithTag("Player").transform;
 
-        DistanceUpdate();
+        //DistanceUpdate();
     }
 
     private void Update()
     {
-        DistanceUpdate();
+        //DistanceUpdate();
     }
 
     private void FixedUpdate()
@@ -62,7 +61,7 @@ public class SplineNearestPos : MonoBehaviour
     #region CustomMethod
 
     // 距離計算
-    private void DistanceUpdate()
+    public void DistanceUpdate(Vector3 offsetPos)
     {
         if (spline == null || inputObject == null) return;
 

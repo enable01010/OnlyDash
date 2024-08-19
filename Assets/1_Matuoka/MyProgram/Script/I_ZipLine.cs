@@ -42,6 +42,7 @@ public partial class Player : SingletonActionListener<Player>
         // æ‚èn‚ß‚é‚Æ‚«‚Ì‹——£ŠÖŒW
         [SerializeField, ReadOnly] private float nearDistance = 0f;
         [SerializeField] private float rideRange = 3f;
+        [SerializeField] private Vector3 offsetRideRangePos = new Vector3(0f, 1.2f, 0f);
 
         // Œ»İg‚í‚ê‚Ä‚¢‚È‚¢(SplineNearestPos’¼‘‚«)
         private Vector3 rideRangeCenterPos = new Vector3(0f, 1.2f, 0f);
@@ -104,6 +105,7 @@ public partial class Player : SingletonActionListener<Player>
 
         public virtual void PlayerUpdate()
         {
+            DistanceZipLineUpdate();
             NearZipLineUpdate();
 
             bool temp = canRideChange;
@@ -117,6 +119,14 @@ public partial class Player : SingletonActionListener<Player>
             else if (temp == true && canRideChange == false)
             {
                 LibButtonUIInfoManager.RemoveIcon(ButtonType.ZipLine);
+            }
+        }
+
+        private void DistanceZipLineUpdate()
+        {
+            for (int i = 0; i < zipLineAreaList.Count; i++)
+            {
+                zipLineAreaList[i].splinePos.DistanceUpdate(offsetRideRangePos);
             }
         }
 

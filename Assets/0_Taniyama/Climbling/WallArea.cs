@@ -5,7 +5,17 @@ using UnityEngine.Splines;
 
 public class WallArea : MonoBehaviour
 {
-    [field: SerializeField] public SplineContainer _spline { get; private set; } 
+    [field: SerializeField] public SplineContainer _spline { get; private set; }
+
+    [SerializeField] float margin = 2f;
+
+    private void Awake()
+    {
+        BoxCollider boxCollider = this.GetComponent<BoxCollider>();
+
+        _spline.SetColliderArea(boxCollider, margin);
+    }
+
 
     private void OnTriggerEnter(Collider other)
     {

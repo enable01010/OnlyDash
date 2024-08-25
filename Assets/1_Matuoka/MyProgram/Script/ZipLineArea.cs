@@ -11,7 +11,6 @@ public class ZipLineArea : MonoBehaviour
 
     [SerializeField] float margin = 5f;
 
-
     private void Awake()
     {
         splinePos = this.GetComponent<SplineNearestPos>();

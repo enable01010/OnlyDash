@@ -1862,6 +1862,11 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 6629057371858929019, guid: 5fb66201f88e72f47b357f6c9f1df8bf,
+        type: 3}
+      propertyPath: managedReferences[1003].ANIMATION_MOVE_MAX_SPEED
+      value: 3
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -2374,26 +2379,34 @@ MonoBehaviour:
         LAYER_MASK:
           serializedVersion: 2
           m_Bits: 0
+        ANIMATION_MOVE_MAX_SPEED: 1
     - rid: 3624697853035937792
       type: {class: Player/DefaultZipLine, ns: , asm: Assembly-CSharp}
       data:
+        zipLineAreaList: []
         nearSplineNumber: 0
         nearSplinePos: {fileID: 0}
         nearSplineContainer: {fileID: 0}
         nearSplineLength: 0
-        isRideRange: 0
         nearDistance: 0
         rideRange: 10
+        startWaitTime: 0.5
+        endWaitTime: 0.5
         speed: 5
-        rideElapsedTime: 0
+        rideStopElapsedTime: 0
+        stopTime: 0.2
+        stopTimeRotSpeed: 10
         nowRate: 0
         dirFreezeLength: 10
         edgeStartLength: 3
         edgeEndLength: 3
-        playerHandPos: {x: 0, y: 0, z: 0}
+        playerHandPosition: {x: 0, y: 1.62, z: 0.15}
         isFreezeRotation: 0
-        jumpPowerY: 10
-        jumpPowerXZ: 10
+        JUMP_HIGHT: 3
+        RIGHT_HAND: {x: -1.3, y: 5, z: 4}
+        LEFT_HAND: {x: 1, y: 5, z: 3}
+        RIGHT_LEG: {x: 0.06, y: -1.15, z: 0}
+        LEF_LEGD: {x: -0.06, y: -1.2, z: 0}
 --- !u!1001 &8073173497189170275
 PrefabInstance:
   m_ObjectHideFlags: 0

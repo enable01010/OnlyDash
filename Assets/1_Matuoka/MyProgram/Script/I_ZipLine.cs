@@ -35,18 +35,14 @@ public partial class Player : SingletonActionListener<Player>
         [SerializeField, ReadOnly] private float nearSplineLength;
 
         // 
-        private bool canRideChange = false;
+        private bool canRide = false;
         private bool isRide = false;
         private bool isDirectionPlus = true;
 
         // èÊÇËénÇﬂÇÈÇ∆Ç´ÇÃãóó£ä÷åW
         [SerializeField, ReadOnly] private float nearDistance = 0f;
         [SerializeField] private float rideRange = 3f;
-        [SerializeField] private Vector3 offsetRideRangePos = new Vector3(0f, 1.2f, 0f);
-
-        // åªç›égÇÌÇÍÇƒÇ¢Ç»Ç¢(SplineNearestPosíºèëÇ´)
-        private Vector3 rideRangeCenterPos = new Vector3(0f, 1.2f, 0f);
-        private Vector3 offsetRideRangeCenterPos;
+        [SerializeField] private Vector3 offsetRideCenterPos = new Vector3(0f, 1.2f, 0f);
 
         // çdíºéûä‘
         [SerializeField] private float startWaitTime = 0.5f;
@@ -93,9 +89,9 @@ public partial class Player : SingletonActionListener<Player>
         public virtual void PlayerStart()
         {
             // ìríÜÇ≈ëÂÇ´Ç≥ïœÇÌÇÁÇ»Ç¢Ç»ÇÁStart
-            offsetRideRangeCenterPos.x = rideRangeCenterPos.x * instance.transform.lossyScale.x;
-            offsetRideRangeCenterPos.y = rideRangeCenterPos.y * instance.transform.lossyScale.y;
-            offsetRideRangeCenterPos.z = rideRangeCenterPos.z * instance.transform.lossyScale.z;
+            offsetRideCenterPos.x *= instance.transform.lossyScale.x;
+            offsetRideCenterPos.y *= instance.transform.lossyScale.y;
+            offsetRideCenterPos.z *= instance.transform.lossyScale.z;
         }
 
         #endregion
@@ -108,15 +104,15 @@ public partial class Player : SingletonActionListener<Player>
             DistanceZipLineUpdate();
             NearZipLineUpdate();
 
-            bool temp = canRideChange;
-            canRideChange = CanRideChangeUpdate();
+            bool temp = canRide;
+            canRide = CanRideChangeUpdate();
 
             
-            if (temp == false && canRideChange == true)
+            if (temp == false && canRide == true)
             {
                 LibButtonUIInfoManager.PopIcon(ButtonType.ZipLine);
             }
-            else if (temp == true && canRideChange == false)
+            else if (temp == true && canRide == false)
             {
                 LibButtonUIInfoManager.RemoveIcon(ButtonType.ZipLine);
             }
@@ -126,7 +122,7 @@ public partial class Player : SingletonActionListener<Player>
         {
             for (int i = 0; i < zipLineAreaList.Count; i++)
             {
-                zipLineAreaList[i].splinePos.DistanceUpdate(offsetRideRangePos);
+                zipLineAreaList[i].splinePos.DistanceUpdate(offsetRideCenterPos);
             }
         }
 
@@ -198,7 +194,7 @@ public partial class Player : SingletonActionListener<Player>
 
         public virtual bool IsGuardOnTrigger()
         {
-            if (canRideChange == false) return true;
+            if (canRide == false) return true;
             return false;
         }
 

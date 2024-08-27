@@ -9,7 +9,7 @@ using UnityEngine.UI;
 [RequireComponent(typeof(Animator))]
 [RequireComponent(typeof(CharacterController))]
 
-public partial class Player : SingletonActionListener<Player>
+public partial class Player : SingletonActionListener<Player>, I_Trampolined
 {
     #region 別コンポーネント
 
@@ -124,13 +124,6 @@ public partial class Player : SingletonActionListener<Player>
 
     [SerializeField] private float JUMP_HEIGHT = 1.2f;
     [SerializeField] private float GRAVITY = -15.0f;
-
-    #endregion
-
-    #region ジップライン用の変数
-
-    //[SerializeField] private bool  = 1.2f;
-    //[SerializeField] private float GRAVITY = -15.0f;
 
     #endregion
 
@@ -654,6 +647,16 @@ public partial class Player : SingletonActionListener<Player>
         float leftLegWeight = (leftLegIKPosition == Vector3.zero) ? 0 : _animator.GetFloat("LeftLegWeight");
         _animator.SetIKPositionWeight(AvatarIKGoal.LeftFoot, leftLegWeight);
         _animator.SetIKPosition(AvatarIKGoal.LeftFoot, leftLegIKPosition);
+    }
+
+    #endregion
+
+    #region 外部インターフェース
+
+    public void TrampolineJump(float trampolineJumpPower)
+    {
+        _verticalVelocity = trampolineJumpPower;
+        _animator.SetBool(_animIDJump, true);
     }
 
     #endregion

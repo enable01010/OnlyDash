@@ -2,6 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public interface I_Trampolined
+{
+    public void TrampolineJump(float trampolineJumpPower);
+}
+
+
 public class Trampoline : MonoBehaviour
 {
     #region Fields
@@ -28,9 +34,12 @@ public class Trampoline : MonoBehaviour
 
     }
 
-    private void OnCollisionEnter(Collision collision)
+    private void OnTriggerEnter(Collider other)
     {
-        if (IsGuardOnCollision(collision) == true) return;
+        if(other.TryGetComponent(out I_Trampolined i_Trampolined))
+        {
+            i_Trampolined.TrampolineJump(jumpPower);
+        }
     }
 
     #endregion
@@ -38,19 +47,7 @@ public class Trampoline : MonoBehaviour
 
     #region CustomMethod
 
-    // CustomMethod
-    private void CustomMethod()
-    {
 
-    }
-
-    private bool IsGuardOnCollision(Collision collision)
-    {
-        if (collision.gameObject.tag != "Player") return true;
-        //if (collision.gameObject.tag != "Player") return true;
-
-        return false;
-    }
 
     #endregion
 }

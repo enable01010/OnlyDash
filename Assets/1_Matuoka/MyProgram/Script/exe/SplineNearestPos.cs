@@ -7,7 +7,7 @@ public class SplineNearestPos : MonoBehaviour
     #region Fields
 
     // スプライン
-    [SerializeField] private SplineContainer spline;
+    private SplineContainer spline;
 
     // 入力位置のゲームオブジェクト
     [SerializeField, ReadOnly] private Transform inputObject;
@@ -41,6 +41,7 @@ public class SplineNearestPos : MonoBehaviour
     private void Start()
     {
         inputObject = GameObject.FindGameObjectWithTag("Player").transform;
+        spline = GetComponent<SplineContainer>();
 
         //DistanceUpdate();
     }

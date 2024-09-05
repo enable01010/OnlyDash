@@ -267,13 +267,13 @@ public partial class Player : SingletonActionListener<Player>
         {
             if (isRide == false)
             {
-                instance._animator.SetBool(instance._animIDZipLine, true);
-                CustomEvent.Trigger(instance.gameObject, "useZipLine");
+                instance._animator.SetBool(instance._animIDDrone, true);
+                CustomEvent.Trigger(instance.gameObject, "useDrone");
             }
             else
             {
-                instance._animator.SetBool(instance._animIDZipLine, false);
-                CustomEvent.Trigger(instance.gameObject, "endZipLine");
+                instance._animator.SetBool(instance._animIDDrone, false);
+                CustomEvent.Trigger(instance.gameObject, "endDrone");
             }
         }
 
@@ -361,8 +361,8 @@ public partial class Player : SingletonActionListener<Player>
 
             if (tempNowRate >= 1f - SplineLengthToRate(edgeLength))
             {
-                instance._animator.SetBool(instance._animIDZipLine, false);
-                CustomEvent.Trigger(instance.gameObject, "endZipLine");
+                instance._animator.SetBool(instance._animIDDrone, false);
+                CustomEvent.Trigger(instance.gameObject, "endDrone");
                 return true;
             }
             else

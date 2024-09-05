@@ -143,6 +143,7 @@ public partial class Player : SingletonActionListener<Player>, I_Trampolined
     private int _animIDClimbingUp;
     private int _animIDClimbingDown;
     private int _animIDZipLine;
+    private int _animIDDrone;
 
     //IKアニメーションの設定
     private Vector3 rightHandIKPosition;
@@ -176,6 +177,7 @@ public partial class Player : SingletonActionListener<Player>, I_Trampolined
 
 
         zipLine.PlayerStart();
+        drone.PlayerStart();
     }
 
     private void Update()
@@ -185,6 +187,7 @@ public partial class Player : SingletonActionListener<Player>, I_Trampolined
 
         zipLine.PlayerUpdate();
         climbing.CanUseCheck();
+        drone.PlayerUpdate();
 
 #if UNITY_EDITOR
         if (Input.GetKeyDown(KeyCode.Return))
@@ -225,6 +228,7 @@ public partial class Player : SingletonActionListener<Player>, I_Trampolined
         _animIDClimbingUp = Animator.StringToHash("ClimbingEndUp");
         _animIDClimbingDown = Animator.StringToHash("ClimbingEndDown");
         _animIDZipLine = Animator.StringToHash("ZipLine");
+        _animIDDrone = Animator.StringToHash("Drone");
     }
 
     /// <summary>
@@ -573,7 +577,7 @@ public partial class Player : SingletonActionListener<Player>, I_Trampolined
         zipLine.OnEnter();
     }
 
-    public void ZipLineState()
+    public void ZipLineUpdate()
     {
         zipLine.OnUpdate();
     }
@@ -603,7 +607,7 @@ public partial class Player : SingletonActionListener<Player>, I_Trampolined
         drone.OnEnter();
     }
 
-    public void DroneState()
+    public void DroneUpdate()
     {
         drone.OnUpdate();
     }

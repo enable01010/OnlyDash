@@ -61,6 +61,7 @@ public partial class Player : SingletonActionListener<Player>, I_Trampolined
     [Tooltip("スライディング"), SerializeReference, SubclassSelector] I_Sliding sliding = new DefaultSliding();
     [Tooltip("ジップライン"), SerializeReference, SubclassSelector] I_ZipLine zipLine = new DefaultZipLine();
     [Tooltip("クライミング"), SerializeReference, SubclassSelector] I_Climbing climbing = new DefaultClimbing();
+    [Tooltip("ドローン"), SerializeReference, SubclassSelector] I_Drone drone = new DefaultDrone();
 
     #endregion
 
@@ -443,6 +444,19 @@ public partial class Player : SingletonActionListener<Player>, I_Trampolined
 
     }
 
+    public override void OnDrone(InputAction.CallbackContext context)
+    {
+        if (GameData.G_AllCheck() == true) return;
+        if (drone.IsGuardOnTrigger() == true) return;
+
+        base.OnDrone(context);
+
+        if (context.phase == InputActionPhase.Started)
+        {
+            drone.OnTrigger();
+        }
+    }
+
     public override void OnCamMove(InputAction.CallbackContext context)
     {
         base.OnCamMove(context);
@@ -584,6 +598,21 @@ public partial class Player : SingletonActionListener<Player>, I_Trampolined
         climbing.OnExit();
     }
 
+    public void DroneEnter()
+    {
+        drone.OnEnter();
+    }
+
+    public void DroneState()
+    {
+        drone.OnUpdate();
+    }
+
+    public void DroneExit()
+    {
+        drone.OnExit();
+    }
+
     #endregion
 
     #region インターフェース呼び出し用関数
@@ -608,10 +637,20 @@ public partial class Player : SingletonActionListener<Player>, I_Trampolined
         climbing.DeleteArea(wallArea);
     }
 
+    public void SetDroneArea(DroneArea droneArea)
+    {
+        drone.AddArea(droneArea);
+    }
+
+    public void DeleteDroneArea(DroneArea droneArea)
+    {
+        drone.DeleteArea(droneArea);
+    }
+
     #endregion
 
     #region アニメーターIK用
-    
+
     private void OnAnimatorIK()
     {
         RightHandIK();

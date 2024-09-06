@@ -52,6 +52,7 @@ MonoBehaviour:
   buttonUiDatas:
   - {fileID: 11400000, guid: 895cae1975888fd41abae4dc36257c5a, type: 2}
   - {fileID: 11400000, guid: d2040efc29a227144a0bb8481f306b00, type: 2}
+  - {fileID: 11400000, guid: 78e2f0b5003d0914a8f5be65daf6056c, type: 2}
   spriteBase: {fileID: 7837013480433092918, guid: 04493d451b20f174da4204cdc30fce8d,
     type: 3}
   OBJ_VERTICAL_POS: 50

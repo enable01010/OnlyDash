@@ -162,6 +162,7 @@ public enum ButtonType
 {
     ZipLine,
     Climbing,
+    Drone,
 }
 
 public enum ControllerType

@@ -199,11 +199,11 @@ public partial class Player : SingletonActionListener<Player>
             // 前回フレームのcanRideから変更があったら
             if (temp == false && canRide == true)
             {
-                LibButtonUIInfoManager.PopIcon(ButtonType.ZipLine);
+                LibButtonUIInfoManager.PopIcon(ButtonType.Drone);
             }
             else if (temp == true && canRide == false)
             {
-                LibButtonUIInfoManager.RemoveIcon(ButtonType.ZipLine);
+                LibButtonUIInfoManager.RemoveIcon(ButtonType.Drone);
             }
         }
 
@@ -266,13 +266,11 @@ public partial class Player : SingletonActionListener<Player>
         public virtual void OnTrigger()
         {
             if (isRide == false)
-            {
-                instance._animator.SetBool(instance._animIDDrone, true);
+            {  
                 CustomEvent.Trigger(instance.gameObject, "useDrone");
             }
             else
             {
-                instance._animator.SetBool(instance._animIDDrone, false);
                 CustomEvent.Trigger(instance.gameObject, "endDrone");
             }
         }
@@ -295,7 +293,8 @@ public partial class Player : SingletonActionListener<Player>
         public virtual void OnEnter()
         {
             isRide = true;
-            LibButtonUIInfoManager.RemoveIcon(ButtonType.ZipLine);
+            LibButtonUIInfoManager.RemoveIcon(ButtonType.Drone);
+            instance._animator.SetBool(instance._animIDDrone, true);
             canPushWaitTime = rideEndIntervalTime;
             moveWaitElapsedTime = moveWaitTime;
 
@@ -468,7 +467,8 @@ public partial class Player : SingletonActionListener<Player>
         public virtual void OnExit()
         {
             isRide = false;
-            LibButtonUIInfoManager.RemoveIcon(ButtonType.ZipLine);
+            LibButtonUIInfoManager.RemoveIcon(ButtonType.Drone);
+            instance._animator.SetBool(instance._animIDDrone, false);
             canPushWaitTime = reRideIntervalTime;
 
             // Playerの調整

@@ -267,12 +267,10 @@ public partial class Player : SingletonActionListener<Player>
         {
             if (isRide == false)
             {
-                instance._animator.SetBool(instance._animIDZipLine, true);
                 CustomEvent.Trigger(instance.gameObject, "useZipLine");
             }
             else
             {
-                instance._animator.SetBool(instance._animIDZipLine, false);
                 CustomEvent.Trigger(instance.gameObject, "endZipLine");
             }
         }
@@ -296,6 +294,7 @@ public partial class Player : SingletonActionListener<Player>
         {
             isRide = true;
             LibButtonUIInfoManager.RemoveIcon(ButtonType.ZipLine);
+            instance._animator.SetBool(instance._animIDZipLine, true);
             canPushWaitTime = rideEndIntervalTime;
             moveWaitElapsedTime = moveWaitTime; 
 
@@ -469,6 +468,7 @@ public partial class Player : SingletonActionListener<Player>
         {
             isRide = false;
             LibButtonUIInfoManager.RemoveIcon(ButtonType.ZipLine);
+            instance._animator.SetBool(instance._animIDZipLine, false);
             canPushWaitTime = reRideIntervalTime;
 
             // PlayerÇÃí≤êÆ

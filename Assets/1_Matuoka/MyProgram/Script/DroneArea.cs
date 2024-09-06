@@ -11,6 +11,9 @@ public class DroneArea : MonoBehaviour
 
     [SerializeField] float margin = 5f;
 
+    public GameObject droneObj { get; private set; }
+    public GameObject droneObj2 { get; private set; }
+
     private void Awake()
     {
         splinePos = this.GetComponent<SplineNearestPos>();
@@ -20,6 +23,12 @@ public class DroneArea : MonoBehaviour
         BoxCollider boxCollider = this.GetComponent<BoxCollider>();
 
         splineContainer.SetColliderArea(boxCollider, margin);
+
+        droneObj = transform.GetChild(0).gameObject;
+        droneObj.transform.position = splineContainer.EvaluatePosition(0);
+
+        droneObj = transform.GetChild(1).gameObject;
+        droneObj.transform.position = splineContainer.EvaluatePosition(1);
     }
 
     private void OnTriggerEnter(Collider other)

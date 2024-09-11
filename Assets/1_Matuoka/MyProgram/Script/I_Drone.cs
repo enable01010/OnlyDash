@@ -70,22 +70,20 @@ public partial class Player : SingletonActionListener<Player>
         [SerializeField, ReadOnly]
         private List<DroneArea> droneAreaList = new List<DroneArea>();
         private int nearSplineNumber;
-        private SplineNearestPos nearSplinePos;
+        private Drone nearDrone;
         private SplineContainer nearSplineContainer;
         private float nearSplineLength;
-
-
+        private bool isDirectionPlus;
 
         // チェック用
-        private bool canRide = false;
+        private bool canPushButton = false;
         private bool isRide = false;
-        private bool isDirectionPlus = true;
 
 
 
         [Header("乗り始めるとき")]
 
-        [SerializeField, Tooltip("一番近いSplineとの距離"), ReadOnly]
+        [SerializeField, Tooltip("Splineの乗り始め場所との距離"), ReadOnly]
         private float nearDistance = 0f;
 
         [SerializeField, Tooltip("乗れる範囲")]
@@ -96,8 +94,11 @@ public partial class Player : SingletonActionListener<Player>
 
         private Vector3 offsetRideCenterPosScale;// Scale対応(途中で大きさ変わらないならStartでOK)
 
-        [SerializeField, Tooltip("向きを固定する長さ(端から)")]
-        private float dirFreezeLength = 10f;
+        //[SerializeField, Tooltip("向きを固定する長さ(端から)")] // 向きは isDirectionPlus で固定
+        //private float dirFreezeLength = 10f;
+
+        //[SerializeField, Tooltip("進む向き")]
+        //private bool isDirectionPlus = true;
 
 
 
@@ -119,7 +120,7 @@ public partial class Player : SingletonActionListener<Player>
         private float reRideIntervalTime = 1f;
 
         [SerializeField, Tooltip("ボタンを押せるまでの残りの時間"), ReadOnly]
-        private float canPushWaitTime = 0f;
+        private float nowPushWaitTime = 0f;
 
 
 
@@ -136,14 +137,15 @@ public partial class Player : SingletonActionListener<Player>
 
         private Vector3 offsetHandPosScale;// Scale対応(途中で大きさ変わらないならStartでOK)
 
-        [SerializeField, Tooltip("傾けるか")] private bool isFreezeRotation = false;
+        [SerializeField, Tooltip("傾けるか")]
+        private bool isFreezeRotation = false;
 
 
 
         [Header("降りるとき")]
 
         [SerializeField, Tooltip("自動で降りる長さ(端から)")]
-        private float edgeLength = 1f;
+        private float edgeLength = 0f;
 
         [SerializeField, Tooltip("ジャンプの高さ")]
         private float JUMP_HIGHT = 3;
@@ -189,72 +191,77 @@ public partial class Player : SingletonActionListener<Player>
 
         public virtual void PlayerUpdate()
         {
-            DistanceZipLineUpdate();
-            NearZipLineUpdate();
+            DistanceDroneUpdate();
+            NearDroneUpdate();
 
             // boolを保持
-            bool temp = canRide;
-            canRide = CanRideChangeUpdate();
+            bool temp = canPushButton;
+            canPushButton = CanPushButtonUpdate();
 
             // 前回フレームのcanRideから変更があったら
-            if (temp == false && canRide == true)
+            if (temp == false && canPushButton == true)
             {
                 LibButtonUIInfoManager.PopIcon(ButtonType.Drone);
             }
-            else if (temp == true && canRide == false)
+            else if (temp == true && canPushButton == false)
             {
                 LibButtonUIInfoManager.RemoveIcon(ButtonType.Drone);
             }
         }
 
         // 距離更新
-        private void DistanceZipLineUpdate()
+        private void DistanceDroneUpdate()
         {
             for (int i = 0; i < droneAreaList.Count; i++)
             {
-                droneAreaList[i].splinePos.DistanceUpdate(offsetRideCenterPosScale);
+                droneAreaList[i].drone.FixedRateDistanceUpdate(instance.transform.position + offsetRideCenterPosScale);
             }
         }
 
         // near変数に格納
-        private void NearZipLineUpdate()
+        private void NearDroneUpdate()
         {
             nearDistance = Mathf.Infinity;
 
             for (int i = 0; i < droneAreaList.Count; i++)
             {
-                if (droneAreaList[i].splinePos.distance < nearDistance)
-                {
-                    nearDistance = droneAreaList[i].splinePos.distance;
-                    nearSplineNumber = i;
-                }
+                if (droneAreaList[i].drone.distance > nearDistance) return;
+                if (droneAreaList[i].drone.IsGuardPlayerRide() == true) return;
+
+                nearDistance = droneAreaList[i].drone.distance;
+                nearSplineNumber = i;
             }
 
-            if (droneAreaList.Count != 0)
+            if (nearDistance != Mathf.Infinity)
             {
-                nearSplinePos = droneAreaList[nearSplineNumber].splinePos;
+                nearDrone = droneAreaList[nearSplineNumber].drone;
                 nearSplineContainer = droneAreaList[nearSplineNumber].splineContainer;
                 nearSplineLength = droneAreaList[nearSplineNumber].splineLength;
             }
         }
 
-        private bool CanRideChangeUpdate()
+        // ボタンが押せるか
+        private bool CanPushButtonUpdate()
         {
-            if (IsRideRangeChangeUpdate() && CanPushButtonUpdate()) return true;
+            if (CanPushWaitTimeUpdate() && IsRideRangeCheckUpdate()) return true;
 
             return false;
         }
 
-        private bool IsRideRangeChangeUpdate()
+        // 乗れる範囲にいるか
+        private bool IsRideRangeCheckUpdate()
         {
+            if (isRide == true) return true;
+
             return nearDistance < rideRange;
         }
 
-        private bool CanPushButtonUpdate()
+        // ボタンの待ち時間の更新
+        private bool CanPushWaitTimeUpdate()
         {
-            if (canPushWaitTime < 0) return true;
+            if (nowPushWaitTime < 0) return true;
 
-            canPushWaitTime -= Time.deltaTime;
+            nowPushWaitTime -= Time.deltaTime;
             return false;
         }
 
@@ -282,7 +289,7 @@ public partial class Player : SingletonActionListener<Player>
 
         public virtual bool IsGuardOnTrigger()
         {
-            return !canRide;
+            return !canPushButton;
         }
 
         #endregion
@@ -295,35 +302,35 @@ public partial class Player : SingletonActionListener<Player>
             isRide = true;
             LibButtonUIInfoManager.RemoveIcon(ButtonType.Drone);
             instance._animator.SetBool(instance._animIDDrone, true);
-            canPushWaitTime = rideEndIntervalTime;
+            nowPushWaitTime = rideEndIntervalTime;
             moveWaitElapsedTime = moveWaitTime;
 
-            nowRate = Mathf.Clamp(nearSplinePos.rate,
-                SplineLengthToRate(edgeLength),
-                1f - SplineLengthToRate(edgeLength));
+            nowRate = nearDrone.nowRate;
 
-            StartZipLineDirection();
+            StartDroneDirection();
         }
 
         // 進行方向決める
-        private void StartZipLineDirection()
+        private void StartDroneDirection()
         {
+            isDirectionPlus = nearDrone.isDirectionPlus;
+
             // 端にいたら向き固定
-            if (nowRate < SplineLengthToRate(dirFreezeLength))
-            {
-                isDirectionPlus = true;
-                return;
-            }
-            else if (nowRate > 1f - SplineLengthToRate(dirFreezeLength))
-            {
-                isDirectionPlus = false;
-                return;
-            }
+            //if (nowRate < SplineLengthToRate(dirFreezeLength))
+            //{
+            //    isDirectionPlus = true;
+            //    return;
+            //}
+            //else if (nowRate > 1f - SplineLengthToRate(dirFreezeLength))
+            //{
+            //    isDirectionPlus = false;
+            //    return;
+            //}
 
             // 向いている方向に近い向きにする
-            Vector3 dir = nearSplineContainer.EvaluateTangent(nowRate);// スプラインの接線ベクトル
-            float angle = Vector3.Angle(instance.transform.forward.normalized, dir.normalized);
-            isDirectionPlus = angle <= 90;
+            //Vector3 dir = nearSplineContainer.EvaluateTangent(nowRate);// スプラインの接線ベクトル
+            //float angle = Vector3.Angle(instance.transform.forward.normalized, dir.normalized);
+            //isDirectionPlus = angle <= 90;
         }
 
         #endregion
@@ -347,6 +354,8 @@ public partial class Player : SingletonActionListener<Player>
             MoveRotation();
             MovePos();
             MoveIKPos();
+
+            nearDrone.PlayerRideMove(nowRate);
         }
 
         // 端まで来たら降りる
@@ -387,6 +396,8 @@ public partial class Player : SingletonActionListener<Player>
             {
                 nowRate -= (speed / nearSplineLength) * Time.deltaTime;
             }
+
+            nowRate = Mathf.Clamp01(nowRate);
         }
 
         // ZipLineに乗る前のUpdate
@@ -469,12 +480,14 @@ public partial class Player : SingletonActionListener<Player>
             isRide = false;
             LibButtonUIInfoManager.RemoveIcon(ButtonType.Drone);
             instance._animator.SetBool(instance._animIDDrone, false);
-            canPushWaitTime = reRideIntervalTime;
+            nowPushWaitTime = reRideIntervalTime;
 
             // Playerの調整
             instance.transform.rotation = Quaternion.Euler(0, instance.transform.localEulerAngles.y, 0);
             //IKPosReset();
-            EndZipLineJump();
+            EndDroneJump();
+
+            nearDrone.PlayerRideEnd(nowRate);
         }
 
         // IKのリセット
@@ -487,7 +500,7 @@ public partial class Player : SingletonActionListener<Player>
         }
 
         // 降りるときのジャンプ
-        private void EndZipLineJump()
+        private void EndDroneJump()
         {
             instance._verticalVelocity = Mathf.Sqrt(JUMP_HIGHT * -2f * instance.GRAVITY);
         }

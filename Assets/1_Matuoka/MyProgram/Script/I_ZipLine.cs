@@ -77,9 +77,8 @@ public partial class Player : SingletonActionListener<Player>
 
 
         // チェック用
-        private bool canRide = false;
+        private bool canPushButton = false;
         private bool isRide = false;
-        private bool isDirectionPlus = true;
 
 
 
@@ -98,6 +97,8 @@ public partial class Player : SingletonActionListener<Player>
 
         [SerializeField, Tooltip("向きを固定する長さ(端から)")]
         private float dirFreezeLength = 10f;
+
+        private bool isDirectionPlus = true;
 
 
 
@@ -119,7 +120,7 @@ public partial class Player : SingletonActionListener<Player>
         private float reRideIntervalTime = 1f;
 
         [SerializeField, Tooltip("ボタンを押せるまでの残りの時間"), ReadOnly]
-        private float canPushWaitTime = 0f;
+        private float nowPushWaitTime = 0f;
 
 
 
@@ -136,7 +137,8 @@ public partial class Player : SingletonActionListener<Player>
 
         private Vector3 offsetHandPosScale;// Scale対応(途中で大きさ変わらないならStartでOK)
         
-        [SerializeField, Tooltip("傾けるか")] private bool isFreezeRotation = false;
+        [SerializeField, Tooltip("傾けるか")]
+        private bool isFreezeRotation = false;
 
 
 
@@ -193,15 +195,15 @@ public partial class Player : SingletonActionListener<Player>
             NearZipLineUpdate();
 
             // boolを保持
-            bool temp = canRide;
-            canRide = CanRideChangeUpdate();
+            bool temp = canPushButton;
+            canPushButton = CanPushButtonUpdate();
 
             // 前回フレームのcanRideから変更があったら
-            if (temp == false && canRide == true)
+            if (temp == false && canPushButton == true)
             {
                 LibButtonUIInfoManager.PopIcon(ButtonType.ZipLine);
             }
-            else if (temp == true && canRide == false)
+            else if (temp == true && canPushButton == false)
             {
                 LibButtonUIInfoManager.RemoveIcon(ButtonType.ZipLine);
             }
@@ -212,7 +214,7 @@ public partial class Player : SingletonActionListener<Player>
         {
             for (int i = 0; i < zipLineAreaList.Count; i++)
             {
-                zipLineAreaList[i].splinePos.DistanceUpdate(offsetRideCenterPosScale);
+                zipLineAreaList[i].splinePos.NearestDistanceUpdate(instance.transform.position + offsetRideCenterPosScale);
             }
         }
 
@@ -238,23 +240,28 @@ public partial class Player : SingletonActionListener<Player>
             }
         }
 
-        private bool CanRideChangeUpdate()
+        // ボタンが押せるか
+        private bool CanPushButtonUpdate()
         {
-            if (IsRideRangeChangeUpdate() && CanPushButtonUpdate()) return true;
+            if (CanPushWaitTimeUpdate() && IsRideRangeCheckUpdate()) return true;
 
             return false;
         }
 
-        private bool IsRideRangeChangeUpdate()
+        // 乗れる範囲にいるか
+        private bool IsRideRangeCheckUpdate()
         {
+            if (isRide == true) return true;
+
             return nearDistance < rideRange;
         }
 
-        private bool CanPushButtonUpdate()
+        // ボタンの待ち時間の更新
+        private bool CanPushWaitTimeUpdate()
         {
-            if (canPushWaitTime < 0) return true;
+            if (nowPushWaitTime < 0) return true;
 
-            canPushWaitTime -= Time.deltaTime;
+            nowPushWaitTime -= Time.deltaTime;
             return false;
         }
 
@@ -282,7 +289,7 @@ public partial class Player : SingletonActionListener<Player>
 
         public virtual bool IsGuardOnTrigger()
         {
-            return !canRide;
+            return !canPushButton;
         }
 
         #endregion
@@ -295,7 +302,7 @@ public partial class Player : SingletonActionListener<Player>
             isRide = true;
             LibButtonUIInfoManager.RemoveIcon(ButtonType.ZipLine);
             instance._animator.SetBool(instance._animIDZipLine, true);
-            canPushWaitTime = rideEndIntervalTime;
+            nowPushWaitTime = rideEndIntervalTime;
             moveWaitElapsedTime = moveWaitTime; 
 
             nowRate = Mathf.Clamp(nearSplinePos.rate,
@@ -387,6 +394,8 @@ public partial class Player : SingletonActionListener<Player>
             {
                 nowRate -= (speed / nearSplineLength) * Time.deltaTime;
             }
+
+            nowRate = Mathf.Clamp01(nowRate);
         }
 
         // ZipLineに乗る前のUpdate
@@ -469,7 +478,7 @@ public partial class Player : SingletonActionListener<Player>
             isRide = false;
             LibButtonUIInfoManager.RemoveIcon(ButtonType.ZipLine);
             instance._animator.SetBool(instance._animIDZipLine, false);
-            canPushWaitTime = reRideIntervalTime;
+            nowPushWaitTime = reRideIntervalTime;
 
             // Playerの調整
             instance.transform.rotation = Quaternion.Euler(0, instance.transform.localEulerAngles.y, 0);

@@ -9,9 +9,6 @@ public class SplineNearestPos : MonoBehaviour
     // スプライン
     private SplineContainer spline;
 
-    // 入力位置のゲームオブジェクト
-    [SerializeField, ReadOnly] private Transform inputObject;
-
     // 出力位置（直近位置）を反映するゲームオブジェクト
     [SerializeField] private Transform outputObject;
 
@@ -40,15 +37,12 @@ public class SplineNearestPos : MonoBehaviour
 
     private void Start()
     {
-        inputObject = GameObject.FindGameObjectWithTag("Player").transform;
         spline = GetComponent<SplineContainer>();
-
-        //DistanceUpdate();
     }
 
     private void Update()
     {
-        //DistanceUpdate();
+
     }
 
     private void FixedUpdate()
@@ -61,10 +55,10 @@ public class SplineNearestPos : MonoBehaviour
 
     #region CustomMethod
 
-    // 距離計算
-    public void DistanceUpdate(Vector3 offsetPos)
+    // 最短距離計算
+    public void NearestDistanceUpdate(Vector3 pos)
     {
-        if (spline == null || inputObject == null) return;
+        if (spline == null) return;
 
         // ワールド空間におけるスプラインを取得
         // スプラインはローカル空間なので、ローカル→ワールド変換行列を掛ける
@@ -74,7 +68,7 @@ public class SplineNearestPos : MonoBehaviour
         // スプラインにおける直近位置を求める
         float dis = SplineUtility.GetNearestPoint(
             tempSpline,
-            inputObject.position + offsetPos,
+            pos,
             out float3 nearest,
             out float t,
             _resolution,

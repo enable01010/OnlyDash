@@ -27,7 +27,7 @@ public class SplineNearestPos : MonoBehaviour
     // ˆÊ’u‚ÌŠ„‡
     public float rate;
 
-    //Å’Z‚Ì‹——£
+    // Å’Z‚Ì‹——£
     public float distance;
 
     #endregion

@@ -137,7 +137,7 @@ public partial class Player : SingletonActionListener<Player>
 
         private Vector3 offsetHandPosScale;// Scale‘Î‰ž(“r’†‚Å‘å‚«‚³•Ï‚í‚ç‚È‚¢‚È‚çStart‚ÅOK)
         
-        [SerializeField, Tooltip("ŒX‚¯‚é‚©")]
+        [SerializeField, Tooltip("ŒX‚¯‚È‚¢‚©")]
         private bool isFreezeRotation = false;
 
 

@@ -9,10 +9,10 @@ public class Drone : MonoBehaviour
     // スプライン
     private SplineContainer spline;
 
-    // 位置の割合
-    //public float rate;
+    // Splineの長さ
+    private float splineLength;
 
-    //最短の距離
+    // 距離
     public float distance;
 
     // ドローン
@@ -24,23 +24,40 @@ public class Drone : MonoBehaviour
     // 乗れるか
     private bool canPlayerRide = false;
 
-    [Header("Spline")]
-    private float splineLength;
+    [SerializeField, Tooltip("傾けないか")]
+    private bool isFreezeRotation = true;
 
-    [field:Header("乗り始めるとき")]
-    [SerializeField, Tooltip("進む向き")]
+    [field: SerializeField, Tooltip("進む向き")]
     public bool isDirectionPlus { get; private set; } = false;
 
-    [field: Header("移動時")]
-    [SerializeField, Tooltip("現在位置割合")]
-    public float nowRate { get; private set; }
-
-    [Header("移動時")]
     [SerializeField, Tooltip("移動スピード")]
     private float speed = 5f;
 
-    [SerializeField, Tooltip("傾けるか")]
-    private bool isFreezeRotation = false;
+    [field: SerializeField, Tooltip("現在位置割合"), ReadOnly]
+    public float nowRate { get; private set; }
+
+
+
+
+
+
+
+    
+
+    [Header("マテリアル")]
+    [SerializeField]
+    private Material[] material;
+
+    enum ColorMaterial
+    {
+        Green = 0,
+        Yellow,
+        Red,
+    }
+
+    [SerializeField]
+    private MeshRenderer droneMeshRenderer;
+          
 
     #endregion
 
@@ -61,6 +78,8 @@ public class Drone : MonoBehaviour
 
         GameObject endObj = transform.GetChild(2).gameObject;
         endObj.transform.position = spline.EvaluatePosition(((int)nowRate + 1) % 2);
+
+        ChangeColor(ColorMaterial.Green);
     }
 
     private void Update()
@@ -112,6 +131,7 @@ public class Drone : MonoBehaviour
     /// <param name="rate"> Splineの割合 </param>
     public void PlayerRideMove(float rate)
     {
+        if (isPlayerRide == false) ChangeColor(ColorMaterial.Yellow);
         isPlayerRide = true;
 
         nowRate = rate;
@@ -132,6 +152,7 @@ public class Drone : MonoBehaviour
         isPlayerRide = false;
 
         canPlayerRide = false;
+        ChangeColor(ColorMaterial.Red);
 
         nowRate = rate;
     }
@@ -210,12 +231,23 @@ public class Drone : MonoBehaviour
         if (nowRate != 0f && nowRate != 1f) return;
 
         canPlayerRide = true;
+        ChangeColor(ColorMaterial.Green);
 
         // 向きを戻す
         Vector3 up = spline.EvaluateUpVector(nowRate);
         Vector3 forward = droneObject.transform.forward * -1f;
 
         droneObject.transform.rotation = Quaternion.LookRotation(forward, up);
+    }
+
+
+    /// <summary>
+    /// 色の変更
+    /// </summary>
+    /// <param name="colorMaterial"></param>
+    private void ChangeColor(ColorMaterial colorMaterial)
+    {
+        droneMeshRenderer.material = material[(int)colorMaterial];
     }
 
     #endregion

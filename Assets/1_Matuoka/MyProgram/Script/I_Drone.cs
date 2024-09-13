@@ -73,7 +73,8 @@ public partial class Player : SingletonActionListener<Player>
         private Drone nearDrone;
         private SplineContainer nearSplineContainer;
         private float nearSplineLength;
-        private bool isDirectionPlus;
+
+
 
         // ƒ`ƒFƒbƒN—p
         private bool canPushButton = false;
@@ -94,11 +95,7 @@ public partial class Player : SingletonActionListener<Player>
 
         private Vector3 offsetRideCenterPosScale;// Scale‘Î‰(“r’†‚Å‘å‚«‚³•Ï‚í‚ç‚È‚¢‚È‚çStart‚ÅOK)
 
-        //[SerializeField, Tooltip("Œü‚«‚ğŒÅ’è‚·‚é’·‚³(’[‚©‚ç)")] // Œü‚«‚Í isDirectionPlus ‚ÅŒÅ’è
-        //private float dirFreezeLength = 10f;
-
-        //[SerializeField, Tooltip("i‚ŞŒü‚«")]
-        //private bool isDirectionPlus = true;
+        private bool isDirectionPlus;
 
 
 
@@ -137,8 +134,8 @@ public partial class Player : SingletonActionListener<Player>
 
         private Vector3 offsetHandPosScale;// Scale‘Î‰(“r’†‚Å‘å‚«‚³•Ï‚í‚ç‚È‚¢‚È‚çStart‚ÅOK)
 
-        [SerializeField, Tooltip("ŒX‚¯‚é‚©")]
-        private bool isFreezeRotation = false;
+        [SerializeField, Tooltip("ŒX‚¯‚È‚¢‚©")]
+        private bool isFreezeRotation = true;
 
 
 
@@ -221,12 +218,16 @@ public partial class Player : SingletonActionListener<Player>
         // near•Ï”‚ÉŠi”[
         private void NearDroneUpdate()
         {
+            if (isRide) return;
+
             nearDistance = Mathf.Infinity;
 
             for (int i = 0; i < droneAreaList.Count; i++)
             {
-                if (droneAreaList[i].drone.distance > nearDistance) return;
-                if (droneAreaList[i].drone.IsGuardPlayerRide() == true) return;
+                if (droneAreaList[i].drone.distance > nearDistance) continue;
+
+                // æ‚ê‚éó‘Ô‚©‚ÅƒK[ƒh
+                if (droneAreaList[i].drone.IsGuardPlayerRide() == true) continue;
 
                 nearDistance = droneAreaList[i].drone.distance;
                 nearSplineNumber = i;

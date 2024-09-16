@@ -62,6 +62,7 @@ public partial class Player : SingletonActionListener<Player>, I_Trampolined
     [Tooltip("ジップライン"), SerializeReference, SubclassSelector] I_ZipLine zipLine = new DefaultZipLine();
     [Tooltip("クライミング"), SerializeReference, SubclassSelector] I_Climbing climbing = new DefaultClimbing();
     [Tooltip("ドローン"), SerializeReference, SubclassSelector] I_Drone drone = new DefaultDrone();
+    [Tooltip("風"), SerializeReference, SubclassSelector] List<I_AdditionalState> additionalStates = new List<I_AdditionalState>();
 
     #endregion
 
@@ -184,6 +185,11 @@ public partial class Player : SingletonActionListener<Player>, I_Trampolined
     {
         GroundCheck();
         CameraRotation();
+
+        foreach(I_AdditionalState additionalState in additionalStates)
+        {
+            additionalState.OnUpdate();
+        }
 
         zipLine.PlayerUpdate();
         climbing.CanUseCheck();
@@ -363,12 +369,6 @@ public partial class Player : SingletonActionListener<Player>, I_Trampolined
             transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
         }
     }
-
-    #endregion
-
-    #region ZipLine設定用関数
-
-
 
     #endregion
 
@@ -700,6 +700,24 @@ public partial class Player : SingletonActionListener<Player>, I_Trampolined
     {
         _verticalVelocity = trampolineJumpPower;
         _animator.SetBool(_animIDJump, true);
+    }
+
+    #endregion
+
+    #region I_AdditionalState用関数
+
+    public void AddAdditionalState(I_AdditionalState additionalState)
+    {
+        additionalStates.Add(additionalState);
+
+        additionalState.OnEnter();
+    }
+
+    public void RemoveAdditionalState(I_AdditionalState additionalState)
+    {
+        additionalState.OnExit();
+
+        additionalStates.Remove(additionalState);
     }
 
     #endregion

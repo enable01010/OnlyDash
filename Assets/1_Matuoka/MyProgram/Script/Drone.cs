@@ -36,14 +36,6 @@ public class Drone : MonoBehaviour
     [field: SerializeField, Tooltip("現在位置割合"), ReadOnly]
     public float nowRate { get; private set; }
 
-
-
-
-
-
-
-    
-
     [Header("マテリアル")]
     [SerializeField]
     private Material[] material;

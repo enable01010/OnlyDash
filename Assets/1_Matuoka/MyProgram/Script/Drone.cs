@@ -13,7 +13,7 @@ public class Drone : MonoBehaviour
     private float splineLength;
 
     // ‹——£
-    public float distance;
+    public float distance { get; private set; }
 
     // ƒhƒ[ƒ“
     private GameObject droneObject;
@@ -24,8 +24,8 @@ public class Drone : MonoBehaviour
     // æ‚ê‚é‚©
     private bool canPlayerRide = false;
 
-    [SerializeField, Tooltip("ŒX‚¯‚È‚¢‚©")]
-    private bool isFreezeRotation = true;
+    // ŒX‚¯‚È‚¢‚©
+    private bool isFreezeRotation;
 
     [field: SerializeField, Tooltip("i‚ŞŒü‚«")]
     public bool isDirectionPlus { get; private set; } = false;
@@ -118,14 +118,23 @@ public class Drone : MonoBehaviour
     }
 
     /// <summary>
+    /// Player‚ªæ‚èn‚ß‚é
+    /// </summary>
+    /// <param name="isFreezeRotation"> ŒX‚¯‚È‚¢‚© </param>
+    public void PlayerRideStart(bool isFreezeRotation)
+    {
+        ChangeColor(ColorMaterial.Yellow);
+        isPlayerRide = true;
+
+        this.isFreezeRotation = isFreezeRotation;
+    }
+
+    /// <summary>
     /// Player‚ªæ‚Á‚Ä‚¢‚é‚Æ‚«‚ÌˆÚ“®
     /// </summary>
     /// <param name="rate"> Spline‚ÌŠ„‡ </param>
     public void PlayerRideMove(float rate)
     {
-        if (isPlayerRide == false) ChangeColor(ColorMaterial.Yellow);
-        isPlayerRide = true;
-
         nowRate = rate;
 
         // ‰ñ“]
@@ -171,12 +180,19 @@ public class Drone : MonoBehaviour
     /// </summary>
     private void MoveRotation(bool isDirectionPlus)
     {
-        droneObject.transform.rotation = MoveQuaternion(isDirectionPlus);
-
-        // Player‚ğ¶‰E‚É‰ñ“]‚µ‚È‚¢(ŒX‚¯‚È‚¢)
+        // ¶‰E‚É‰ñ“]‚µ‚È‚¢(ŒX‚¯‚È‚¢)
         if (isFreezeRotation == true)
         {
+            // e‚Ì‰ñ“]‚ğ”½‰f
+            droneObject.transform.rotation = this.transform.rotation;
+
+            droneObject.transform.rotation *= MoveQuaternion(isDirectionPlus);
+
             droneObject.transform.rotation = Quaternion.Euler(0, droneObject.transform.localEulerAngles.y, 0);
+        }
+        else
+        {
+            droneObject.transform.rotation = MoveQuaternion(isDirectionPlus);
         }
     }
 
@@ -231,7 +247,6 @@ public class Drone : MonoBehaviour
 
         droneObject.transform.rotation = Quaternion.LookRotation(forward, up);
     }
-
 
     /// <summary>
     /// F‚Ì•ÏX

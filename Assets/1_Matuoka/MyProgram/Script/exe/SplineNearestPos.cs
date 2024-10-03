@@ -10,7 +10,7 @@ public class SplineNearestPos : MonoBehaviour
     private SplineContainer spline;
 
     // 出力位置（直近位置）を反映するゲームオブジェクト
-    [SerializeField] private Transform outputObject;
+    private Transform outputObject;
 
     // 解像度
     // 内部的にPickResolutionMin～PickResolutionMaxの範囲に丸められる

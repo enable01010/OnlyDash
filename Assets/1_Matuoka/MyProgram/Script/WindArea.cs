@@ -6,9 +6,8 @@ public class WindArea : MonoBehaviour
 {
     #region Fields
 
+    [SerializeField]
     Player.Wind_Add wind_Add = new Player.Wind_Add();
-
-
 
     #endregion
 
@@ -17,7 +16,7 @@ public class WindArea : MonoBehaviour
 
     private void Awake()
     {
-        
+        wind_Add.Init(this.transform);
     }
 
     private void Start()

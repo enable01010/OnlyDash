@@ -30,7 +30,6 @@ public class DroneArea : MonoBehaviour
         }
     }
 
-
     private void OnTriggerExit(Collider other)
     {
         if (other.TryGetComponent<Player>(out Player player))

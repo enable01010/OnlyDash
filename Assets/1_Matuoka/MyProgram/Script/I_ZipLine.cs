@@ -65,9 +65,9 @@ public partial class Player : SingletonActionListener<Player>
     {
         #region 変数
 
-        [Header("Spline")]
+        //[Header("Spline")]
 
-        [SerializeField, ReadOnly]
+        //[SerializeField, ReadOnly]
         private List<ZipLineArea> zipLineAreaList = new List<ZipLineArea>();
         private int nearSplineNumber;
         private SplineNearestPos nearSplinePos;
@@ -90,7 +90,7 @@ public partial class Player : SingletonActionListener<Player>
         [SerializeField, Tooltip("乗れる範囲")]
         private float rideRange = 3f;
 
-        [SerializeField, Tooltip("乗れる範囲のPlayerの中心のoffset")]
+        //[SerializeField, Tooltip("乗れる範囲のPlayerの中心のoffset")]
         private Vector3 offsetRideCenterPos = new Vector3(0f, 1.2f, 0f);
 
         private Vector3 offsetRideCenterPosScale;// Scale対応(途中で大きさ変わらないならStartでOK)
@@ -132,7 +132,7 @@ public partial class Player : SingletonActionListener<Player>
         [SerializeField, Tooltip("移動スピード")]
         private float speed = 5f;
         
-        [SerializeField, Tooltip("掴む位置")]
+        //[SerializeField, Tooltip("掴む位置")]
         private Vector3 offsetHandPos = new Vector3(0f, 1.62f, 0.15f);
 
         private Vector3 offsetHandPosScale;// Scale対応(途中で大きさ変わらないならStartでOK)
@@ -152,18 +152,18 @@ public partial class Player : SingletonActionListener<Player>
 
 
 
-        [Header("IK用変数")]// offsetHandPos変えるならこちらも調整
+        //[Header("IK用変数")]// offsetHandPos変えるならこちらも調整
 
-        [SerializeField, Tooltip("IK右手")]
+        //[SerializeField, Tooltip("IK右手")]
         Vector3 RIGHT_HAND = new Vector3(-1.3f, 6.62f, 4.15f);
 
-        [SerializeField, Tooltip("IK左手")]
+        //[SerializeField, Tooltip("IK左手")]
         Vector3 LEFT_HAND = new Vector3(1f, 6.62f, 4.77f);
 
-        [SerializeField, Tooltip("IK右足")]
+        //[SerializeField, Tooltip("IK右足")]
         Vector3 RIGHT_LEG = new Vector3(0.06f, 0.47f, 0.15f);
 
-        [SerializeField, Tooltip("IK左足")]
+        //[SerializeField, Tooltip("IK左足")]
         Vector3 LEF_LEGD = new Vector3(-0.06f, 0.42f, 0.15f);
 
         #endregion

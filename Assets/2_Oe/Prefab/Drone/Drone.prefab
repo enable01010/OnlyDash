@@ -10,12 +10,11 @@ GameObject:
   m_Component:
   - component: {fileID: 1674496439732740385}
   - component: {fileID: 7388979573340979102}
-  - component: {fileID: 9102925036137923797}
   - component: {fileID: 9031956194195424181}
+  - component: {fileID: 9102925036137923797}
   - component: {fileID: 8886180069172333154}
-  - component: {fileID: 7177400306035666336}
   m_Layer: 0
-  m_Name: DronePrefab
+  m_Name: Drone
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -159,19 +158,6 @@ MonoBehaviour:
       m_Data: []
   m_Knots:
     m_KnotsLink: []
---- !u!114 &9102925036137923797
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3238709456987730097}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 051973d7d431d72409f517aeffdbc537, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  margin: 5
 --- !u!65 &9031956194195424181
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -193,6 +179,19 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &9102925036137923797
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3238709456987730097}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 051973d7d431d72409f517aeffdbc537, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  margin: 5
 --- !u!114 &8886180069172333154
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -205,8 +204,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1d4ea9110de72de43b9ceed74d5f6d2f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  distance: 0
-  isFreezeRotation: 1
   <isDirectionPlus>k__BackingField: 1
   speed: 5
   <nowRate>k__BackingField: 0
@@ -215,23 +212,6 @@ MonoBehaviour:
   - {fileID: 2100000, guid: 2773108750f273346a45ef81ef5d3ff6, type: 2}
   - {fileID: 2100000, guid: 1e2e3f07d76e58049987b43b0e1a9274, type: 2}
   droneMeshRenderer: {fileID: 2298941472562654270}
---- !u!114 &7177400306035666336
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3238709456987730097}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 37da0c14879b2194994dbd0a68085794, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  outputObject: {fileID: 0}
-  _resolution: 4
-  _iterations: 2
-  rate: 0
-  distance: 0
 --- !u!1 &4570504122610034425
 GameObject:
   m_ObjectHideFlags: 0
@@ -245,7 +225,7 @@ GameObject:
   - component: {fileID: 651784118865389035}
   - component: {fileID: 8330648258852688162}
   m_Layer: 0
-  m_Name: Sphere (1)
+  m_Name: End
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -261,7 +241,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.2, y: 0.2, z: 0.2}
+  m_LocalScale: {x: 0.3, y: 0.3, z: 0.3}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 1674496439732740385}
@@ -365,8 +345,8 @@ Transform:
   m_GameObject: {fileID: 6373596858581588821}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.28499997, z: 0.057499886}
-  m_LocalScale: {x: 0.125, y: 0.125, z: 0.25}
+  m_LocalPosition: {x: 0, y: 1, z: 0.5}
+  m_LocalScale: {x: 0.5, y: 0.5, z: 1.5}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1602307920045130202}
@@ -468,8 +448,8 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 0.4, y: 0.4, z: 0.4}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 853263796703685975}
   - {fileID: 9140264161923862829}
@@ -504,7 +484,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.25, y: 0.25, z: 0.25}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 1602307920045130202}
@@ -595,7 +575,7 @@ GameObject:
   - component: {fileID: 8832999804261612319}
   - component: {fileID: 8135464650190814032}
   m_Layer: 0
-  m_Name: Sphere
+  m_Name: Start
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -611,7 +591,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.2, y: 0.2, z: 0.2}
+  m_LocalScale: {x: 0.3, y: 0.3, z: 0.3}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 1674496439732740385}

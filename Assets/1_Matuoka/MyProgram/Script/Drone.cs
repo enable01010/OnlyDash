@@ -22,10 +22,10 @@ public class Drone : MonoBehaviour
     private bool isPlayerRide = false;
 
     // èÊÇÍÇÈÇ©
-    private bool canPlayerRide = false;
+    private bool canPlayerRide = true;
 
     // åXÇØÇ»Ç¢Ç©
-    private bool isFreezeRotation;
+    private bool isFreezeRotation = true;
 
     [field: SerializeField, Tooltip("êiÇﬁå¸Ç´")]
     public bool isDirectionPlus { get; private set; } = false;
@@ -64,6 +64,7 @@ public class Drone : MonoBehaviour
         droneObject = transform.GetChild(0).gameObject;
         nowRate = isDirectionPlus ? 0f : 1f;
         droneObject.transform.position = spline.EvaluatePosition(nowRate);
+        MoveRotation(isDirectionPlus);
 
         GameObject startObj = transform.GetChild(1).gameObject;
         startObj.transform.position = spline.EvaluatePosition(nowRate);
@@ -242,10 +243,7 @@ public class Drone : MonoBehaviour
         ChangeColor(ColorMaterial.Green);
 
         // å¸Ç´ÇñﬂÇ∑
-        Vector3 up = spline.EvaluateUpVector(nowRate);
-        Vector3 forward = droneObject.transform.forward * -1f;
-
-        droneObject.transform.rotation = Quaternion.LookRotation(forward, up);
+        MoveRotation(isDirectionPlus);
     }
 
     /// <summary>

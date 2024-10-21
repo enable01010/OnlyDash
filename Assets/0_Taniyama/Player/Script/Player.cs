@@ -145,6 +145,7 @@ public partial class Player : SingletonActionListener<Player>, I_Trampolined
     private int _animIDClimbingDown;
     private int _animIDZipLine;
     private int _animIDDrone;
+    private int _animIDWind;
 
     //IKアニメーションの設定
     private Vector3 rightHandIKPosition;
@@ -235,6 +236,7 @@ public partial class Player : SingletonActionListener<Player>, I_Trampolined
         _animIDClimbingDown = Animator.StringToHash("ClimbingEndDown");
         _animIDZipLine = Animator.StringToHash("ZipLine");
         _animIDDrone = Animator.StringToHash("Drone");
+        _animIDWind = Animator.StringToHash("Wind");
     }
 
     /// <summary>

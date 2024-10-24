@@ -304,6 +304,16 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5687935988738363235, guid: 699069ea2aec768499b547d2280e3c72,
         type: 3}
+      propertyPath: wind_Add.hight
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5687935988738363235, guid: 699069ea2aec768499b547d2280e3c72,
+        type: 3}
+      propertyPath: wind_Add.period
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 5687935988738363235, guid: 699069ea2aec768499b547d2280e3c72,
+        type: 3}
       propertyPath: wind_Add.maxPower
       value: 20
       objectReference: {fileID: 0}
@@ -314,8 +324,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5687935988738363235, guid: 699069ea2aec768499b547d2280e3c72,
         type: 3}
+      propertyPath: wind_Add.amplitude
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5687935988738363235, guid: 699069ea2aec768499b547d2280e3c72,
+        type: 3}
       propertyPath: wind_Add.maxDistance
       value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 5687935988738363235, guid: 699069ea2aec768499b547d2280e3c72,
+        type: 3}
+      propertyPath: wind_Add.risingVelocity
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 8104996858526637820, guid: 699069ea2aec768499b547d2280e3c72,
         type: 3}

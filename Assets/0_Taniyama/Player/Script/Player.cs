@@ -9,7 +9,7 @@ using UnityEngine.UI;
 [RequireComponent(typeof(Animator))]
 [RequireComponent(typeof(CharacterController))]
 
-public partial class Player : SingletonActionListener<Player>, I_Trampolined
+public partial class Player : SingletonActionListener<Player>, I_Trampolined,I_BombHit
 {
     #region 別コンポーネント
 
@@ -702,6 +702,11 @@ public partial class Player : SingletonActionListener<Player>, I_Trampolined
     {
         _verticalVelocity = trampolineJumpPower;
         _animator.SetBool(_animIDJump, true);
+    }
+
+    public virtual void BombHit()
+    {
+        
     }
 
     #endregion

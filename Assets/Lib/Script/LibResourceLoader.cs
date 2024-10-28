@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class LibResourceLoader
 {
-    public static GameObject bombFxPref;
+    public static GameObject _bombFxPref;
 
     /// <summary>
     /// ƒQ[ƒ€‹N“®‚ÉŒÄ‚Ño‚µ‚©‚©‚é
@@ -10,6 +10,6 @@ public class LibResourceLoader
     [RuntimeInitializeOnLoadMethod]
     static void Initialize()
     {
-        bombFxPref = Resources.Load("BombFxPref") as GameObject;
+        _bombFxPref = Resources.Load("BombFxPref") as GameObject;
     }
 }

@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Unity.VisualScripting;
-using static Player;
-using UnityEngine.UI;
 
 [RequireComponent(typeof(Animator))]
 [RequireComponent(typeof(CharacterController))]
@@ -704,9 +702,33 @@ public partial class Player : SingletonActionListener<Player>, I_Trampolined,I_B
         _animator.SetBool(_animIDJump, true);
     }
 
-    public virtual void BombHit()
+    public virtual void BombHit(Vector3 power)
     {
-        
+        // 縦方向の移動は元の計算にゆだねる
+        _verticalVelocity = power.y;
+        LibCoroutineRunner.StartCoroutine(BombMoveHolizontal(power));
+    }
+
+    /// <summary>
+    /// ボムを受けた時の平行移動処理
+    /// </summary>
+    /// <param name="power">力</param>
+    /// <returns></returns>
+    private IEnumerator BombMoveHolizontal(Vector3 power)
+    {
+        //縦方向の力は無視するので0にする
+        power.y = 0;
+
+        //力が一定以下になるまで繰り返す
+        while(power.magnitude > ConstData.MIN_FLOAT_VALUE)
+        {
+            //プレイヤーの移動処理
+            _controller.Move(power * Time.deltaTime);
+
+            //移動速度の減速処理
+            power *= Bomb.BOMB_SPEED_SLOW;
+            yield return null;
+        }
     }
 
     #endregion

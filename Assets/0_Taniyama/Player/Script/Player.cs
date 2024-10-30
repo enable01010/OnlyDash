@@ -711,6 +711,7 @@ public partial class Player : SingletonActionListener<Player>, I_Trampolined,I_B
 
     /// <summary>
     /// ボムを受けた時の平行移動処理
+    /// Updateを汚したくないためコルーチンで作成
     /// </summary>
     /// <param name="power">力</param>
     /// <returns></returns>
@@ -720,7 +721,7 @@ public partial class Player : SingletonActionListener<Player>, I_Trampolined,I_B
         power.y = 0;
 
         //力が一定以下になるまで繰り返す
-        while(power.magnitude > ConstData.MIN_FLOAT_VALUE)
+        while(power.magnitude > Bomb.BOMB_END_SPEED)
         {
             //プレイヤーの移動処理
             _controller.Move(power * Time.deltaTime);

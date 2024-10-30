@@ -9,7 +9,8 @@ public class Bomb : MonoBehaviour
     const float PREFAB_DESTROY_TIME = 5.0f;
     [SerializeField] float POWER = 10;
     [SerializeField] float REPOP_TIME = 5.0f;
-    public const float BOMB_SPEED_SLOW = 0.99f;
+    public const float BOMB_SPEED_SLOW = 0.97f;
+    public const float BOMB_END_SPEED = 1.0f;
 
     private void OnTriggerEnter(Collider other)
     {

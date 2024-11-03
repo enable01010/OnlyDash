@@ -1,9 +1,6 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq.Expressions;
 using UnityEditor;
 using UnityEngine;
 
@@ -15,13 +12,9 @@ public class ScriptOpener : AssetPostprocessor
          string[] movedAssets,
          string[] movedFromAssetPaths)
     {
-        foreach (string asset in importedAssets)
+        if (importedAssets.Length == 1 && importedAssets[0].EndsWith(".cs"))
         {
-            // C#スクリプトが作成された場合
-            if (asset.EndsWith(".cs"))
-            {
-                OpenScriptInVisualStudio(asset);
-            }
+            OpenScriptInVisualStudio(importedAssets[0]);
         }
     }
 

@@ -4,10 +4,18 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using Unity.VisualScripting;
 
+public interface I_PlayerInterface:
+    I_Trampolined,
+    I_BombHit,
+    I_IceGroundMover
+{
+
+}
+
 [RequireComponent(typeof(Animator))]
 [RequireComponent(typeof(CharacterController))]
 
-public partial class Player : SingletonActionListener<Player>, I_Trampolined,I_BombHit
+public partial class Player : SingletonActionListener<Player>, I_PlayerInterface
 {
     #region 別コンポーネント
 
@@ -730,6 +738,16 @@ public partial class Player : SingletonActionListener<Player>, I_Trampolined,I_B
             power *= Bomb.BOMB_SPEED_SLOW;
             yield return null;
         }
+    }
+
+    public virtual void InGround(Ice_Add ice)
+    {
+        AddAdditionalState(ice);
+    }
+
+    public void OnGround(Ice_Add ice)
+    {
+        RemoveAdditionalState(ice);
     }
 
     #endregion

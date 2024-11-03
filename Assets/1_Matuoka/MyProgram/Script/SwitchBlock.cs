@@ -35,16 +35,11 @@ public class SwitchBlock : MonoBehaviour
 
         switchCollider = switchObj.GetComponent<GeneralCollider3D>();
         switchCollider.onEnter += OnSwitchTriggerEnter;
-        switchCollider.onStay  += OnSwitchTriggerStay;
+        //switchCollider.onStay  += OnSwitchTriggerStay;
         switchCollider.onExit  += OnSwitchTriggerExit;
 
         blocks = transform.GetChild(1).gameObject;
         blocks.SetActive(false);
-    }
-
-    private void Start()
-    {
-
     }
 
     private void Update()
@@ -60,11 +55,6 @@ public class SwitchBlock : MonoBehaviour
                 blocks.SetActive(false);
             }
         }
-    }
-
-    private void FixedUpdate()
-    {
-
     }
 
     #endregion
@@ -90,14 +80,6 @@ public class SwitchBlock : MonoBehaviour
 
             isCountDown = false;
             countTime = LIMIT_TIME;
-        }
-    }
-
-    private void OnSwitchTriggerStay(Collider collision)
-    {
-        if (collision.TryGetComponent(out Player player))
-        {
-
         }
     }
 

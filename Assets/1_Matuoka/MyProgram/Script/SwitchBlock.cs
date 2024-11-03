@@ -2,24 +2,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SwitchBlock : MonoBehaviour
+public class SwitchBlock : MonoBehaviour ,I_GeneralColliderUser
 {
     #region Fields
 
     private MeshRenderer switchMeshRenderer;
-    private GeneralCollider3D switchCollider;
     private GameObject blocks;
-    enum ColorMaterial
-    {
-        Green = 0,
-        Yellow,
-        Red,
-    }
 
     [SerializeField] private float LIMIT_TIME = 3f;
 
-    [SerializeField, ReadOnly] private bool isCountDown = false;
+    [SerializeField, ReadOnly] private bool isNotPlayerOn = false;
     [SerializeField, ReadOnly] private float countTime = 0f;
+    private bool isUse { get { return (isNotPlayerOn && countTime > 0); } }
 
     #endregion
 
@@ -33,28 +27,22 @@ public class SwitchBlock : MonoBehaviour
         switchMeshRenderer = switchObj.GetComponent<MeshRenderer>();
         ChangeColor(Color.green);
 
-        switchCollider = switchObj.GetComponent<GeneralCollider3D>();
-        switchCollider.onEnter += OnSwitchTriggerEnter;
-        //switchCollider.onStay  += OnSwitchTriggerStay;
-        switchCollider.onExit  += OnSwitchTriggerExit;
-
         blocks = transform.GetChild(1).gameObject;
         blocks.SetActive(false);
     }
 
     private void Update()
     {
-        if (isCountDown == true)
-        {
-            countTime -= Time.deltaTime;
+        if (isUse == false) return;
 
-            if (countTime <= 0)
-            {
-                isCountDown = false;
-                ChangeColor(Color.green);
-                blocks.SetActive(false);
-            }
+        countTime -= Time.deltaTime;
+
+        if (countTime <= 0)
+        {
+            ChangeColor(Color.green);
+            blocks.SetActive(false);
         }
+
     }
 
     #endregion
@@ -71,27 +59,28 @@ public class SwitchBlock : MonoBehaviour
         switchMeshRenderer.material.color = color;
     }
 
-    private void OnSwitchTriggerEnter(Collider collision)
+    #endregion
+
+    public virtual void OnEnter_GeneralCollider(Collider collision)
     {
         if (collision.TryGetComponent(out Player player))
         {
             ChangeColor(Color.yellow);
             blocks.SetActive(true);
 
-            isCountDown = false;
+            isNotPlayerOn = false;
             countTime = LIMIT_TIME;
         }
     }
 
-    private void OnSwitchTriggerExit(Collider collision)
+    public virtual void OnExit_GeneralCollider(Collider collision)
     {
         if (collision.TryGetComponent<Player>(out _))
         {
             ChangeColor(Color.red);
 
-            isCountDown = true;
+            isNotPlayerOn = true;
         }
     }
 
-    #endregion
 }

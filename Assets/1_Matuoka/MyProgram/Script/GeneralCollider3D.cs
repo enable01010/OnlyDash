@@ -1,26 +1,61 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using UnityEngine;
 
+[RequireComponent(typeof(Collider))]
 public class GeneralCollider3D : MonoBehaviour
 {
-    public delegate void OnTrigger(Collider other);
-    public OnTrigger onEnter;
-    public OnTrigger onStay;
-    public OnTrigger onExit;
+    private Action<Collider> onEnter;
+    private Action<Collider> onStay;
+    private Action<Collider> onExit;
+
+    private void Awake()
+    {
+        // 親オブジェクトから自動検索
+        if(onEnter == null && onStay == null && onExit == null)
+            Init(transform.root.GetComponentInChildren<I_GeneralColliderUser>());
+
+        // トリガーつけ忘れ用
+        GetComponent<Collider>().isTrigger = true;
+    }
+
+    /// <summary>
+    /// 初期化
+    /// </summary>
+    /// <param name="owner">呼び出し元</param>
+    public void Init(I_GeneralColliderUser owner)
+    {
+        if (owner == null) return;
+        
+        onEnter = owner.OnEnter_GeneralCollider;
+        onStay = owner.OnStay_GeneralCollider;
+        onExit = owner.OnExit_GeneralCollider;
+    }
 
     private void OnTriggerEnter(Collider other)
     {
-        onEnter(other);
+        if(onEnter != null)
+            onEnter(other);
     }
 
     private void OnTriggerStay(Collider other)
     {
-        onStay(other);
+        if (onStay != null)
+            onStay(other);
     }
 
     private void OnTriggerExit(Collider other)
     {
-        onExit(other);
+        if (onExit != null)
+            onExit(other);
     }
+}
+
+/// <summary>
+/// ジェネラルコライダーを使うようのインターフェース
+/// </summary>
+public interface I_GeneralColliderUser
+{
+    public void OnEnter_GeneralCollider(Collider other) { }
+    public void OnStay_GeneralCollider(Collider other) { }
+    public void OnExit_GeneralCollider(Collider other) { }
 }

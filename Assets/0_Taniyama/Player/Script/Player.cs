@@ -745,7 +745,7 @@ public partial class Player : SingletonActionListener<Player>, I_PlayerInterface
         AddAdditionalState(ice);
     }
 
-    public void OnGround(Ice_Add ice)
+    public void OutGround(Ice_Add ice)
     {
         RemoveAdditionalState(ice);
     }

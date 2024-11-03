@@ -17,7 +17,7 @@ public class IceGround : MonoBehaviour
     {
         if (other.TryGetComponent<I_IceGroundMover>(out var hit))
         {
-            hit.OnGround(iceParameter);
+            hit.OutGround(iceParameter);
         }
     }
 }
@@ -35,7 +35,7 @@ public interface I_IceGroundMover
     /// <summary>
     /// ïXÇÃè„Ç©ÇÁç~ÇËÇΩç€Ç…èàóù
     /// </summary>
-    public void OnGround(Ice_Add ice);
+    public void OutGround(Ice_Add ice);
 }
 
 

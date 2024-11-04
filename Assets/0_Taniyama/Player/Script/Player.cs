@@ -9,7 +9,8 @@ public interface I_PlayerInterface:
     I_BombHit,
     I_IceGroundMover,
     I_SwitchHit, 
-    I_WindMover
+    I_WindMover,
+    I_BreakGround
 {
 
 }

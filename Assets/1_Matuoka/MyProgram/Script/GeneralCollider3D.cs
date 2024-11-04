@@ -12,7 +12,7 @@ public class GeneralCollider3D : MonoBehaviour
     {
         // 親オブジェクトから自動検索
         if(onEnter == null && onStay == null && onExit == null)
-            Init(transform.root.GetComponentInChildren<I_GeneralColliderUser>());
+            Init(transform.GetComponentInParent<I_GeneralColliderUser>());
 
         // トリガーつけ忘れ用
         GetComponent<Collider>().isTrigger = true;

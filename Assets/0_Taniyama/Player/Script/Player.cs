@@ -7,7 +7,9 @@ using Unity.VisualScripting;
 public interface I_PlayerInterface:
     I_Trampolined,
     I_BombHit,
-    I_IceGroundMover
+    I_IceGroundMover,
+    I_SwitchHit, 
+    I_WindMover
 {
 
 }
@@ -748,6 +750,16 @@ public partial class Player : SingletonActionListener<Player>, I_PlayerInterface
     public void OutGround(Ice_Add ice)
     {
         RemoveAdditionalState(ice);
+    }
+
+    public virtual void WindEnter(Wind_Add wind_Add)
+    {
+        AddAdditionalState(wind_Add);
+    }
+
+    public virtual void WindExit(Wind_Add wind_Add)
+    {
+        RemoveAdditionalState(wind_Add);
     }
 
     #endregion

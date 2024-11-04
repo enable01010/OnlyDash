@@ -63,7 +63,7 @@ public class SwitchBlock : MonoBehaviour ,I_GeneralColliderUser
 
     public virtual void OnEnter_GeneralCollider(Collider collision)
     {
-        if (collision.TryGetComponent(out Player player))
+        if (collision.TryGetComponent(out I_SwitchHit i_SwitchHit))
         {
             ChangeColor(Color.yellow);
             blocks.SetActive(true);
@@ -75,12 +75,20 @@ public class SwitchBlock : MonoBehaviour ,I_GeneralColliderUser
 
     public virtual void OnExit_GeneralCollider(Collider collision)
     {
-        if (collision.TryGetComponent<Player>(out _))
+        if (collision.TryGetComponent<I_SwitchHit>(out _))
         {
             ChangeColor(Color.red);
 
             isNotPlayerOn = true;
         }
     }
+}
+
+
+/// <summary>
+/// スイッチを押せるオブジェクト用のインターフェース
+/// </summary>
+public interface I_SwitchHit
+{
 
 }

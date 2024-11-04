@@ -6,8 +6,7 @@ public class WindArea : MonoBehaviour
 {
     #region Fields
 
-    [SerializeField]
-    Player.Wind_Add wind_Add = new Player.Wind_Add();
+    [SerializeField] Player.Wind_Add wind_Add;
 
     #endregion
 
@@ -19,21 +18,6 @@ public class WindArea : MonoBehaviour
         wind_Add.Init(this.transform);
     }
 
-    private void Start()
-    {
-
-    }
-
-    private void Update()
-    {
-
-    }
-
-    private void FixedUpdate()
-    {
-
-    }
-
     #endregion
 
 
@@ -41,20 +25,36 @@ public class WindArea : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.TryGetComponent<Player>(out Player player))
+        if (other.TryGetComponent<I_WindMover>(out I_WindMover i_WindMover))
         {
-            player.AddAdditionalState(wind_Add);
+            i_WindMover.WindEnter(wind_Add);
         }
     }
 
-
     private void OnTriggerExit(Collider other)
     {
-        if (other.TryGetComponent<Player>(out Player player))
+        if (other.TryGetComponent(out I_WindMover i_WindMover))
         {
-            player.RemoveAdditionalState(wind_Add);
+            i_WindMover.WindExit(wind_Add);
         }
     }
 
     #endregion
+}
+
+
+/// <summary>
+/// 風の影響を受けるオブジェクト用のインターフェース
+/// </summary>
+public interface I_WindMover
+{
+    /// <summary>
+    /// 風のエリアに入った処理
+    /// </summary>
+    public void WindEnter(Player.Wind_Add wind_Add);
+
+    /// <summary>
+    /// 風のエリアから出た処理
+    /// </summary>
+    public void WindExit(Player.Wind_Add wind_Add);
 }

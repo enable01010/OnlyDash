@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ColorTiles : MonoBehaviour
+public class ColorTiles : MonoBehaviour, I_GeneralColliderUser
 {
     [Header("初期生成")]
     [SerializeField] private float PADDING_LEFT = 0.5f;
@@ -10,21 +10,22 @@ public class ColorTiles : MonoBehaviour
     [SerializeField] private float PADDING_TOP = 0.5f;
     [SerializeField] private float PADDING_BOTTOM = 0.5f;
 
-    //[SerializeField, Tooltip("x_z")] private Vector2 TILE_SIZE = new Vector3(1f, 1f);
     [SerializeField, Tooltip("x_z")] private Vector2 SPACE = new Vector3(0.5f, 0.5f);
 
     [SerializeField] private int TILE_COUNT_X = 3;
     [SerializeField] private int TILE_COUNT_Z = 3;
 
-    [SerializeField] private Color32 tileColor;
+    [SerializeField] private Color tileColorOff;
+    [SerializeField] private Color tileColorOn;
 
     [SerializeField] private GameObject frame;
     [SerializeField] private GameObject tileParent;
     [SerializeField] private GameObject tile;
     [SerializeField, ReadOnly] private List<GameObject> tiles = new();
     [SerializeField, ReadOnly] private List<Material> tilesMaterial = new();
+    [SerializeField, ReadOnly] private List<Tile> tilesTile = new();
 
-    // Start is called before the first frame update
+
     void Start()
     {
         InitTiles();
@@ -56,8 +57,8 @@ public class ColorTiles : MonoBehaviour
         {
             while (tiles.Count != TILE_COUNT_X * TILE_COUNT_Z)
             {
-                GameObject obj = Instantiate(tile);
-                obj.transform.parent = tileParent.transform;
+                GameObject obj = Instantiate(tile, tileParent.transform);
+                //obj.transform.parent = tileParent.transform;// Awake関係でダメ！！
                 obj.name = "Tile(" + tiles.Count + ")";
                 tiles.Add(obj);
             }
@@ -84,17 +85,21 @@ public class ColorTiles : MonoBehaviour
         // 生成して位置調整
         InstantiateTilesEditor();
 
-        // Material
+        // Material・Tile
         tilesMaterial.Clear();
         foreach (GameObject tile in tiles)
         {
             Material material = tile.GetComponent<MeshRenderer>().material;
-            material.color = tileColor;
+            material.color = tileColorOff;
             tilesMaterial.Add(material);
+
+            tilesTile.Add(tile.GetComponent<Tile>());
         }
     }
 
-    // 位置調整
+    /// <summary>
+    /// 位置調整
+    /// </summary>
     private void SetPositionTiles()
     {
         float frameWidth = this.transform.localScale.x;
@@ -122,5 +127,21 @@ public class ColorTiles : MonoBehaviour
         }
     }
 
+    public virtual void OnEnter_GeneralCollider(Collider other, Transform generalCollider)
+    {
+        if (other.TryGetComponent<Player>(out _))// 修正！！！！！！！！！
+        {
+            Tile tempTile = generalCollider.GetComponent<Tile>();
+            tempTile.ChangeIsOn();
 
+            if (tempTile.isOn == true)
+            {
+                tempTile.ChangeMaterial(tileColorOn);
+            }
+            else
+            {
+                tempTile.ChangeMaterial(tileColorOff);
+            }
+        }
+    }
 }

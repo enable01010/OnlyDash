@@ -4,9 +4,9 @@ using UnityEngine;
 [RequireComponent(typeof(Collider))]
 public class GeneralCollider3D : MonoBehaviour
 {
-    private Action<Collider> onEnter;
-    private Action<Collider> onStay;
-    private Action<Collider> onExit;
+    private Action<Collider, Transform> onEnter;
+    private Action<Collider, Transform> onStay;
+    private Action<Collider, Transform> onExit;
 
     private void Awake()
     {
@@ -34,19 +34,19 @@ public class GeneralCollider3D : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         if(onEnter != null)
-            onEnter(other);
+            onEnter(other, this.transform);
     }
 
     private void OnTriggerStay(Collider other)
     {
         if (onStay != null)
-            onStay(other);
+            onStay(other, this.transform);
     }
 
     private void OnTriggerExit(Collider other)
     {
         if (onExit != null)
-            onExit(other);
+            onExit(other, this.transform);
     }
 }
 
@@ -55,7 +55,10 @@ public class GeneralCollider3D : MonoBehaviour
 /// </summary>
 public interface I_GeneralColliderUser
 {
-    public void OnEnter_GeneralCollider(Collider other) { }
-    public void OnStay_GeneralCollider(Collider other) { }
-    public void OnExit_GeneralCollider(Collider other) { }
+    public void OnEnter_GeneralCollider(Collider other, Transform generalCollider) { }
+    public void OnStay_GeneralCollider(Collider other, Transform generalCollider) { }
+    public void OnExit_GeneralCollider(Collider other, Transform generalCollider) { }
+    //public void OnEnter_GeneralCollider(Collider other) { }
+    //public void OnStay_GeneralCollider(Collider other) { }
+    //public void OnExit_GeneralCollider(Collider other) { }
 }

@@ -10,7 +10,8 @@ public interface I_PlayerInterface:
     I_IceGroundMover,
     I_SwitchHit, 
     I_WindMover,
-    I_BreakGround
+    I_BreakGround,
+    I_PendulumHit
 {
 
 }
@@ -761,6 +762,35 @@ public partial class Player : SingletonActionListener<Player>, I_PlayerInterface
     public virtual void WindExit(Wind_Add wind_Add)
     {
         RemoveAdditionalState(wind_Add);
+    }
+
+    public void HitPendulum(Vector3 power)
+    {
+        // 縦方向の移動は元の計算にゆだねる
+        _verticalVelocity = power.y;
+        LibCoroutineRunner.StartCoroutine(PendulumMoveHolizontal(power));
+    }
+
+    /// <summary>
+    /// 振り子に衝突した際の横方向の移動処理
+    /// </summary>
+    /// <param name="power">横方向の力</param>
+    /// <returns>コルーチン</returns>
+    private IEnumerator PendulumMoveHolizontal(Vector3 power)
+    {
+        //縦方向の力は無視するので0にする
+        power.y = 0;
+
+        //力が一定以下になるまで繰り返す
+        while (power.magnitude > Bomb.BOMB_END_SPEED)
+        {
+            //プレイヤーの移動処理
+            _controller.Move(power * Time.deltaTime);
+
+            //移動速度の減速処理
+            power *= Pendulum.PENDULUM_SPEED_SLOW;
+            yield return null;
+        }
     }
 
     #endregion

@@ -4,15 +4,25 @@ using UnityEngine;
 [RequireComponent(typeof(Collider))]
 public class GeneralCollider3D : MonoBehaviour
 {
-    private Action<Collider, Transform> onEnter;
-    private Action<Collider, Transform> onStay;
-    private Action<Collider, Transform> onExit;
+    private Action<Collider, GeneralColliderAttribute> onEnter;
+    private Action<Collider, GeneralColliderAttribute> onStay;
+    private Action<Collider, GeneralColliderAttribute> onExit;
+    private GeneralColliderAttribute attribute;
 
     private void Awake()
     {
+        // 引数用変数の作成
+        if(attribute == null)
+        {
+            SetAttribute(new GeneralColliderAttribute());
+        }
+        
+
         // 親オブジェクトから自動検索
-        if(onEnter == null && onStay == null && onExit == null)
+        if (onEnter == null && onStay == null && onExit == null)
+        {
             Init(transform.GetComponentInParent<I_GeneralColliderUser>());
+        }
 
         // トリガーつけ忘れ用
         GetComponent<Collider>().isTrigger = true;
@@ -31,22 +41,28 @@ public class GeneralCollider3D : MonoBehaviour
         onExit = owner.OnExit_GeneralCollider;
     }
 
+    public void SetAttribute(GeneralColliderAttribute attribute)
+    {
+        this.attribute = attribute;
+        this.attribute.AddGeneralCollider3D(this);
+    }
+
     private void OnTriggerEnter(Collider other)
     {
         if(onEnter != null)
-            onEnter(other, this.transform);
+            onEnter(other, attribute);
     }
 
     private void OnTriggerStay(Collider other)
     {
         if (onStay != null)
-            onStay(other, this.transform);
+            onStay(other, attribute);
     }
 
     private void OnTriggerExit(Collider other)
     {
         if (onExit != null)
-            onExit(other, this.transform);
+            onExit(other, attribute);
     }
 }
 
@@ -55,10 +71,25 @@ public class GeneralCollider3D : MonoBehaviour
 /// </summary>
 public interface I_GeneralColliderUser
 {
-    public void OnEnter_GeneralCollider(Collider other, Transform generalCollider) { }
-    public void OnStay_GeneralCollider(Collider other, Transform generalCollider) { }
-    public void OnExit_GeneralCollider(Collider other, Transform generalCollider) { }
-    //public void OnEnter_GeneralCollider(Collider other) { }
-    //public void OnStay_GeneralCollider(Collider other) { }
-    //public void OnExit_GeneralCollider(Collider other) { }
+    public void OnEnter_GeneralCollider(Collider other, GeneralColliderAttribute attribute) { }
+    public void OnStay_GeneralCollider(Collider other, GeneralColliderAttribute attribute) { }
+    public void OnExit_GeneralCollider(Collider other, GeneralColliderAttribute attribute) { }
+}
+
+
+/// <summary>
+/// GeneralCollider3D用の引数用クラス
+/// </summary>
+public class GeneralColliderAttribute
+{
+    public GeneralCollider3D gc3d;
+    public Transform transform;
+    public GameObject gameObject;
+
+    public void AddGeneralCollider3D(GeneralCollider3D gc3d)
+    {
+        this.gc3d = gc3d;
+        transform = gc3d.transform;
+        gameObject = gc3d.gameObject;
+    }
 }

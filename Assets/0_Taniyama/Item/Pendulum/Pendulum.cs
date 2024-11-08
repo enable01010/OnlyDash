@@ -42,7 +42,7 @@ public class Pendulum : MonoBehaviour, I_GeneralColliderUser
         transform.localEulerAngles = LibVector.Set_Z(transform.localEulerAngles, angle);
     }
 
-    public void OnEnter_GeneralCollider(Collider other) 
+    public void OnEnter_GeneralCollider(Collider other, GeneralColliderAttribute attribute) 
     {
         if (isMove == false) return;
         if (!other.TryGetComponent<I_PendulumHit>(out var hit)) return;

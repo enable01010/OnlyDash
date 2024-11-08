@@ -127,20 +127,25 @@ public class ColorTiles : MonoBehaviour, I_GeneralColliderUser
         }
     }
 
-    public virtual void OnEnter_GeneralCollider(Collider other, Transform generalCollider)
+    public virtual void OnEnter_GeneralCollider(Collider other, GeneralColliderAttribute attribute)
     {
         if (other.TryGetComponent<Player>(out _))// 修正！！！！！！！！！
         {
-            Tile tempTile = generalCollider.GetComponent<Tile>();
-            tempTile.ChangeIsOn();
+            // アトリビュートを指定の型にキャスト
+            var tileAttribute = attribute as TilesGeneralColliderAttribute;
+            if (tileAttribute != null)
+            {
+                Tile tempTile = tileAttribute.tile;
+                tempTile.ChangeIsOn();
 
-            if (tempTile.isOn == true)
-            {
-                tempTile.ChangeMaterial(tileColorOn);
-            }
-            else
-            {
-                tempTile.ChangeMaterial(tileColorOff);
+                if (tempTile.isOn == true)
+                {
+                    tempTile.ChangeMaterial(tileColorOn);
+                }
+                else
+                {
+                    tempTile.ChangeMaterial(tileColorOff);
+                }
             }
         }
 

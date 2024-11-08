@@ -12,6 +12,12 @@ public class Tile : MonoBehaviour
         material = this.GetComponent<MeshRenderer>().material;
     }
 
+    private void Start()
+    {
+        // ジェネラルコライダーの引数用変数に自身のデータを格納
+        GetComponent<GeneralCollider3D>().SetAttribute(new TilesGeneralColliderAttribute(this));
+    }
+
     public void ChangeIsOn()
     {
         isOn = !isOn;
@@ -30,4 +36,17 @@ public class Tile : MonoBehaviour
 public interface I_TileHit
 {
 
+}
+
+/// <summary>
+/// Tileを使う場合の GeneralColliderの引数
+/// </summary>
+public class TilesGeneralColliderAttribute: GeneralColliderAttribute
+{
+    public Tile tile;
+
+    public TilesGeneralColliderAttribute(Tile tile)
+    {
+        this.tile = tile;
+    }
 }

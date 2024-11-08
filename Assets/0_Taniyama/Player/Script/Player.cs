@@ -11,7 +11,8 @@ public interface I_PlayerInterface:
     I_SwitchHit, 
     I_WindMover,
     I_BreakGround,
-    I_PendulumHit
+    I_PendulumHit,
+    I_TileHit
 {
 
 }

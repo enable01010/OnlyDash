@@ -129,7 +129,7 @@ public class ColorTiles : MonoBehaviour, I_GeneralColliderUser
 
     public virtual void OnEnter_GeneralCollider(Collider other, GeneralColliderAttribute attribute)
     {
-        if (other.TryGetComponent<Player>(out _))// 修正！！！！！！！！！
+        if (other.TryGetComponent<I_TileHit>(out _))
         {
             // アトリビュートを指定の型にキャスト
             var tileAttribute = attribute as TilesGeneralColliderAttribute;
@@ -178,4 +178,9 @@ public class ColorTiles : MonoBehaviour, I_GeneralColliderUser
             tile.ChangeMaterial(tileColorOff);
         }
     }
+}
+
+public interface I_TileHit
+{
+
 }

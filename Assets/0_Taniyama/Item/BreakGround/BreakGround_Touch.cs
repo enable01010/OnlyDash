@@ -9,7 +9,7 @@ public class BreakGround_Touch: MonoBehaviour ,I_GeneralColliderUser
 
     bool isTouched = false;
 
-    public virtual void OnEnter_GeneralCollider(Collider other) {
+    public virtual void OnEnter_GeneralCollider(Collider other, Transform generalCollider) {
         if (!other.TryGetComponent<I_BreakGround>(out _)) return;
 
         nowBreakTime = 0;

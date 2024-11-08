@@ -61,7 +61,7 @@ public class SwitchBlock : MonoBehaviour ,I_GeneralColliderUser
 
     #endregion
 
-    public virtual void OnEnter_GeneralCollider(Collider collision)
+    public virtual void OnEnter_GeneralCollider(Collider collision, Transform generalCollider)
     {
         if (collision.TryGetComponent(out I_SwitchHit i_SwitchHit))
         {
@@ -73,7 +73,7 @@ public class SwitchBlock : MonoBehaviour ,I_GeneralColliderUser
         }
     }
 
-    public virtual void OnExit_GeneralCollider(Collider collision)
+    public virtual void OnExit_GeneralCollider(Collider collision, Transform generalCollider)
     {
         if (collision.TryGetComponent<I_SwitchHit>(out _))
         {

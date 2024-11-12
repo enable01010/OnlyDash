@@ -12,7 +12,8 @@ public interface I_PlayerInterface:
     I_WindMover,
     I_BreakGround,
     I_PendulumHit,
-    I_TileHit
+    I_TileHit,
+    I_SlowGround
 {
 
 }
@@ -753,6 +754,16 @@ public partial class Player : SingletonActionListener<Player>, I_PlayerInterface
     public void OutGround(Ice_Add ice)
     {
         RemoveAdditionalState(ice);
+    }
+
+    public virtual void SlowGroundInGround(Slow_Add slow)
+    {
+        AddAdditionalState(slow);
+    }
+
+    public virtual void SlowGroundOutGround(Slow_Add slow)
+    {
+        RemoveAdditionalState(slow);
     }
 
     public virtual void WindEnter(Wind_Add wind_Add)

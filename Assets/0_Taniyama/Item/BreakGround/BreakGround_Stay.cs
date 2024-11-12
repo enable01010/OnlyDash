@@ -8,14 +8,14 @@ public class BreakGround_Stay : MonoBehaviour, I_GeneralColliderUser
     [SerializeField] float REPOP_TIME = 5.0f;
 
 
-    public virtual void OnEnter_GeneralCollider(Collider other, Transform generalCollider)
+    public virtual void OnEnter_GeneralCollider(Collider other, GeneralColliderAttribute attribute)
     {
         if (!other.TryGetComponent<I_BreakGround>(out _)) return;
 
         nowBreakTime = 0;
     }
 
-    public virtual void OnStay_GeneralCollider(Collider other, Transform generalCollider)
+    public virtual void OnStay_GeneralCollider(Collider other, GeneralColliderAttribute attribute)
     {
         nowBreakTime += Time.deltaTime;
         if (nowBreakTime > BREAK_TIME)

@@ -746,12 +746,12 @@ public partial class Player : SingletonActionListener<Player>, I_PlayerInterface
         }
     }
 
-    public virtual void InGround(Ice_Add ice)
+    public virtual void IceAreaInGround(Ice_Add ice)
     {
         AddAdditionalState(ice);
     }
 
-    public void OutGround(Ice_Add ice)
+    public void IceAreaOutGround(Ice_Add ice)
     {
         RemoveAdditionalState(ice);
     }

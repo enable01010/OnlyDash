@@ -1,23 +1,49 @@
+using System.Collections.Generic;
 using UnityEngine;
 using static Player;
 
-public class IceGround : MonoBehaviour
+public class IceGround : MonoBehaviour, I_GeneralColliderUser
 {
+    List<GeneralCollider3D> gc3d = new List<GeneralCollider3D>();
     [SerializeField] Ice_Add iceParameter;
 
-    private void OnTriggerEnter(Collider other)
+    public void OnEnter_GeneralCollider(Collider other, GeneralColliderAttribute attribute)
     {
-        if(other.TryGetComponent<I_IceGroundMover>(out var hit))
+        gc3d.Add(attribute.gc3d);
+        if (gc3d.Count == 1)
         {
-            hit.InGround(iceParameter);
+            StartArea(other);
         }
     }
 
-    private void OnTriggerExit(Collider other)
+    public void OnExit_GeneralCollider(Collider other, GeneralColliderAttribute attribute)
+    {
+        gc3d.Remove(attribute.gc3d);
+        if (gc3d.Count == 0)
+        {
+            EndArea(other);
+        }
+    }
+
+    /// <summary>
+    /// スローのエリアに入り始めた際の処理
+    /// </summary>
+    private void StartArea(Collider other)
     {
         if (other.TryGetComponent<I_IceGroundMover>(out var hit))
         {
-            hit.OutGround(iceParameter);
+            hit.IceAreaInGround(iceParameter);
+        }
+    }
+
+    /// <summary>
+    /// スローのエリアに出た際の処理
+    /// </summary>
+    private void EndArea(Collider other)
+    {
+        if (other.TryGetComponent<I_IceGroundMover>(out var hit))
+        {
+            hit.IceAreaOutGround(iceParameter);
         }
     }
 }
@@ -30,12 +56,12 @@ public interface I_IceGroundMover
     /// <summary>
     /// 氷の上に乗り始めた時の処理
     /// </summary>
-    public void InGround(Ice_Add ice);
+    public void IceAreaInGround(Ice_Add ice);
 
     /// <summary>
     /// 氷の上から降りた際に処理
     /// </summary>
-    public void OutGround(Ice_Add ice);
+    public void IceAreaOutGround(Ice_Add ice);
 }
 
 

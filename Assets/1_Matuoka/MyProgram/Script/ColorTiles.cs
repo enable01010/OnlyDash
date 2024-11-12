@@ -179,8 +179,3 @@ public class ColorTiles : MonoBehaviour, I_GeneralColliderUser
         }
     }
 }
-
-public interface I_TileHit
-{
-
-}

@@ -4,8 +4,10 @@ using UnityEngine;
 
 public class Tile : MonoBehaviour
 {
-    public bool isOn = false;
+    public bool isOn { get; private set; } = false;
     private Material material;
+    private Color offColor;
+    private Color onColor;
 
     private void Awake()
     {
@@ -18,9 +20,26 @@ public class Tile : MonoBehaviour
         GetComponent<GeneralCollider3D>().SetAttribute(new TilesGeneralColliderAttribute(this));
     }
 
+    public void InitColor(Color offColor, Color onColor)
+    {
+        this.offColor = offColor;
+        this.onColor = onColor;
+    }
+
     public void ChangeIsOn()
     {
         isOn = !isOn;
+
+        if (isOn) ChangeMaterial(onColor);
+        else ChangeMaterial(offColor);
+    }
+
+    public void ChangeIsOn(bool temp)
+    {
+        isOn = temp;
+
+        if (isOn) ChangeMaterial(onColor);
+        else ChangeMaterial(offColor);
     }
 
     public void ChangeMaterial(Color color)

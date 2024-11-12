@@ -15,15 +15,15 @@ public class ColorTiles : MonoBehaviour, I_GeneralColliderUser
     [SerializeField, Range(2, 6)] private int TILE_COUNT_X = 3;
     [SerializeField, Range(2, 6)] private int TILE_COUNT_Z = 3;
 
-    [SerializeField] private Color tileColorOff;
-    [SerializeField] private Color tileColorOn;
+    [SerializeField] private Color TILE_COLOR_OFF;
+    [SerializeField] private Color TILE_COLOR_ON;
 
     [SerializeField] private GameObject frame;
     [SerializeField] private GameObject tileParent;
     [SerializeField] private GameObject tilePrefab;
     [SerializeField, ReadOnly] private List<GameObject> tilesObj = new();
-    [SerializeField, ReadOnly] private List<Material> tilesMaterial = new();
     [SerializeField, ReadOnly] private List<Tile> tilesTile = new();
+    [SerializeField, ReadOnly] private List<bool> tilesIsOn = new();
 
 
     void Start()
@@ -40,6 +40,7 @@ public class ColorTiles : MonoBehaviour, I_GeneralColliderUser
 # if UNITY_EDITOR
     private void OnValidate()
     {
+        // 起動中も呼ばれる
         InstantiateTilesEditor();
     }
 # endif
@@ -85,15 +86,15 @@ public class ColorTiles : MonoBehaviour, I_GeneralColliderUser
         // 生成して位置調整
         InstantiateTilesEditor();
 
-        // Material・Tile
-        tilesMaterial.Clear();
-        foreach (GameObject tile in tilesObj)
+        // Tile取得・初期設定
+        foreach (GameObject tileObj in tilesObj)
         {
-            Material material = tile.GetComponent<MeshRenderer>().material;
-            material.color = tileColorOff;
-            tilesMaterial.Add(material);
+            Tile tile = tileObj.GetComponent<Tile>();
+            tile.InitColor(TILE_COLOR_OFF, TILE_COLOR_ON);
+            tile.ChangeIsOn(false);
+            tilesTile.Add(tile);
 
-            tilesTile.Add(tile.GetComponent<Tile>());
+            tilesIsOn.Add(true);
         }
     }
 
@@ -137,15 +138,6 @@ public class ColorTiles : MonoBehaviour, I_GeneralColliderUser
             {
                 Tile tempTile = tileAttribute.tile;
                 tempTile.ChangeIsOn();
-
-                if (tempTile.isOn == true)
-                {
-                    tempTile.ChangeMaterial(tileColorOn);
-                }
-                else
-                {
-                    tempTile.ChangeMaterial(tileColorOff);
-                }
             }
         }
 
@@ -158,24 +150,29 @@ public class ColorTiles : MonoBehaviour, I_GeneralColliderUser
 
     private bool CheckColor()
     {
-        foreach (Tile tile in tilesTile)
+        for(int i = 0; i < tilesTile.Count; i++)
         {
-            if (tile.isOn == false)
+            if (tilesTile[i].isOn != tilesIsOn[i])
             {
                 return false;
             }
         }
+        //foreach (Tile tile in tilesTile)
+        //{
+        //    if (tile.isOn != tilesIsOn)
+        //    {
+        //        return false;
+        //    }
+        //}
 
         return true;
     }
 
     private void AllOff()
     {
-        
         foreach (Tile tile in tilesTile)
         {
-            tile.isOn = false;
-            tile.ChangeMaterial(tileColorOff);
+            tile.ChangeIsOn(false);
         }
     }
 }

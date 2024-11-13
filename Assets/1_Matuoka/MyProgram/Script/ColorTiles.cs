@@ -1,6 +1,9 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 public class ColorTiles : MonoBehaviour, I_GeneralColliderUser
 {
@@ -15,8 +18,8 @@ public class ColorTiles : MonoBehaviour, I_GeneralColliderUser
     [SerializeField, Range(2, 6)] private int TILE_COUNT_X = 3;
     [SerializeField, Range(2, 6)] private int TILE_COUNT_Z = 3;
 
-    [SerializeField] private Color TILE_COLOR_OFF;
-    [SerializeField] private Color TILE_COLOR_ON;
+    [field: SerializeField] public Color TILE_COLOR_OFF { get; private set; }
+    [field:SerializeField] public Color TILE_COLOR_ON { get; private set; }
 
     [SerializeField] private GameObject frame;
     [SerializeField] private GameObject tileParent;
@@ -25,46 +28,54 @@ public class ColorTiles : MonoBehaviour, I_GeneralColliderUser
     [SerializeField, ReadOnly] private List<Tile> tilesTile = new();
     [SerializeField, ReadOnly] private List<bool> tilesIsOn = new();
 
+    bool isDestroyChildObj = false;
 
     void Start()
     {
         InitTiles();
     }
 
-# if UNITY_EDITOR
+#if UNITY_EDITOR
     private void OnValidate()
     {
         // 起動中も呼ばれる
         InstantiateTilesEditor();
     }
-# endif
+#endif
 
     /// <summary>
     /// 生成して位置調整(Editor用)
     /// </summary>
     private void InstantiateTilesEditor()
     {
-        // tilesのnullを消す
-        tilesObj.RemoveAll(item => item == null);
-
         // 少ないなら増やす
-        if (tilesObj.Count < TILE_COUNT_X * TILE_COUNT_Z)
+        int needCount = TILE_COUNT_X * TILE_COUNT_Z;
+        while (tilesObj.Count < needCount)
         {
-            while (tilesObj.Count != TILE_COUNT_X * TILE_COUNT_Z)
-            {
-                GameObject obj = Instantiate(tilePrefab, tileParent.transform);
-                //obj.transform.parent = tileParent.transform;// Awake関係でダメ！！
-                obj.name = "Tile(" + tilesObj.Count + ")";
-                tilesObj.Add(obj);
-            }
+            GameObject obj = Instantiate(tilePrefab, tileParent.transform);
+            //obj.transform.parent = tileParent.transform;// Awake関係でダメ！！
+            obj.name = "Tile(" + tilesObj.Count + ")";
+            tilesObj.Add(obj);
         }
 
         // 表示・非表示の切り替え
-        for (int i = 0; i < tilesObj.Count; i++)
+        if (needCount < tilesObj.Count && isDestroyChildObj == false)
         {
-            tilesObj[i].SetActive(i < TILE_COUNT_X * TILE_COUNT_Z);
-        }
+            isDestroyChildObj = true;
+            EditorApplication.delayCall += () =>
+            {
+                isDestroyChildObj = false;
 
+                for (int i = needCount; i < tilesObj.Count; i++)
+                {
+                    DestroyImmediate(tilesObj[i]);
+                }
+
+                tilesObj.RemoveAll(item => item == null);
+            };
+
+        }
+        
         SetPositionTiles();
     }
 
@@ -87,7 +98,7 @@ public class ColorTiles : MonoBehaviour, I_GeneralColliderUser
         foreach (GameObject tileObj in tilesObj)
         {
             Tile tile = tileObj.GetComponent<Tile>();
-            tile.InitColor(TILE_COLOR_OFF, TILE_COLOR_ON);
+            tile.InitColor(this);
             tile.ChangeIsOn(false);
             tilesTile.Add(tile);
 

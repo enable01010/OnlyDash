@@ -1,13 +1,10 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Tile : MonoBehaviour
 {
     public bool isOn { get; private set; } = false;
     private Material material;
-    private Color offColor;
-    private Color onColor;
+    private ColorTiles owner;
 
     private void Awake()
     {
@@ -25,10 +22,9 @@ public class Tile : MonoBehaviour
     /// </summary>
     /// <param name="offColor"></param>
     /// <param name="onColor"></param>
-    public void InitColor(Color offColor, Color onColor)
+    public void InitColor(ColorTiles owner)
     {
-        this.offColor = offColor;
-        this.onColor = onColor;
+        this.owner = owner;
     }
 
     /// <summary>
@@ -38,8 +34,8 @@ public class Tile : MonoBehaviour
     {
         isOn = !isOn;
 
-        if (isOn) ChangeMaterial(onColor);
-        else ChangeMaterial(offColor);
+        if (isOn) ChangeMaterial(owner.TILE_COLOR_ON);
+        else ChangeMaterial(owner.TILE_COLOR_OFF);
     }
 
     /// <summary>
@@ -50,8 +46,8 @@ public class Tile : MonoBehaviour
     {
         isOn = temp;
 
-        if (isOn) ChangeMaterial(onColor);
-        else ChangeMaterial(offColor);
+        if (isOn) ChangeMaterial(owner.TILE_COLOR_ON);
+        else ChangeMaterial(owner.TILE_COLOR_OFF);
     }
 
     /// <summary>

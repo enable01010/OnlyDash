@@ -31,12 +31,6 @@ public class ColorTiles : MonoBehaviour, I_GeneralColliderUser
         InitTiles();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
 # if UNITY_EDITOR
     private void OnValidate()
     {
@@ -74,6 +68,9 @@ public class ColorTiles : MonoBehaviour, I_GeneralColliderUser
         SetPositionTiles();
     }
 
+    /// <summary>
+    /// 初期生成
+    /// </summary>
     private void InitTiles()
     {
         // 全て消す
@@ -103,6 +100,7 @@ public class ColorTiles : MonoBehaviour, I_GeneralColliderUser
     /// </summary>
     private void SetPositionTiles()
     {
+        // 左上から右上に向かって配置　その後下段に配置
         float frameWidth = this.transform.localScale.x;
         float frameHeight = this.transform.localScale.z;
 
@@ -136,18 +134,20 @@ public class ColorTiles : MonoBehaviour, I_GeneralColliderUser
             var tileAttribute = attribute as TilesGeneralColliderAttribute;
             if (tileAttribute != null)
             {
+                // タイルの切り替え
                 Tile tempTile = tileAttribute.tile;
                 tempTile.ChangeIsOn();
-            }
-        }
 
-        if (CheckColor())
-        {
-            AllOff();
+                // 全て一致していたら
+                if (CheckColor()) AllOff();
+            }
         }
     }
 
-
+    /// <summary>
+    /// 全て一致していたらtrue
+    /// </summary>
+    /// <returns></returns>
     private bool CheckColor()
     {
         for(int i = 0; i < tilesTile.Count; i++)
@@ -157,17 +157,13 @@ public class ColorTiles : MonoBehaviour, I_GeneralColliderUser
                 return false;
             }
         }
-        //foreach (Tile tile in tilesTile)
-        //{
-        //    if (tile.isOn != tilesIsOn)
-        //    {
-        //        return false;
-        //    }
-        //}
 
         return true;
     }
 
+    /// <summary>
+    /// 全てのタイルを消す
+    /// </summary>
     private void AllOff()
     {
         foreach (Tile tile in tilesTile)

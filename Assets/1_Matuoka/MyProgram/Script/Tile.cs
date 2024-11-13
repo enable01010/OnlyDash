@@ -20,12 +20,20 @@ public class Tile : MonoBehaviour
         GetComponent<GeneralCollider3D>().SetAttribute(new TilesGeneralColliderAttribute(this));
     }
 
+    /// <summary>
+    /// ColorTilesの色を入れる
+    /// </summary>
+    /// <param name="offColor"></param>
+    /// <param name="onColor"></param>
     public void InitColor(Color offColor, Color onColor)
     {
         this.offColor = offColor;
         this.onColor = onColor;
     }
 
+    /// <summary>
+    /// 切り替えて色を変える
+    /// </summary>
     public void ChangeIsOn()
     {
         isOn = !isOn;
@@ -34,6 +42,10 @@ public class Tile : MonoBehaviour
         else ChangeMaterial(offColor);
     }
 
+    /// <summary>
+    /// 引数の状態に切り替えて色を変える
+    /// </summary>
+    /// <param name="temp"></param>
     public void ChangeIsOn(bool temp)
     {
         isOn = temp;
@@ -42,6 +54,10 @@ public class Tile : MonoBehaviour
         else ChangeMaterial(offColor);
     }
 
+    /// <summary>
+    /// Materialの色を変える
+    /// </summary>
+    /// <param name="color"></param>
     public void ChangeMaterial(Color color)
     {
         material.color = color;

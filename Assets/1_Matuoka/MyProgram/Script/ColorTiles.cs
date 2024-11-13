@@ -15,15 +15,15 @@ public class ColorTiles : MonoBehaviour, I_GeneralColliderUser
     [SerializeField, Range(2, 6)] private int TILE_COUNT_X = 3;
     [SerializeField, Range(2, 6)] private int TILE_COUNT_Z = 3;
 
-    [SerializeField] private Color tileColorOff;
-    [SerializeField] private Color tileColorOn;
+    [SerializeField] private Color TILE_COLOR_OFF;
+    [SerializeField] private Color TILE_COLOR_ON;
 
     [SerializeField] private GameObject frame;
     [SerializeField] private GameObject tileParent;
     [SerializeField] private GameObject tilePrefab;
     [SerializeField, ReadOnly] private List<GameObject> tilesObj = new();
-    [SerializeField, ReadOnly] private List<Material> tilesMaterial = new();
     [SerializeField, ReadOnly] private List<Tile> tilesTile = new();
+    [SerializeField, ReadOnly] private List<bool> tilesIsOn = new();
 
 
     void Start()
@@ -31,15 +31,10 @@ public class ColorTiles : MonoBehaviour, I_GeneralColliderUser
         InitTiles();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
 # if UNITY_EDITOR
     private void OnValidate()
     {
+        // 起動中も呼ばれる
         InstantiateTilesEditor();
     }
 # endif
@@ -73,6 +68,9 @@ public class ColorTiles : MonoBehaviour, I_GeneralColliderUser
         SetPositionTiles();
     }
 
+    /// <summary>
+    /// 初期生成
+    /// </summary>
     private void InitTiles()
     {
         // 全て消す
@@ -85,15 +83,15 @@ public class ColorTiles : MonoBehaviour, I_GeneralColliderUser
         // 生成して位置調整
         InstantiateTilesEditor();
 
-        // Material・Tile
-        tilesMaterial.Clear();
-        foreach (GameObject tile in tilesObj)
+        // Tile取得・初期設定
+        foreach (GameObject tileObj in tilesObj)
         {
-            Material material = tile.GetComponent<MeshRenderer>().material;
-            material.color = tileColorOff;
-            tilesMaterial.Add(material);
+            Tile tile = tileObj.GetComponent<Tile>();
+            tile.InitColor(TILE_COLOR_OFF, TILE_COLOR_ON);
+            tile.ChangeIsOn(false);
+            tilesTile.Add(tile);
 
-            tilesTile.Add(tile.GetComponent<Tile>());
+            tilesIsOn.Add(true);
         }
     }
 
@@ -102,6 +100,7 @@ public class ColorTiles : MonoBehaviour, I_GeneralColliderUser
     /// </summary>
     private void SetPositionTiles()
     {
+        // 左上から右上に向かって配置　その後下段に配置
         float frameWidth = this.transform.localScale.x;
         float frameHeight = this.transform.localScale.z;
 
@@ -135,32 +134,25 @@ public class ColorTiles : MonoBehaviour, I_GeneralColliderUser
             var tileAttribute = attribute as TilesGeneralColliderAttribute;
             if (tileAttribute != null)
             {
+                // タイルの切り替え
                 Tile tempTile = tileAttribute.tile;
                 tempTile.ChangeIsOn();
 
-                if (tempTile.isOn == true)
-                {
-                    tempTile.ChangeMaterial(tileColorOn);
-                }
-                else
-                {
-                    tempTile.ChangeMaterial(tileColorOff);
-                }
+                // 全て一致していたら
+                if (CheckColor()) AllOff();
             }
-        }
-
-        if (CheckColor())
-        {
-            AllOff();
         }
     }
 
-
+    /// <summary>
+    /// 全て一致していたらtrue
+    /// </summary>
+    /// <returns></returns>
     private bool CheckColor()
     {
-        foreach (Tile tile in tilesTile)
+        for(int i = 0; i < tilesTile.Count; i++)
         {
-            if (tile.isOn == false)
+            if (tilesTile[i].isOn != tilesIsOn[i])
             {
                 return false;
             }
@@ -169,13 +161,14 @@ public class ColorTiles : MonoBehaviour, I_GeneralColliderUser
         return true;
     }
 
+    /// <summary>
+    /// 全てのタイルを消す
+    /// </summary>
     private void AllOff()
     {
-        
         foreach (Tile tile in tilesTile)
         {
-            tile.isOn = false;
-            tile.ChangeMaterial(tileColorOff);
+            tile.ChangeIsOn(false);
         }
     }
 }

@@ -18,10 +18,8 @@ public class Tile : MonoBehaviour
     }
 
     /// <summary>
-    /// ColorTilesの色を入れる
+    /// ColorTilesを入れる
     /// </summary>
-    /// <param name="offColor"></param>
-    /// <param name="onColor"></param>
     public void InitColor(ColorTiles owner)
     {
         this.owner = owner;
@@ -30,12 +28,12 @@ public class Tile : MonoBehaviour
     /// <summary>
     /// 切り替えて色を変える
     /// </summary>
-    public void ChangeIsOn()
+    public void TileHit()
     {
         isOn = !isOn;
 
-        if (isOn) ChangeMaterial(owner.TILE_COLOR_ON);
-        else ChangeMaterial(owner.TILE_COLOR_OFF);
+        if (isOn) ChangeColor(owner.TILE_COLOR_ON);
+        else ChangeColor(owner.TILE_COLOR_OFF);
     }
 
     /// <summary>
@@ -46,15 +44,15 @@ public class Tile : MonoBehaviour
     {
         isOn = temp;
 
-        if (isOn) ChangeMaterial(owner.TILE_COLOR_ON);
-        else ChangeMaterial(owner.TILE_COLOR_OFF);
+        if (isOn) ChangeColor(owner.TILE_COLOR_ON);
+        else ChangeColor(owner.TILE_COLOR_OFF);
     }
 
     /// <summary>
-    /// Materialの色を変える
+    /// 色を変える
     /// </summary>
     /// <param name="color"></param>
-    public void ChangeMaterial(Color color)
+    public void ChangeColor(Color color)
     {
         material.color = color;
     }

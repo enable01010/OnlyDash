@@ -16,7 +16,6 @@ public class GeneralCollider3D : MonoBehaviour
         {
             SetAttribute(new GeneralColliderAttribute());
         }
-        
 
         // 親オブジェクトから自動検索
         if (onEnter == null && onStay == null && onExit == null)
@@ -71,8 +70,25 @@ public class GeneralCollider3D : MonoBehaviour
 /// </summary>
 public interface I_GeneralColliderUser
 {
+    /// <summary>
+    /// コライダーに触れ始めた際に呼ばれる
+    /// </summary>
+    /// <param name="other">当たったオブジェクト</param>
+    /// <param name="attribute">追加情報</param>
     public void OnEnter_GeneralCollider(Collider other, GeneralColliderAttribute attribute) { }
+
+    /// <summary>
+    /// コライダーに続けている際に呼ばれる
+    /// </summary>
+    /// <param name="other">当たったオブジェクト</param>
+    /// <param name="attribute">追加情報</param>
     public void OnStay_GeneralCollider(Collider other, GeneralColliderAttribute attribute) { }
+
+    /// <summary>
+    /// コライダーから離れた際に呼ばれる
+    /// </summary>
+    /// <param name="other">当たったオブジェクト</param>
+    /// <param name="attribute">追加情報</param>
     public void OnExit_GeneralCollider(Collider other, GeneralColliderAttribute attribute) { }
 }
 

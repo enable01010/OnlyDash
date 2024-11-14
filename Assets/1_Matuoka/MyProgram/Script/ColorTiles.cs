@@ -14,8 +14,8 @@ public class ColorTiles : MonoBehaviour, I_GeneralColliderUser
     [SerializeField] private GameObject tileParent;
     [SerializeField] private GameObject tilePrefab;
     [SerializeField, ReadOnly] private List<GameObject> tilesObj = new();
-    [SerializeField, ReadOnly] private List<Tile> tilesTile = new();
-    [SerializeField, ReadOnly] private List<bool> tilesIsOn = new();
+    [SerializeField, ReadOnly] private List<Tile> tiles = new();
+    [SerializeField, ReadOnly] private List<bool> answers = new();
 
     void Start()
     {
@@ -23,25 +23,19 @@ public class ColorTiles : MonoBehaviour, I_GeneralColliderUser
     }
 
     /// <summary>
-    /// 初期生成
+    /// タイルの初期化処理
     /// </summary>
     private void InitTiles()
     {
-        // 全て消す
-        //foreach (Transform child in tileParent.transform)
-        //{
-        //    Destroy(child.gameObject);
-        //}
-
         // Tile取得・初期設定
         foreach (GameObject tileObj in tilesObj)
         {
             Tile tile = tileObj.GetComponent<Tile>();
-            tile.InitColor(this);
-            tile.ChangeIsOn(false);
-            tilesTile.Add(tile);
+            tile.Init(this);
+            tile.SetFirstSetting();
+            tiles.Add(tile);
 
-            tilesIsOn.Add(true);
+            answers.Add(true);
         }
     }
 
@@ -64,14 +58,14 @@ public class ColorTiles : MonoBehaviour, I_GeneralColliderUser
     }
 
     /// <summary>
-    /// 全て一致していたらtrue
+    /// 回答が一致しているか確認する処理
     /// </summary>
-    /// <returns></returns>
+    /// <returns>true:すべて一致 false:一つでも一致していない</returns>
     private bool CheckColor()
     {
-        for(int i = 0; i < tilesTile.Count; i++)
+        for(int i = 0; i < tiles.Count; i++)
         {
-            if (tilesTile[i].isOn != tilesIsOn[i])
+            if (tiles[i].isOn != answers[i])
             {
                 return false;
             }
@@ -85,9 +79,9 @@ public class ColorTiles : MonoBehaviour, I_GeneralColliderUser
     /// </summary>
     private void AllOff()
     {
-        foreach (Tile tile in tilesTile)
+        foreach (Tile tile in tiles)
         {
-            tile.ChangeIsOn(false);
+            tile.SetFirstSetting();
         }
     }
 
@@ -109,7 +103,9 @@ public class ColorTiles : MonoBehaviour, I_GeneralColliderUser
 
     private void OnValidate()
     {
-        // 起動中も呼ばれる(起動中に数値を変えるとバグる)
+        // 実行中に数値を変えるとバグるため実行中は処理しない
+        if (EditorApplication.isPlaying == true) return;
+
         InstantiateTilesEditor();
     }
 

@@ -20,7 +20,7 @@ public class Tile : MonoBehaviour
     /// <summary>
     /// ColorTiles‚ğ“ü‚ê‚é
     /// </summary>
-    public void InitColor(ColorTiles owner)
+    public void Init(ColorTiles owner)
     {
         this.owner = owner;
     }
@@ -37,12 +37,12 @@ public class Tile : MonoBehaviour
     }
 
     /// <summary>
-    /// ˆø”‚Ìó‘Ô‚ÉØ‚è‘Ö‚¦‚ÄF‚ğ•Ï‚¦‚é
+    /// ‰Šúó‘Ô‚É‚·‚é
     /// </summary>
     /// <param name="temp"></param>
-    public void ChangeIsOn(bool temp)
+    public void SetFirstSetting()
     {
-        isOn = temp;
+        isOn = false;
 
         if (isOn) ChangeColor(owner.TILE_COLOR_ON);
         else ChangeColor(owner.TILE_COLOR_OFF);

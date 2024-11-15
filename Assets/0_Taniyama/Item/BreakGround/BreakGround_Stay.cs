@@ -17,6 +17,8 @@ public class BreakGround_Stay : MonoBehaviour, I_GeneralColliderUser
 
     public virtual void OnStay_GeneralCollider(Collider other, GeneralColliderAttribute attribute)
     {
+        if (!other.TryGetComponent<I_BreakGround>(out _)) return;
+
         nowBreakTime += Time.deltaTime;
         if (nowBreakTime > BREAK_TIME)
         {

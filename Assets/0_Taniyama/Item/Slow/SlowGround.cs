@@ -12,57 +12,57 @@ public class SlowGround : MonoBehaviour,I_GeneralColliderUser
 
     public void OnEnter_GeneralCollider(Collider other, GeneralColliderAttribute attribute) 
     {
+        // TODO: インターフェースで判別しているが複数のオブジェクトが乗るとバグる
+        if (!other.TryGetComponent<I_SlowGround>(out var hit)) return;
+
         gc3d.Add(attribute.gc3d);
         if(gc3d.Count == 1)
         {
-            StartArea(other);
+            StartArea(hit);
         }
     }
 
     public void OnExit_GeneralCollider(Collider other, GeneralColliderAttribute attribute) 
     {
+        // TODO: インターフェースで判別しているが複数のオブジェクトが乗るとバグる
+        if (!other.TryGetComponent<I_SlowGround>(out var hit)) return;
+
         gc3d.Remove(attribute.gc3d);
         if (gc3d.Count == 0)
         {
-            EndArea(other);
+            EndArea(hit);
         }
     }
 
     /// <summary>
     /// スローのエリアに入り始めた際の処理
     /// </summary>
-    private void StartArea(Collider other)
+    private void StartArea(I_SlowGround hit)
     {
-        if(other.TryGetComponent<I_SlowGround>(out var hit))
-        {
-            hit.SlowGroundInGround(slowParameter);
-        }
+        hit.SlowGroundInGround(slowParameter);
     }
 
     /// <summary>
     /// スローのエリアに出た際の処理
     /// </summary>
-    private void EndArea(Collider other)
+    private void EndArea(I_SlowGround hit)
     {
-        if (other.TryGetComponent<I_SlowGround>(out var hit))
-        {
-            hit.SlowGroundOutGround(slowParameter);
-        }
+        hit.SlowGroundOutGround(slowParameter);
     }
 }
 
 /// <summary>
-/// 氷の上で滑るオブジェクト用のインターフェース
+/// スローの上で滑るオブジェクト用のインターフェース
 /// </summary>
 public interface I_SlowGround
 {
     /// <summary>
-    /// 氷の上に乗り始めた時の処理
+    /// スローの上に乗り始めた時の処理
     /// </summary>
     public void SlowGroundInGround(Slow_Add ice);
 
     /// <summary>
-    /// 氷の上から降りた際に処理
+    /// スローの上から降りた際に処理
     /// </summary>
     public void SlowGroundOutGround(Slow_Add ice);
 }
@@ -75,13 +75,11 @@ public partial class Player : SingletonActionListener<Player>
     [System.Serializable]
     public class Slow_Add : I_AdditionalState
     {
-        Vector3 verocity = Vector2.zero;
         [SerializeField] float SLOW_SPEED = 0.9f;
 
         public virtual void OnEnter()
         {
-            Vector3 targetDirection = Quaternion.Euler(0.0f, instance._targetRotation, 0.0f) * Vector3.forward;
-            verocity = targetDirection.normalized * instance._speed;
+            
         }
 
         public virtual void OnUpdate()

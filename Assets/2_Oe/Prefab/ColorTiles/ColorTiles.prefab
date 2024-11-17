@@ -993,8 +993,8 @@ MonoBehaviour:
   - {fileID: 5590554609988354026}
   - {fileID: 1259047047442328284}
   - {fileID: 1801763392888701679}
-  tilesTile: []
-  tilesIsOn: 
+  tiles: []
+  answers: 
   PADDING_LEFT: 0.37
   PADDING_RIGHT: 1.18
   PADDING_TOP: 0.42

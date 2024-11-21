@@ -1,6 +1,9 @@
 using System.Collections;
 using UnityEngine;
 
+/// <summary>
+/// ˆê’è”ÍˆÍ“à‚É“ü‚Á‚½ê‡‚É•\¦‚³‚ê‚é‘«ê
+/// </summary>
 public class DissolveFoot : MonoBehaviour,I_GeneralColliderUser
 {
     [SerializeField] float DISSOLVE_TIME = 0.5f;
@@ -8,7 +11,7 @@ public class DissolveFoot : MonoBehaviour,I_GeneralColliderUser
     [SerializeField] float SERACH_AREA_LENGTH = 5.0f;
     Vector3 START_POS;
 
-    private Collider col;
+    [SerializeField,AutoGetComponent] private BoxCollider col;
     private Material mat;
     private const string MATERIAL_PASS = "_clipTimer";
 
@@ -30,7 +33,7 @@ public class DissolveFoot : MonoBehaviour,I_GeneralColliderUser
     private void Awake()
     {
         START_POS = transform.position;
-        col = GetComponent<Collider>();
+        //col = GetComponent<Collider>();
         mat = GetComponent<MeshRenderer>().material;
 
         // Å‰‚Í”ñ•\¦‚É‚·‚é

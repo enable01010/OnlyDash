@@ -301,25 +301,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 4735756423885428332, guid: 3525cec20dcdee447a06a0b2ffc68f5e,
-        type: 3}
-      propertyPath: SERACH_AREA_LENGTH
-      value: 5
-      objectReference: {fileID: 0}
     - target: {fileID: 5621828605774228571, guid: 3525cec20dcdee447a06a0b2ffc68f5e,
         type: 3}
       propertyPath: m_Name
       value: DissolveFoot (1)
-      objectReference: {fileID: 0}
-    - target: {fileID: 7830180802072659456, guid: 3525cec20dcdee447a06a0b2ffc68f5e,
-        type: 3}
-      propertyPath: m_Radius
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 7893481895202640153, guid: 3525cec20dcdee447a06a0b2ffc68f5e,
-        type: 3}
-      propertyPath: m_LocalScale.x
-      value: 0.3
       objectReference: {fileID: 0}
     - target: {fileID: 7893481895202640153, guid: 3525cec20dcdee447a06a0b2ffc68f5e,
         type: 3}

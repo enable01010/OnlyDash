@@ -2452,8 +2452,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bdfff115ba7ce7c4ba81181bb92c118a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  eventSystem: {fileID: 1655689420}
-  UI_Window: {fileID: 2073451153}
+  uiWindow: {fileID: 2073451153}
   timeScaleSlider: {fileID: 1462668440}
   timeScaleText: {fileID: 2038645976}
   timeScaleResetButton: {fileID: 1892059874}
@@ -2578,18 +2577,6 @@ Transform:
   - {fileID: 7470605951010592242}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1655689420 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 5148107578835001787, guid: f0271df749728104eac22c3d897fd8ce,
-    type: 3}
-  m_PrefabInstance: {fileID: 746329221}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 76c392e42b5098c458856cdf6ecaaaa1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1682047760
 GameObject:
   m_ObjectHideFlags: 0

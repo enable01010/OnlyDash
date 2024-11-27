@@ -1,21 +1,17 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.EventSystems;
+using System;
+using static Player;
 
 public class DebugTool : MonoBehaviour
 {
 #if UNITY_EDITOR
 
     #region Field
-
-    [SerializeField] private EventSystem eventSystem;
-
     private bool isPause = false;
-    [SerializeField] private GameObject UI_Window;
+    [SerializeField] private GameObject uiWindow;
 
-    private enum PP
+    private enum PlayerPrefsEnum
     {
         TimeScale = 0,
         PlayerMove,
@@ -26,18 +22,16 @@ public class DebugTool : MonoBehaviour
     [SerializeField] private Text timeScaleText;
     [SerializeField] private Button timeScaleResetButton;
     private const int CONSTANT_VELOCITY = 10;
+    private const string TIME_SCALE_TEXT_FORMAT = "x {0}倍";
 
-
-    [System.Serializable]
-    public enum PlayerMove
+    private enum PlayerMove
     {
         ControlledMove = 0,
         AutoMove,
     }
-    private int playerMove;
+    private PlayerMove playerMove;
     [SerializeField] private Button[] moveButton;
     private Button nowPlayButton;
-
 
     #endregion
 
@@ -47,19 +41,13 @@ public class DebugTool : MonoBehaviour
     private void Awake()
     {
         DataLoad();
+        SetUiActions();
     }
 
     private void Start()
     {
         DataSet();
-
-        timeScaleSlider.onValueChanged.AddListener(TimeScaleSliderChange);
-        timeScaleResetButton.onClick.AddListener(TimeScaleReset);
-
-        moveButton[(int)PlayerMove.ControlledMove].onClick.
-            AddListener(() => PlayerMoveButton(PlayerMove.ControlledMove));
-        moveButton[(int)PlayerMove.AutoMove].onClick.
-            AddListener(() => PlayerMoveButton(PlayerMove.AutoMove));
+        ReSetColorPlayerMoveButton();
     }
 
     private void Update()
@@ -78,8 +66,31 @@ public class DebugTool : MonoBehaviour
     /// </summary>
     private void DataLoad()
     {
-        timeScale = PlayerPrefs.GetFloat(PP.TimeScale.ToString(), 1f);
-        playerMove = PlayerPrefs.GetInt(PP.PlayerMove.ToString(), (int)PlayerMove.ControlledMove);
+        timeScale = PlayerPrefs.GetFloat(PlayerPrefsEnum.TimeScale.ToString(), 1f);
+        playerMove = (PlayerMove)PlayerPrefs.GetInt(PlayerPrefsEnum.PlayerMove.ToString());
+    }
+
+    /// <summary>
+    /// UIのボタンが押された際の処理の設定
+    /// </summary>
+    private void SetUiActions()
+    {
+        // タイムスケールのスライダーが変更された際の処理
+        timeScaleSlider.onValueChanged.AddListener(value => {
+            timeScale = value / CONSTANT_VELOCITY;
+            timeScaleText.text = LibFuncUtility.TextFormatBuilder(TIME_SCALE_TEXT_FORMAT, timeScale.ToString("F1"));
+        });
+
+        // タイムスケールのリセットボタンが押された際の処理
+        timeScaleResetButton.onClick.AddListener(() => timeScaleSlider.value = CONSTANT_VELOCITY);
+
+        // ボタンに関数を登録
+        for (int i = 0; i < moveButton.Length; i++)
+        {
+            int count = i;
+            moveButton[i].onClick
+                .AddListener(() => PlayerMoveButton((PlayerMove)count));
+        }
     }
 
     /// <summary>
@@ -96,8 +107,8 @@ public class DebugTool : MonoBehaviour
     /// </summary>
     private void DataSave()
     {
-        PlayerPrefs.SetFloat(PP.TimeScale.ToString(), timeScale);
-        PlayerPrefs.SetInt(PP.PlayerMove.ToString(), playerMove);
+        PlayerPrefs.SetFloat(PlayerPrefsEnum.TimeScale.ToString(), timeScale);
+        PlayerPrefs.SetInt(PlayerPrefsEnum.PlayerMove.ToString(), (int)playerMove);
 
         PlayerPrefs.Save();
     }
@@ -117,7 +128,7 @@ public class DebugTool : MonoBehaviour
         }
 
         isPause = !isPause;
-        UI_Window.SetActive(isPause);
+        uiWindow.SetActive(isPause);
     }
 
     /// <summary>
@@ -138,25 +149,6 @@ public class DebugTool : MonoBehaviour
     }
 
     /// <summary>
-    /// TimeScaleをTextに表示する
-    /// </summary>
-    /// <param name="num"></param>
-    private void TimeScaleSliderChange(float num)
-    {
-        timeScale = num / 10f;
-        timeScaleText.text = "x " + timeScale.ToString("F1");
-        //timeScaleText.text = "x " + num.ToString("0.0");
-    }
-
-    /// <summary>
-    /// TimeScaleを1に戻す
-    /// </summary>
-    private void TimeScaleReset()
-    {
-        timeScaleSlider.value = CONSTANT_VELOCITY;
-    }
-
-    /// <summary>
     /// TimeScaleの変更
     /// </summary>
     private void TimeScaleChange()
@@ -172,12 +164,12 @@ public class DebugTool : MonoBehaviour
     {
         switch (playerMove)
         {
-            case (int)PlayerMove.ControlledMove:
-                Player.instance.ChangeMove(new Player.ControlledMove());
+            case PlayerMove.ControlledMove:
+                Player.instance.ChangeMove(new ControlledMove());
                 break;
 
-            case (int)PlayerMove.AutoMove:
-                Player.instance.ChangeMove(new Player.AutoMove());
+            case PlayerMove.AutoMove:
+                Player.instance.ChangeMove(new AutoMove());
                 break;
 
             default:
@@ -191,29 +183,27 @@ public class DebugTool : MonoBehaviour
     /// </summary>
     private void PlayerMoveButton(PlayerMove playerMove)
     {
-        this.playerMove = (int)playerMove;
+        this.playerMove = playerMove;
+        ReSetColorPlayerMoveButton();
+    }
 
 
-        // ボタンの色を白に戻す
-        if (nowPlayButton != null)
+    /// <summary>
+    /// プレイヤーの移動方法指定ボタンの色を調整する処理
+    /// </summary>
+    private void ReSetColorPlayerMoveButton()
+    {
+        int length = Enum.GetValues(typeof(PlayerMove)).Length;
+        for (int i = 0; i < length; i++)
         {
-            ColorBlock colorBlock = nowPlayButton.colors;
-            colorBlock.normalColor = Color.white;
-            colorBlock.highlightedColor = Color.white;
-            colorBlock.selectedColor = Color.white;
+            Color col = (i == (int)playerMove) ? Color.yellow : Color.white;
 
-            nowPlayButton.colors = colorBlock;
-        }
+            ColorBlock colorBlock = moveButton[i].colors;
+            colorBlock.normalColor = col;
+            colorBlock.highlightedColor = col;
+            colorBlock.selectedColor = col;
 
-        // ボタンの色を黄色にする
-        eventSystem.currentSelectedGameObject.TryGetComponent(out nowPlayButton);
-        if (nowPlayButton != null)
-        {
-            ColorBlock colorBlock = nowPlayButton.colors;
-            colorBlock.normalColor = Color.yellow;
-            colorBlock.highlightedColor = Color.yellow;
-            colorBlock.selectedColor = Color.yellow;
-            nowPlayButton.colors = colorBlock;
+            moveButton[i].colors = colorBlock;
         }
     }
 

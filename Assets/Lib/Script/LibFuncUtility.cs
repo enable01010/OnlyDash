@@ -1,5 +1,5 @@
 using System;
-using UnityEditor;
+using System.Text;
 
 public static class LibFuncUtility
 {
@@ -15,5 +15,12 @@ public static class LibFuncUtility
             isDone = true;
             action();
         }
+    }
+
+    public static string TextFormatBuilder(string format, object arg0 = null, object arg1 = null, object arg2 = null)
+    {
+        var builder = new StringBuilder();
+        builder.AppendFormat(format, arg0, arg1, arg2);
+        return builder.ToString();
     }
 }

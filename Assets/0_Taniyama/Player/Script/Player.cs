@@ -824,5 +824,18 @@ public partial class Player : SingletonActionListener<Player>, I_PlayerInterface
     }
 
     #endregion
+
+#if UNITY_EDITOR
+
+    #region DebugToolópä÷êî
+
+    public void ChangeMove(I_Move i_Move)
+    {
+        move = i_Move;
+    }
+
+    #endregion
+
+#endif
 }
 

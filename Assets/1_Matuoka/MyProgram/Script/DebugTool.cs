@@ -2,6 +2,12 @@ using UnityEngine;
 using UnityEngine.UI;
 using System;
 using static Player;
+/// <summary>
+/// isPause
+/// DebugToolOff
+/// DebugToolOn
+/// SwitchBlock
+/// </summary>
 
 public class DebugTool : MonoBehaviour
 {

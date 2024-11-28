@@ -42,7 +42,7 @@ public class AutoGetComponentDrawer : PropertyDrawer
         // シリアライズが未設定の場合にのみ実行
         if (property.objectReferenceValue != null) return;
         // 対象がGameObjectの場合にのみ実行
-        GameObject targetObject = property.serializedObject.targetObject as GameObject;
+        MonoBehaviour targetObject = property.serializedObject.targetObject as MonoBehaviour;
         if (targetObject == null) return;
 
 

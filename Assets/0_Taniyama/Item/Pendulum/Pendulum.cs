@@ -10,7 +10,8 @@ public class Pendulum : MonoBehaviour, I_GeneralColliderUser
     bool isMove = true;
     [SerializeField] float MOVE_POWER = 5.0f;
     [SerializeField] float MIN_POWER_Y = 1.0f;
-    [SerializeField] float HIT_STOP_TIME = 0.3f;
+    [SerializeField] float HIT_STOP_TIME = 0.15f;
+    [SerializeField] float HIT_STOP_REMOVE_TIME = 0.1f;
     public const float PENDULUM_SPEED_SLOW = 0.99f;
 
     Transform _generalCollider;
@@ -32,9 +33,9 @@ public class Pendulum : MonoBehaviour, I_GeneralColliderUser
 
     void Update()
     {
-        if (isMove == false) return;
-
         nowPitch += Time.deltaTime;
+
+        if (isMove == false) return;
         float rate = (Mathf.Sin(nowPitch * Mathf.PI * 2 / MOVE_PITCH) + 1) / 2.0f; //ピッチの秒数で一周する周期を作成
         float angle = LibMath.GetValueToRange(rate, -MAX_ROTANGLE, MAX_ROTANGLE);
         transform.localEulerAngles = LibVector.Set_Z(transform.localEulerAngles, angle);
@@ -64,7 +65,7 @@ public class Pendulum : MonoBehaviour, I_GeneralColliderUser
         hit.HitPendulum(impact);
 
         //一定時間停止
-        LibCoroutineRunner.StartCoroutine(HitStop(HIT_STOP_TIME));
+        LibCoroutineRunner.StartCoroutine(HitStop(HIT_STOP_TIME, HIT_STOP_REMOVE_TIME));
     }
 
     /// <summary>
@@ -72,7 +73,7 @@ public class Pendulum : MonoBehaviour, I_GeneralColliderUser
     /// </summary>
     /// <param name="stopTime">停止時間</param>
     /// <returns>コルーチン</returns>
-    private IEnumerator HitStop(float stopTime)
+    private IEnumerator HitStop(float stopTime,float removeTime)
     {
         isMove = false;
 
@@ -81,6 +82,26 @@ public class Pendulum : MonoBehaviour, I_GeneralColliderUser
             stopTime -= Time.deltaTime;
             yield return null;
         }
+
+        Debug.Log("S" + transform.localEulerAngles.z);
+        while (removeTime > 0)
+        {
+            removeTime -= Time.deltaTime;
+
+            // ヒットストップで遅れた位置を規定時間かけてもとに戻す
+            float removeRate = LibMath.OneMinus(removeTime / HIT_STOP_REMOVE_TIME);
+            float nowAngle = transform.localEulerAngles.z;
+
+            float rate = (Mathf.Sin(nowPitch * Mathf.PI * 2 / MOVE_PITCH) + 1) / 2.0f; //ピッチの秒数で一周する周期を作成
+            float nonStopedAngle = LibMath.GetValueToRange(rate, -MAX_ROTANGLE, MAX_ROTANGLE);
+
+            float nextAngle = Mathf.Lerp(LibMath.ClampAngle180(nowAngle), LibMath.ClampAngle180(nonStopedAngle), removeRate);
+            Debug.Log(nextAngle);
+            transform.localEulerAngles = LibVector.Set_Z(transform.localEulerAngles, nextAngle);
+
+            yield return null;
+        }
+
         isMove = true;
     }
 }

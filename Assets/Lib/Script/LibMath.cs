@@ -165,6 +165,19 @@ public class LibMath
         return lfAngle;
     }
 
+    /// <summary>
+    /// Šp“x‚ğ-180`180‚ÉC³‚·‚éˆ—
+    /// </summary>
+    /// <param name="angle">C³‚·‚é‘O‚ÌŠp“x</param>
+    /// <returns>C³Œã‚ÌŠp“x</returns>
+    public static float ClampAngle180(float angle)
+    {
+        if (angle < -180) angle += 360f;
+        if (angle > 180) angle -= 360f;
+        return angle;
+    }
+
+
     public static float ClampAngle(float lfAngle, float lfMin, float lfMax)
     {
         if (lfAngle < -360f) lfAngle += 360f;

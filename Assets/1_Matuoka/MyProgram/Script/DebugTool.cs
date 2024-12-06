@@ -21,6 +21,10 @@ public class DebugTool : MonoBehaviour
     {
         TimeScale = 0,
         PlayerMove,
+        SavePosName,
+        SavePosX,
+        SavePosY,
+        SavePosZ,
     }
 
     private float timeScale;
@@ -39,6 +43,13 @@ public class DebugTool : MonoBehaviour
     [SerializeField] private Button[] moveButton;
     private Button nowPlayButton;
 
+
+    [SerializeField] private GameObject content;
+    [SerializeField, Range(1, 10)] private int SAVE_LIMIT = 10;
+    private GameObject[] buttonsObj;
+    private Button[] buttons;
+    private Text[] buttonsText;
+
     #endregion
 
 
@@ -48,6 +59,7 @@ public class DebugTool : MonoBehaviour
     {
         DataLoad();
         SetUiActions();
+        SavePosInit();
     }
 
     private void Start()
@@ -210,6 +222,24 @@ public class DebugTool : MonoBehaviour
             colorBlock.selectedColor = col;
 
             moveButton[i].colors = colorBlock;
+        }
+    }
+
+    private void SavePosInit()
+    {
+        buttonsObj = new GameObject[SAVE_LIMIT];
+        buttons = new Button[SAVE_LIMIT];
+        buttonsText = new Text[SAVE_LIMIT];
+
+        buttonsObj[0] = content.transform.GetChild(0).gameObject;
+        for (int i = 0; i < SAVE_LIMIT; i++)
+        {
+            if(i != 0) buttonsObj[i] = Instantiate(buttonsObj[0], content.transform);
+
+            buttons[i] = buttonsObj[i].GetComponent<Button>();
+            buttonsText[i] = buttonsObj[i].GetComponentInChildren<Text>();
+
+            buttonsText[i].text = PlayerPrefs.GetString(PlayerPrefsEnum.SavePosName.ToString() + i, "None");
         }
     }
 

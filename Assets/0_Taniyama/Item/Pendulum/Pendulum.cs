@@ -64,8 +64,11 @@ public class Pendulum : MonoBehaviour, I_GeneralColliderUser
 
         hit.HitPendulum(impact);
 
-        //ˆê’èŠÔ’â~
+        // ˆê’èŠÔ’â~
         LibCoroutineRunner.StartCoroutine(HitStop(HIT_STOP_TIME, HIT_STOP_REMOVE_TIME));
+
+        // ƒJƒƒ‰‚Ì—h‚ê
+        LibCameraAction.Shake();
     }
 
     /// <summary>
@@ -83,7 +86,6 @@ public class Pendulum : MonoBehaviour, I_GeneralColliderUser
             yield return null;
         }
 
-        Debug.Log("S" + transform.localEulerAngles.z);
         while (removeTime > 0)
         {
             removeTime -= Time.deltaTime;
@@ -96,7 +98,6 @@ public class Pendulum : MonoBehaviour, I_GeneralColliderUser
             float nonStopedAngle = LibMath.GetValueToRange(rate, -MAX_ROTANGLE, MAX_ROTANGLE);
 
             float nextAngle = Mathf.Lerp(LibMath.ClampAngle180(nowAngle), LibMath.ClampAngle180(nonStopedAngle), removeRate);
-            Debug.Log(nextAngle);
             transform.localEulerAngles = LibVector.Set_Z(transform.localEulerAngles, nextAngle);
 
             yield return null;

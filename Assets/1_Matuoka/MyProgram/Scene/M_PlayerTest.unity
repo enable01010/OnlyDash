@@ -1380,10 +1380,10 @@ RectTransform:
   - {fileID: 1584167136}
   m_Father: {fileID: 1447891639}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 650, y: -50}
+  m_SizeDelta: {x: 1000, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &676072185
 MonoBehaviour:
@@ -1588,7 +1588,7 @@ RectTransform:
   m_Father: {fileID: 998810289}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 20.000006}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -2016,7 +2016,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 981806887}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1487552466}
+        m_TargetAssemblyTypeName: DebugTool, Assembly-CSharp
+        m_MethodName: SavePosSaveButton
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &981806887
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2295,7 +2307,7 @@ RectTransform:
   m_Father: {fileID: 1156893341}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -2788,7 +2800,7 @@ RectTransform:
   m_Father: {fileID: 209653963}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 10, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -2865,9 +2877,9 @@ RectTransform:
   m_Father: {fileID: 246402987}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: -47, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1268511644
 MonoBehaviour:
@@ -3319,7 +3331,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 100}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1447891640
 MonoBehaviour:
@@ -3568,7 +3580,15 @@ MonoBehaviour:
   - {fileID: 278154997}
   - {fileID: 577913704}
   content: {fileID: 1447891638}
+  inputField: {fileID: 1539385097}
+  savePosButton: {fileID: 981806886}
   SAVE_LIMIT: 4
+  posNames: []
+  posVectors: []
+  posButtonsObj: []
+  posButtons: []
+  posButtonsText: []
+  playerPos: {x: 0, y: 0, z: 0}
 --- !u!114 &1487552467
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4803,7 +4823,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &2073451154
 MonoBehaviour:
   m_ObjectHideFlags: 0

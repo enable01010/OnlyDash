@@ -10,7 +10,6 @@ using UnityEngine.Rendering;
 public static class LibCameraAction
 {
     private static IEnumerator hitStopCoroutine = null;
-    private static Vector3 hitStopStartPos = Vector3.negativeInfinity;
     private static Vector3 shakeVector;
 
     /// <summary>
@@ -23,7 +22,6 @@ public static class LibCameraAction
         if(hitStopCoroutine != null)
         {
             // 終了処理
-            Camera.main.transform.localPosition = hitStopStartPos;
             LibCoroutineRunner.StopCoroutine(hitStopCoroutine);
             hitStopCoroutine = null;
         }
@@ -51,7 +49,6 @@ public static class LibCameraAction
 
         // URPのカメラ設定
         RenderPipelineManager.beginCameraRendering += MoveCamera;
-        RenderPipelineManager.endCameraRendering += MoveEndCamera;
 
         // カメラの移動方向のみ算出
         float time = shakeData.duration;
@@ -69,26 +66,12 @@ public static class LibCameraAction
 
         // URPのカメラ設定削除
         RenderPipelineManager.beginCameraRendering -= MoveCamera;
-        RenderPipelineManager.endCameraRendering -= MoveEndCamera;
     }
 
     private static void MoveCamera(ScriptableRenderContext context, Camera cam)
     {
-        if(hitStopStartPos == Vector3.negativeInfinity)
-        {
-            hitStopStartPos = cam.transform.localPosition;
-        }
-        
         cam.transform.localPosition += cam.transform.rotation * shakeVector;
     }
-
-    private static void MoveEndCamera(ScriptableRenderContext context, Camera cam)
-    {
-        cam.transform.localPosition = hitStopStartPos;
-        hitStopStartPos = Vector3.negativeInfinity;
-    }
-
-    
 }
 
 [System.Serializable]

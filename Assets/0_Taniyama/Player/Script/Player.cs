@@ -42,6 +42,7 @@ public partial class Player : SingletonActionListener<Player>, I_PlayerInterface
 
     [Space(10)]
     [Tooltip("ジャンプクールタイム"),SerializeField] private float JUMP_TIMEOUT = 0.50f;
+    [Tooltip("コヨーテタイムの時間"), SerializeField] private float JUMP_COYOTE_TIME = 0.15f; 
     [Tooltip("落下までの時間"),SerializeField] private float FALL_TIMEOUT = 0.15f;
 
     [Space(10)]
@@ -60,6 +61,7 @@ public partial class Player : SingletonActionListener<Player>, I_PlayerInterface
     private float TERMINAL_VELOCITY = 53.0f;
     //時間
     private float _jumpTimeoutDelta;
+    private float _coyoteTime;
     private float _fallTimeoutDelta;
     private float _slidingTimeoutDelta;
 
@@ -327,7 +329,14 @@ public partial class Player : SingletonActionListener<Player>, I_PlayerInterface
 
         if (isGrounded == false)
         {
-            _jumpTimeoutDelta = JUMP_TIMEOUT;
+            if(_coyoteTime < JUMP_COYOTE_TIME)
+            {
+                _coyoteTime += Time.deltaTime;
+            }
+            else
+            {
+                _jumpTimeoutDelta = JUMP_TIMEOUT;
+            }
 
             // fall timeout
             if (_fallTimeoutDelta >= 0.0f)
@@ -363,6 +372,8 @@ public partial class Player : SingletonActionListener<Player>, I_PlayerInterface
             {
                 _jumpTimeoutDelta -= Time.deltaTime;
             }
+
+            _coyoteTime = 0;
         }
     }
 
@@ -400,7 +411,7 @@ public partial class Player : SingletonActionListener<Player>, I_PlayerInterface
     public override void OnJump(InputAction.CallbackContext context)
     {
         if (GameData.G_AllCheck() == true) return;
-        if (isGrounded == false) return;
+        if (isGrounded == false && _coyoteTime > JUMP_COYOTE_TIME) return;
 
         base.OnJump(context);
 

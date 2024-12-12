@@ -27,7 +27,6 @@ public class DebugTool : MonoBehaviour
         SavePosZ,
         SaveCameraPosX,
         SaveCameraPosY,
-        SaveCameraPosZ,
     }
 
     private float timeScale;
@@ -54,13 +53,10 @@ public class DebugTool : MonoBehaviour
     public List<Vector3> posPlayerVectors = new();
     public List<Vector3> posCameraVectors = new();
     private List<GameObject> posButtonsObj = new();
+    private GameObject baseButton;
     private List<Button> posButtons = new();
     private List<Text> posButtonsText = new();
     private GameObject playerFollowCamera;
-
-    // DebugTool開くときに代入、開いている間Updateで代入
-    private Vector3 playerPos;
-    private Vector3 cameraPos;
 
     #endregion
 
@@ -71,7 +67,7 @@ public class DebugTool : MonoBehaviour
     {
         DataLoad();
         SetUiActions();
-        posButtonsObj.Add(content.transform.GetChild(0).gameObject);
+        baseButton = content.transform.GetChild(0).gameObject;
         SavePosButtonInstantiate();
     }
 
@@ -86,9 +82,6 @@ public class DebugTool : MonoBehaviour
 
     private void Update()
     {
-        if (isDebugToolOpen == true) Player.instance.transform.position = playerPos;
-        if (isDebugToolOpen == true) playerFollowCamera.transform.position = cameraPos;
-
         if (Input.GetKeyDown(KeyCode.F1) == false) return;
         ChangeDebugTool();
     }
@@ -175,8 +168,7 @@ public class DebugTool : MonoBehaviour
     private void DebugToolOpen()
     {
         Time.timeScale = 0f;
-        playerPos = Player.instance.transform.position;
-        cameraPos = playerFollowCamera.transform.position;
+        Player.instance.GetController().enabled = false;
     }
 
     /// <summary>
@@ -186,6 +178,8 @@ public class DebugTool : MonoBehaviour
     {
         DataSave();
         DataSet();
+
+        Player.instance.GetController().enabled = true;
     }
 
     /// <summary>
@@ -255,25 +249,24 @@ public class DebugTool : MonoBehaviour
         for (int i = 0; i < SAVE_LIMIT; i++)
         {
             // データがなかったらbreak
-            string @tempString = PlayerPrefs.GetString(PlayerPrefsEnum.SavePosName.ToString() + i, "None");
-            if (@tempString == "None") break;
+            string @string = PlayerPrefs.GetString(PlayerPrefsEnum.SavePosName.ToString() + i);
+            if (string.IsNullOrEmpty(@string)) break;
 
             // Listに名前を格納
-            posNames.Add(@tempString);
+            posNames.Add(@string);
 
             // ListにPlayerの位置を格納
-            Vector3 tempPlayerPos = Vector3.zero;
-            tempPlayerPos.x = PlayerPrefs.GetFloat(PlayerPrefsEnum.SavePosX.ToString() + i);
-            tempPlayerPos.y = PlayerPrefs.GetFloat(PlayerPrefsEnum.SavePosY.ToString() + i);
-            tempPlayerPos.z = PlayerPrefs.GetFloat(PlayerPrefsEnum.SavePosZ.ToString() + i);
-            posPlayerVectors.Add(tempPlayerPos);
+            Vector3 @player = Vector3.zero;
+            @player.x = PlayerPrefs.GetFloat(PlayerPrefsEnum.SavePosX.ToString() + i);
+            @player.y = PlayerPrefs.GetFloat(PlayerPrefsEnum.SavePosY.ToString() + i);
+            @player.z = PlayerPrefs.GetFloat(PlayerPrefsEnum.SavePosZ.ToString() + i);
+            posPlayerVectors.Add(@player);
 
             // ListにCameraの位置を格納
-            Vector3 tempCameraPos = Vector3.zero;
-            tempCameraPos.x = PlayerPrefs.GetFloat(PlayerPrefsEnum.SaveCameraPosX.ToString() + i);
-            tempCameraPos.y = PlayerPrefs.GetFloat(PlayerPrefsEnum.SaveCameraPosY.ToString() + i);
-            tempCameraPos.z = PlayerPrefs.GetFloat(PlayerPrefsEnum.SaveCameraPosZ.ToString() + i);
-            posCameraVectors.Add(tempCameraPos);
+            Vector3 @camera = Vector3.zero;
+            @camera.x = PlayerPrefs.GetFloat(PlayerPrefsEnum.SaveCameraPosX.ToString() + i);
+            @camera.y = PlayerPrefs.GetFloat(PlayerPrefsEnum.SaveCameraPosY.ToString() + i);
+            posCameraVectors.Add(@camera);
         }  
     }
 
@@ -284,33 +277,33 @@ public class DebugTool : MonoBehaviour
     {
         for (int i = 0; i < posNames.Count; i++)
         {
-            // 起動時にボタンが1個ある
-            if (i != 0) posButtonsObj.Add(Instantiate(posButtonsObj[0], content.transform));
+            var obj = Instantiate(baseButton, content.transform);
+            posButtonsObj.Add(obj);
+
+            // 非アクティブのオブジェクトを複製するためアクティブに変更
+            obj.SetActive(true);
 
             // ボタンの関数設定
             Vector3 tempPlayerPos = posPlayerVectors[i];
             Vector3 tempCameraPos = posCameraVectors[i];
-            posButtonsObj[i].GetComponent<Button>().onClick
+            obj.GetComponent<Button>().onClick
                 .AddListener(() => 
                 {
                     SavePosButtonWarp(tempPlayerPos, tempCameraPos);
                 });
 
             // Listに格納
-            posButtons.Add(posButtonsObj[i].GetComponent<Button>());
-            posButtonsText.Add(posButtonsObj[i].GetComponentInChildren<Text>());
+            posButtons.Add(obj.GetComponent<Button>());
+            posButtonsText.Add(obj.GetComponentInChildren<Text>());
 
             // ボタンのText変更
             posButtonsText[i].text = posNames[i];
 
             // Deleteボタンの関数設定
             string name = posNames[i];
-            posButtonsObj[i].transform.GetChild(1).GetComponent<Button>().onClick
+            obj.transform.GetChild(1).GetComponent<Button>().onClick
                 .AddListener(() => SavePosDeleteButton(name));
         }
-
-        // 何もセーブがなければボタン非表示
-        posButtonsObj[0].SetActive(posNames.Count != 0);
     }
 
     /// <summary>
@@ -330,21 +323,20 @@ public class DebugTool : MonoBehaviour
         PlayerPrefs.SetFloat(PlayerPrefsEnum.SavePosZ.ToString() + (posPlayerVectors.Count - 1), posPlayerVectors[^1].z);
 
         // Cameraの位置の保存
-        posCameraVectors.Add(playerFollowCamera.transform.position);
+        posCameraVectors.Add(Player.instance.DebugCameraAngleSGet());
         PlayerPrefs.SetFloat(PlayerPrefsEnum.SaveCameraPosX.ToString() + (posCameraVectors.Count - 1), posCameraVectors[^1].x);
         PlayerPrefs.SetFloat(PlayerPrefsEnum.SaveCameraPosY.ToString() + (posCameraVectors.Count - 1), posCameraVectors[^1].y);
-        PlayerPrefs.SetFloat(PlayerPrefsEnum.SaveCameraPosZ.ToString() + (posCameraVectors.Count - 1), posCameraVectors[^1].z);
 
 
         PlayerPrefs.Save();
 
-        // ボタンの生成(非表示切り替え)
-        posButtonsObj[0].SetActive(true);
-        if (posButtonsObj.Count != posNames.Count) posButtonsObj.Add(Instantiate(posButtonsObj[0], content.transform));
+        posButtonsObj.Add(Instantiate(baseButton,content.transform));
+
+        posButtonsObj[^1].SetActive(true);
 
         // ボタンの関数設定
         Vector3 tempPlayerPos = posPlayerVectors[^1];
-        Vector3 tempCameraPos = posPlayerVectors[^1];
+        Vector3 tempCameraPos = posCameraVectors[^1];
         posButtonsObj[^1].GetComponent<Button>().onClick
             .AddListener(() => 
             {
@@ -379,13 +371,12 @@ public class DebugTool : MonoBehaviour
 
 
         // PlayerPrefsの末尾を削除
-        PlayerPrefs.DeleteKey(PlayerPrefsEnum.SavePosName.ToString() + (posNames.Count - 1));
-        PlayerPrefs.DeleteKey(PlayerPrefsEnum.SavePosX.ToString() + (posPlayerVectors.Count - 1));
-        PlayerPrefs.DeleteKey(PlayerPrefsEnum.SavePosY.ToString() + (posPlayerVectors.Count - 1));
-        PlayerPrefs.DeleteKey(PlayerPrefsEnum.SavePosZ.ToString() + (posPlayerVectors.Count - 1));
-        PlayerPrefs.DeleteKey(PlayerPrefsEnum.SaveCameraPosX.ToString() + (posCameraVectors.Count - 1));
-        PlayerPrefs.DeleteKey(PlayerPrefsEnum.SaveCameraPosY.ToString() + (posCameraVectors.Count - 1));
-        PlayerPrefs.DeleteKey(PlayerPrefsEnum.SaveCameraPosZ.ToString() + (posCameraVectors.Count - 1));
+        PlayerPrefs.DeleteKey(PlayerPrefsEnum.SavePosName.ToString() + (posNames.Count));
+        PlayerPrefs.DeleteKey(PlayerPrefsEnum.SavePosX.ToString() + (posPlayerVectors.Count));
+        PlayerPrefs.DeleteKey(PlayerPrefsEnum.SavePosY.ToString() + (posPlayerVectors.Count));
+        PlayerPrefs.DeleteKey(PlayerPrefsEnum.SavePosZ.ToString() + (posPlayerVectors.Count));
+        PlayerPrefs.DeleteKey(PlayerPrefsEnum.SaveCameraPosX.ToString() + (posCameraVectors.Count));
+        PlayerPrefs.DeleteKey(PlayerPrefsEnum.SaveCameraPosY.ToString() + (posCameraVectors.Count));
 
 
         // PlayerPrefsの更新(上書き)
@@ -397,7 +388,6 @@ public class DebugTool : MonoBehaviour
             PlayerPrefs.SetFloat(PlayerPrefsEnum.SavePosZ.ToString() + i, posPlayerVectors[i].z);
             PlayerPrefs.SetFloat(PlayerPrefsEnum.SaveCameraPosX.ToString() + i, posCameraVectors[i].x);
             PlayerPrefs.SetFloat(PlayerPrefsEnum.SaveCameraPosY.ToString() + i, posCameraVectors[i].y);
-            PlayerPrefs.SetFloat(PlayerPrefsEnum.SaveCameraPosZ.ToString() + i, posCameraVectors[i].z);
         }
 
 
@@ -423,10 +413,8 @@ public class DebugTool : MonoBehaviour
     /// <param name="cameraPos"></param>
     private void SavePosButtonWarp(Vector3 playerPos, Vector3 cameraPos)
     {
-        //Player.instance.transform.position = playerPos;
-        //playerFollowCamera.transform.position = cameraPos;
-        this.playerPos = playerPos;
-        this.cameraPos = cameraPos;
+        Player.instance.transform.position = playerPos;
+        Player.instance.DebugCameraAngleSet(cameraPos);
     }
 
     #endregion

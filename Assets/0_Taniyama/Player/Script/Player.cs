@@ -29,7 +29,11 @@ public partial class Player : SingletonActionListener<Player>, I_PlayerInterface
     private CharacterController _controller;
     private GameObject _mainCamera;
 
-    #endregion
+#if UNITY_EDITOR
+    public CharacterController GetController() { return _controller; }
+#endif
+
+#endregion
 
     #region ステータス
 
@@ -519,12 +523,18 @@ public partial class Player : SingletonActionListener<Player>, I_PlayerInterface
     }
 
 #if UNITY_EDITOR
-    private void DebugCameraAngleSet(Vector3 angle)
+    public void DebugCameraAngleSet(Vector3 angle)
     {
         _cinemachineTargetPitch = angle.x;
-        _cinemachineTargetPitch = angle.y;
+        _cinemachineTargetYaw = angle.y;
         CinemachineCameraTarget.transform.rotation = Quaternion.Euler(_cinemachineTargetPitch + CameraAngleOverride,_cinemachineTargetYaw, 0.0f);
     }
+
+    public Vector3 DebugCameraAngleSGet()
+    {
+        return new Vector3(_cinemachineTargetPitch, _cinemachineTargetYaw, 0);
+    }
+
 #endif
 
 #endregion

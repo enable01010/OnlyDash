@@ -1076,7 +1076,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Enter text...
+  m_Text: 
 --- !u!222 &548155870
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1363,7 +1363,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &676072184
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3584,7 +3584,8 @@ MonoBehaviour:
   inputField: {fileID: 1539385097}
   savePosButton: {fileID: 981806886}
   SAVE_LIMIT: 4
-  posVectors: []
+  posPlayerVectors: []
+  posCameraVectors: []
 --- !u!114 &1487552467
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6429,6 +6430,7 @@ MonoBehaviour:
   SPRINT_SPEED: 5.335
   MOVE_SPEED: 5.335
   JUMP_TIMEOUT: 0.5
+  JUMP_COYOTE_TIME: 0.15
   FALL_TIMEOUT: 0.15
   SLIDING_TIMEOUT: 1
   SLIDING_SPEED: 6

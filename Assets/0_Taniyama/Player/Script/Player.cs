@@ -518,7 +518,16 @@ public partial class Player : SingletonActionListener<Player>, I_PlayerInterface
             _cinemachineTargetYaw, 0.0f);
     }
 
-    #endregion
+#if UNITY_EDITOR
+    private void DebugCameraAngleSet(Vector3 angle)
+    {
+        _cinemachineTargetPitch = angle.x;
+        _cinemachineTargetPitch = angle.y;
+        CinemachineCameraTarget.transform.rotation = Quaternion.Euler(_cinemachineTargetPitch + CameraAngleOverride,_cinemachineTargetYaw, 0.0f);
+    }
+#endif
+
+#endregion
 
     #region ƒTƒEƒ“ƒhŠÖŒW
 

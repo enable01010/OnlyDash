@@ -12,7 +12,9 @@ public class DebugTool : MonoBehaviour
 #if UNITY_EDITOR
 
     #region Field
-    private bool isDebugTool = false;
+
+    [SerializeField] private bool isStartOpen = false;
+    private bool isDebugToolOpen = false;
     [SerializeField] private GameObject uiWindow;
 
     private enum PlayerPrefsEnum
@@ -23,6 +25,9 @@ public class DebugTool : MonoBehaviour
         SavePosX,
         SavePosY,
         SavePosZ,
+        SaveCameraPosX,
+        SaveCameraPosY,
+        SaveCameraPosZ,
     }
 
     private float timeScale;
@@ -39,19 +44,23 @@ public class DebugTool : MonoBehaviour
     }
     private PlayerMove playerMove;
     [SerializeField] private Button[] moveButton;
-    private Button nowPlayButton;
 
 
     [SerializeField] private GameObject content;
     [SerializeField] private InputField inputField;
     [SerializeField] private Button savePosButton;
     [SerializeField, Range(1, 10)] private int SAVE_LIMIT = 10;
-    public List<string> posNames = new();
-    public List<Vector3> posVectors = new(); 
-    public List<GameObject> posButtonsObj = new();
-    public List<Button> posButtons = new();
-    public List<Text> posButtonsText = new();
-    public Vector3 playerPos;
+    private List<string> posNames = new();
+    public List<Vector3> posPlayerVectors = new();
+    public List<Vector3> posCameraVectors = new();
+    private List<GameObject> posButtonsObj = new();
+    private List<Button> posButtons = new();
+    private List<Text> posButtonsText = new();
+    private GameObject playerFollowCamera;
+
+    // DebugTool開くときに代入、開いている間Updateで代入
+    private Vector3 playerPos;
+    private Vector3 cameraPos;
 
     #endregion
 
@@ -63,20 +72,25 @@ public class DebugTool : MonoBehaviour
         DataLoad();
         SetUiActions();
         posButtonsObj.Add(content.transform.GetChild(0).gameObject);
-        SavePosButtonChange();
-        SavePosInit();
+        SavePosButtonInstantiate();
     }
 
     private void Start()
     {
         DataSet();
         ResetColorPlayerMoveButton();
+
+        playerFollowCamera = GameObject.Find("PlayerFollowCamera");
+        if (isStartOpen) ChangeDebugTool();
     }
 
     private void Update()
     {
+        if (isDebugToolOpen == true) Player.instance.transform.position = playerPos;
+        if (isDebugToolOpen == true) playerFollowCamera.transform.position = cameraPos;
+
         if (Input.GetKeyDown(KeyCode.F1) == false) return;
-        InputKey();
+        ChangeDebugTool();
     }
 
     #endregion
@@ -124,7 +138,6 @@ public class DebugTool : MonoBehaviour
     {
         TimeScaleChange();
         PlayerMoveChange();
-        PlayerPosChange();
     }
 
     /// <summary>
@@ -141,9 +154,9 @@ public class DebugTool : MonoBehaviour
     /// <summary>
     /// DebugToolのON・OFF切り替え
     /// </summary>
-    private void InputKey()
+    private void ChangeDebugTool()
     {
-        if (isDebugTool == false)
+        if (isDebugToolOpen == false)
         {
             DebugToolOpen();
         }
@@ -152,22 +165,22 @@ public class DebugTool : MonoBehaviour
             DebugToolClose();
         }
 
-        isDebugTool = !isDebugTool;
-        uiWindow.SetActive(isDebugTool);
+        isDebugToolOpen = !isDebugToolOpen;
+        uiWindow.SetActive(isDebugToolOpen);
     }
 
     /// <summary>
-    /// DebugToolをONにする処理
+    /// DebugToolを開く処理
     /// </summary>
     private void DebugToolOpen()
     {
         Time.timeScale = 0f;
-
         playerPos = Player.instance.transform.position;
+        cameraPos = playerFollowCamera.transform.position;
     }
 
     /// <summary>
-    /// DebugToolをOFFにする処理
+    /// DebugToolを閉じる処理
     /// </summary>
     private void DebugToolClose()
     {
@@ -205,11 +218,6 @@ public class DebugTool : MonoBehaviour
         }
     }
 
-    private void PlayerPosChange()
-    {
-        Player.instance.transform.position = playerPos;
-    }
-
     /// <summary>
     /// 移動方法を切り替えるボタン
     /// </summary>
@@ -239,69 +247,186 @@ public class DebugTool : MonoBehaviour
         }
     }
 
-    private void SavePosInit()
-    {
-        playerPos = Player.instance.transform.position;
-    }
-
+    /// <summary>
+    /// 起動時のPlayerPrefsからのデータ取得
+    /// </summary>
     private void SavePosLoad()
     {
         for (int i = 0; i < SAVE_LIMIT; i++)
         {
+            // データがなかったらbreak
             string @tempString = PlayerPrefs.GetString(PlayerPrefsEnum.SavePosName.ToString() + i, "None");
-
             if (@tempString == "None") break;
 
+            // Listに名前を格納
             posNames.Add(@tempString);
 
-            Vector3 @tempVector3 = Vector3.zero;
+            // ListにPlayerの位置を格納
+            Vector3 tempPlayerPos = Vector3.zero;
+            tempPlayerPos.x = PlayerPrefs.GetFloat(PlayerPrefsEnum.SavePosX.ToString() + i);
+            tempPlayerPos.y = PlayerPrefs.GetFloat(PlayerPrefsEnum.SavePosY.ToString() + i);
+            tempPlayerPos.z = PlayerPrefs.GetFloat(PlayerPrefsEnum.SavePosZ.ToString() + i);
+            posPlayerVectors.Add(tempPlayerPos);
 
-            @tempVector3.x = PlayerPrefs.GetFloat(PlayerPrefsEnum.SavePosX.ToString() + i);
-            @tempVector3.y = PlayerPrefs.GetFloat(PlayerPrefsEnum.SavePosY.ToString() + i);
-            @tempVector3.z = PlayerPrefs.GetFloat(PlayerPrefsEnum.SavePosZ.ToString() + i);
-
-            posVectors.Add(tempVector3);
+            // ListにCameraの位置を格納
+            Vector3 tempCameraPos = Vector3.zero;
+            tempCameraPos.x = PlayerPrefs.GetFloat(PlayerPrefsEnum.SaveCameraPosX.ToString() + i);
+            tempCameraPos.y = PlayerPrefs.GetFloat(PlayerPrefsEnum.SaveCameraPosY.ToString() + i);
+            tempCameraPos.z = PlayerPrefs.GetFloat(PlayerPrefsEnum.SaveCameraPosZ.ToString() + i);
+            posCameraVectors.Add(tempCameraPos);
         }  
     }
 
-
-    private void SavePosButtonChange()
+    /// <summary>
+    /// 起動時のボタン生成
+    /// </summary>
+    private void SavePosButtonInstantiate()
     {
         for (int i = 0; i < posNames.Count; i++)
         {
-            if(i != 0) posButtonsObj.Add(Instantiate(posButtonsObj[0], content.transform));
+            // 起動時にボタンが1個ある
+            if (i != 0) posButtonsObj.Add(Instantiate(posButtonsObj[0], content.transform));
 
+            // ボタンの関数設定
+            Vector3 tempPlayerPos = posPlayerVectors[i];
+            Vector3 tempCameraPos = posCameraVectors[i];
+            posButtonsObj[i].GetComponent<Button>().onClick
+                .AddListener(() => 
+                {
+                    SavePosButtonWarp(tempPlayerPos, tempCameraPos);
+                });
+
+            // Listに格納
             posButtons.Add(posButtonsObj[i].GetComponent<Button>());
             posButtonsText.Add(posButtonsObj[i].GetComponentInChildren<Text>());
 
-            posButtonsText[i].text = PlayerPrefs.GetString(PlayerPrefsEnum.SavePosName.ToString() + i, "None");
+            // ボタンのText変更
+            posButtonsText[i].text = posNames[i];
+
+            // Deleteボタンの関数設定
+            string name = posNames[i];
+            posButtonsObj[i].transform.GetChild(1).GetComponent<Button>().onClick
+                .AddListener(() => SavePosDeleteButton(name));
         }
 
+        // 何もセーブがなければボタン非表示
         posButtonsObj[0].SetActive(posNames.Count != 0);
     }
 
+    /// <summary>
+    /// 新たなセーブポイントの追加
+    /// </summary>
     public void SavePosSaveButton()
     {
+        // 名前の保存
         posNames.Add(inputField.text);
         inputField.text = "";
         PlayerPrefs.SetString(PlayerPrefsEnum.SavePosName.ToString() + (posNames.Count - 1), posNames[^1]);
 
-        posVectors.Add(Player.instance.transform.position);
-        PlayerPrefs.SetFloat(PlayerPrefsEnum.SavePosX.ToString() + (posVectors.Count - 1), posVectors[^1].x);
-        PlayerPrefs.SetFloat(PlayerPrefsEnum.SavePosY.ToString() + (posVectors.Count - 1), posVectors[^1].y);
-        PlayerPrefs.SetFloat(PlayerPrefsEnum.SavePosZ.ToString() + (posVectors.Count - 1), posVectors[^1].z);
+        // Playerの位置の保存
+        posPlayerVectors.Add(Player.instance.transform.position);
+        PlayerPrefs.SetFloat(PlayerPrefsEnum.SavePosX.ToString() + (posPlayerVectors.Count - 1), posPlayerVectors[^1].x);
+        PlayerPrefs.SetFloat(PlayerPrefsEnum.SavePosY.ToString() + (posPlayerVectors.Count - 1), posPlayerVectors[^1].y);
+        PlayerPrefs.SetFloat(PlayerPrefsEnum.SavePosZ.ToString() + (posPlayerVectors.Count - 1), posPlayerVectors[^1].z);
+
+        // Cameraの位置の保存
+        posCameraVectors.Add(playerFollowCamera.transform.position);
+        PlayerPrefs.SetFloat(PlayerPrefsEnum.SaveCameraPosX.ToString() + (posCameraVectors.Count - 1), posCameraVectors[^1].x);
+        PlayerPrefs.SetFloat(PlayerPrefsEnum.SaveCameraPosY.ToString() + (posCameraVectors.Count - 1), posCameraVectors[^1].y);
+        PlayerPrefs.SetFloat(PlayerPrefsEnum.SaveCameraPosZ.ToString() + (posCameraVectors.Count - 1), posCameraVectors[^1].z);
+
 
         PlayerPrefs.Save();
 
-
+        // ボタンの生成(非表示切り替え)
         posButtonsObj[0].SetActive(true);
-
         if (posButtonsObj.Count != posNames.Count) posButtonsObj.Add(Instantiate(posButtonsObj[0], content.transform));
 
+        // ボタンの関数設定
+        Vector3 tempPlayerPos = posPlayerVectors[^1];
+        Vector3 tempCameraPos = posPlayerVectors[^1];
+        posButtonsObj[^1].GetComponent<Button>().onClick
+            .AddListener(() => 
+            {
+                SavePosButtonWarp(tempPlayerPos, tempCameraPos);
+            });
+
+        // Listに格納
         posButtons.Add(posButtonsObj[^1].GetComponent<Button>());
         posButtonsText.Add(posButtonsObj[^1].GetComponentInChildren<Text>());
 
+        // ボタンのText変更
         posButtonsText[^1].text = posNames[^1];
+
+        // Deleteボタンの関数設定
+        string name = posNames[^1];
+        posButtonsObj[^1].transform.GetChild(1).GetComponent<Button>().onClick
+                .AddListener(() => SavePosDeleteButton(name));
+    }
+
+    /// <summary>
+    /// セーブを消す
+    /// </summary>
+    /// <param name="name"></param>
+    public void SavePosDeleteButton(string name)
+    {
+        // データをリストから削除
+        int index = posNames.IndexOf(name);
+
+        posNames.RemoveAt(index);
+        posPlayerVectors.RemoveAt(index);
+        posCameraVectors.RemoveAt(index);
+
+
+        // PlayerPrefsの末尾を削除
+        PlayerPrefs.DeleteKey(PlayerPrefsEnum.SavePosName.ToString() + (posNames.Count - 1));
+        PlayerPrefs.DeleteKey(PlayerPrefsEnum.SavePosX.ToString() + (posPlayerVectors.Count - 1));
+        PlayerPrefs.DeleteKey(PlayerPrefsEnum.SavePosY.ToString() + (posPlayerVectors.Count - 1));
+        PlayerPrefs.DeleteKey(PlayerPrefsEnum.SavePosZ.ToString() + (posPlayerVectors.Count - 1));
+        PlayerPrefs.DeleteKey(PlayerPrefsEnum.SaveCameraPosX.ToString() + (posCameraVectors.Count - 1));
+        PlayerPrefs.DeleteKey(PlayerPrefsEnum.SaveCameraPosY.ToString() + (posCameraVectors.Count - 1));
+        PlayerPrefs.DeleteKey(PlayerPrefsEnum.SaveCameraPosZ.ToString() + (posCameraVectors.Count - 1));
+
+
+        // PlayerPrefsの更新(上書き)
+        for (int i = 0; i < posNames.Count; i++)
+        {
+            PlayerPrefs.SetString(PlayerPrefsEnum.SavePosName.ToString() + i, posNames[i]);
+            PlayerPrefs.SetFloat(PlayerPrefsEnum.SavePosX.ToString() + i, posPlayerVectors[i].x);
+            PlayerPrefs.SetFloat(PlayerPrefsEnum.SavePosY.ToString() + i, posPlayerVectors[i].y);
+            PlayerPrefs.SetFloat(PlayerPrefsEnum.SavePosZ.ToString() + i, posPlayerVectors[i].z);
+            PlayerPrefs.SetFloat(PlayerPrefsEnum.SaveCameraPosX.ToString() + i, posCameraVectors[i].x);
+            PlayerPrefs.SetFloat(PlayerPrefsEnum.SaveCameraPosY.ToString() + i, posCameraVectors[i].y);
+            PlayerPrefs.SetFloat(PlayerPrefsEnum.SaveCameraPosZ.ToString() + i, posCameraVectors[i].z);
+        }
+
+
+        // ボタンが0個にならないようにする
+        if (posButtonsObj.Count == 1)
+        {
+            posButtonsObj[0].SetActive(false);
+            return;
+        }
+
+        // ボタンの削除
+        Destroy(posButtonsObj[index]);
+
+        posButtonsObj.RemoveAt(index);
+        posButtons.RemoveAt(index);
+        posButtonsText.RemoveAt(index);
+    }
+
+    /// <summary>
+    /// ボタンを押したらワープする
+    /// </summary>
+    /// <param name="playerPos"></param>
+    /// <param name="cameraPos"></param>
+    private void SavePosButtonWarp(Vector3 playerPos, Vector3 cameraPos)
+    {
+        //Player.instance.transform.position = playerPos;
+        //playerFollowCamera.transform.position = cameraPos;
+        this.playerPos = playerPos;
+        this.cameraPos = cameraPos;
     }
 
     #endregion

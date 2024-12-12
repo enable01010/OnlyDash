@@ -321,8 +321,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 50, y: -400}
-  m_SizeDelta: {x: 1400, y: 172}
+  m_AnchoredPosition: {x: 50, y: -450}
+  m_SizeDelta: {x: 1400, y: 350}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &246402988
 MonoBehaviour:
@@ -3572,6 +3572,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bdfff115ba7ce7c4ba81181bb92c118a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isStartOpen: 1
   uiWindow: {fileID: 2073451153}
   timeScaleSlider: {fileID: 1462668440}
   timeScaleText: {fileID: 2038645976}
@@ -3583,12 +3584,7 @@ MonoBehaviour:
   inputField: {fileID: 1539385097}
   savePosButton: {fileID: 981806886}
   SAVE_LIMIT: 4
-  posNames: []
   posVectors: []
-  posButtonsObj: []
-  posButtons: []
-  posButtonsText: []
-  playerPos: {x: 0, y: 0, z: 0}
 --- !u!114 &1487552467
 MonoBehaviour:
   m_ObjectHideFlags: 0

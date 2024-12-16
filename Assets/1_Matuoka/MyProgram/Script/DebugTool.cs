@@ -45,18 +45,22 @@ public class DebugTool : MonoBehaviour
     [SerializeField] private Button[] moveButton;
 
 
-    [SerializeField] private GameObject content;
+    [SerializeField] private Transform content;
     [SerializeField] private InputField inputField;
     [SerializeField] private Button savePosButton;
-    [SerializeField, Range(1, 10)] private int SAVE_LIMIT = 10;
-    private List<string> posNames = new();
-    public List<Vector3> posPlayerVectors = new();
-    public List<Vector3> posCameraVectors = new();
-    private List<GameObject> posButtonsObj = new();
+
+    public struct SavePosData
+    {
+        public string saveName;
+        public Vector3 playerPos;
+        public Vector3 cameraEulerAngle;
+        public GameObject buttonObj;
+        public Button button;
+        public Text buttonText;
+    }
+
+    private List<SavePosData> savePosData = new();
     private GameObject baseButton;
-    private List<Button> posButtons = new();
-    private List<Text> posButtonsText = new();
-    private GameObject playerFollowCamera;
 
     #endregion
 
@@ -67,8 +71,6 @@ public class DebugTool : MonoBehaviour
     {
         DataLoad();
         SetUiActions();
-        baseButton = content.transform.GetChild(0).gameObject;
-        SavePosButtonInstantiate();
     }
 
     private void Start()
@@ -76,7 +78,6 @@ public class DebugTool : MonoBehaviour
         DataSet();
         ResetColorPlayerMoveButton();
 
-        playerFollowCamera = GameObject.Find("PlayerFollowCamera");
         if (isStartOpen) ChangeDebugTool();
     }
 
@@ -242,67 +243,71 @@ public class DebugTool : MonoBehaviour
     }
 
     /// <summary>
-    /// 起動時のPlayerPrefsからのデータ取得
+    /// ボタンを生成してリストに追加
     /// </summary>
-    private void SavePosLoad()
+    /// <param name="saveName"></param>
+    /// <param name="playerPos"></param>
+    /// <param name="cameraEulerAngle"></param>
+    private void InstantiateSaveButton(string saveName, Vector3 playerPos, Vector3 cameraEulerAngle)
     {
-        for (int i = 0; i < SAVE_LIMIT; i++)
-        {
-            // データがなかったらbreak
-            string @string = PlayerPrefs.GetString(PlayerPrefsEnum.SavePosName.ToString() + i);
-            if (string.IsNullOrEmpty(@string)) break;
+        // ボタン生成
+        GameObject @obj = Instantiate(baseButton, content);
+        @obj.SetActive(true);
 
-            // Listに名前を格納
-            posNames.Add(@string);
+        // ボタンの関数設定
+        Button @button = @obj.GetComponent<Button>();
+        @button.onClick.AddListener(() => SavePosButtonWarp(playerPos, cameraEulerAngle));
 
-            // ListにPlayerの位置を格納
-            Vector3 @player = Vector3.zero;
-            @player.x = PlayerPrefs.GetFloat(PlayerPrefsEnum.SavePosX.ToString() + i);
-            @player.y = PlayerPrefs.GetFloat(PlayerPrefsEnum.SavePosY.ToString() + i);
-            @player.z = PlayerPrefs.GetFloat(PlayerPrefsEnum.SavePosZ.ToString() + i);
-            posPlayerVectors.Add(@player);
+        // ボタンのText変更
+        Text @text = @obj.GetComponentInChildren<Text>();
+        @text.text = saveName;
 
-            // ListにCameraの位置を格納
-            Vector3 @camera = Vector3.zero;
-            @camera.x = PlayerPrefs.GetFloat(PlayerPrefsEnum.SaveCameraPosX.ToString() + i);
-            @camera.y = PlayerPrefs.GetFloat(PlayerPrefsEnum.SaveCameraPosY.ToString() + i);
-            posCameraVectors.Add(@camera);
-        }  
+        // Deleteボタンの関数設定
+        obj.transform.GetChild(1).GetComponent<Button>().onClick
+            .AddListener(() => SavePosDeleteButton(saveName));
+
+        // Listに追加
+        SavePosData @tempSavePosData;
+        @tempSavePosData.saveName = saveName;
+        @tempSavePosData.playerPos = playerPos;
+        @tempSavePosData.cameraEulerAngle = cameraEulerAngle;
+        @tempSavePosData.buttonObj = @obj;
+        @tempSavePosData.button = @button;
+        @tempSavePosData.buttonText = @text;
+        savePosData.Add(@tempSavePosData);
     }
 
     /// <summary>
-    /// 起動時のボタン生成
+    /// 起動時のボタンの生成
     /// </summary>
-    private void SavePosButtonInstantiate()
+    private void SavePosLoad()
     {
-        for (int i = 0; i < posNames.Count; i++)
+        baseButton = content.GetChild(0).gameObject;
+
+        int index = 0;
+        while (true)
         {
-            var obj = Instantiate(baseButton, content.transform);
-            posButtonsObj.Add(obj);
+            // 名前を取得
+            string name = PlayerPrefs.GetString(PlayerPrefsEnum.SavePosName.ToString() + index);
+            
+            // 保存データが無くなればbreak
+            if (string.IsNullOrEmpty(name)) break;
 
-            // 非アクティブのオブジェクトを複製するためアクティブに変更
-            obj.SetActive(true);
+            // Playerの位置を取得
+            Vector3 playerPos = Vector3.zero;
+            playerPos.x = PlayerPrefs.GetFloat(PlayerPrefsEnum.SavePosX.ToString() + index);
+            playerPos.y = PlayerPrefs.GetFloat(PlayerPrefsEnum.SavePosY.ToString() + index);
+            playerPos.z = PlayerPrefs.GetFloat(PlayerPrefsEnum.SavePosZ.ToString() + index);
 
-            // ボタンの関数設定
-            Vector3 tempPlayerPos = posPlayerVectors[i];
-            Vector3 tempCameraPos = posCameraVectors[i];
-            obj.GetComponent<Button>().onClick
-                .AddListener(() => 
-                {
-                    SavePosButtonWarp(tempPlayerPos, tempCameraPos);
-                });
+            // Cameraの角度を取得
+            Vector3 cameraAngle = Vector3.zero;
+            cameraAngle.x = PlayerPrefs.GetFloat(PlayerPrefsEnum.SaveCameraPosX.ToString() + index);
+            cameraAngle.y = PlayerPrefs.GetFloat(PlayerPrefsEnum.SaveCameraPosY.ToString() + index);
 
-            // Listに格納
-            posButtons.Add(obj.GetComponent<Button>());
-            posButtonsText.Add(obj.GetComponentInChildren<Text>());
+            // ボタンの生成
+            InstantiateSaveButton(name, playerPos, cameraAngle);
 
-            // ボタンのText変更
-            posButtonsText[i].text = posNames[i];
-
-            // Deleteボタンの関数設定
-            string name = posNames[i];
-            obj.transform.GetChild(1).GetComponent<Button>().onClick
-                .AddListener(() => SavePosDeleteButton(name));
+            index++;
         }
     }
 
@@ -311,49 +316,28 @@ public class DebugTool : MonoBehaviour
     /// </summary>
     public void SavePosSaveButton()
     {
+        int index = savePosData.Count;
+
         // 名前の保存
-        posNames.Add(inputField.text);
+        string @string = inputField.text;
         inputField.text = "";
-        PlayerPrefs.SetString(PlayerPrefsEnum.SavePosName.ToString() + (posNames.Count - 1), posNames[^1]);
+        PlayerPrefs.SetString(PlayerPrefsEnum.SavePosName.ToString() + index, @string);
 
         // Playerの位置の保存
-        posPlayerVectors.Add(Player.instance.transform.position);
-        PlayerPrefs.SetFloat(PlayerPrefsEnum.SavePosX.ToString() + (posPlayerVectors.Count - 1), posPlayerVectors[^1].x);
-        PlayerPrefs.SetFloat(PlayerPrefsEnum.SavePosY.ToString() + (posPlayerVectors.Count - 1), posPlayerVectors[^1].y);
-        PlayerPrefs.SetFloat(PlayerPrefsEnum.SavePosZ.ToString() + (posPlayerVectors.Count - 1), posPlayerVectors[^1].z);
+        Vector3 @playerPos = Player.instance.transform.position;
+        PlayerPrefs.SetFloat(PlayerPrefsEnum.SavePosX.ToString() + index, @playerPos.x);
+        PlayerPrefs.SetFloat(PlayerPrefsEnum.SavePosY.ToString() + index, @playerPos.y);
+        PlayerPrefs.SetFloat(PlayerPrefsEnum.SavePosZ.ToString() + index, @playerPos.z);
 
         // Cameraの位置の保存
-        posCameraVectors.Add(Player.instance.DebugCameraAngleSGet());
-        PlayerPrefs.SetFloat(PlayerPrefsEnum.SaveCameraPosX.ToString() + (posCameraVectors.Count - 1), posCameraVectors[^1].x);
-        PlayerPrefs.SetFloat(PlayerPrefsEnum.SaveCameraPosY.ToString() + (posCameraVectors.Count - 1), posCameraVectors[^1].y);
-
+        Vector3 @cameraAngle = Player.instance.DebugCameraAngleSGet();
+        PlayerPrefs.SetFloat(PlayerPrefsEnum.SaveCameraPosX.ToString() + index, @cameraAngle.x);
+        PlayerPrefs.SetFloat(PlayerPrefsEnum.SaveCameraPosY.ToString() + index, @cameraAngle.y);
 
         PlayerPrefs.Save();
 
-        posButtonsObj.Add(Instantiate(baseButton,content.transform));
-
-        posButtonsObj[^1].SetActive(true);
-
-        // ボタンの関数設定
-        Vector3 tempPlayerPos = posPlayerVectors[^1];
-        Vector3 tempCameraPos = posCameraVectors[^1];
-        posButtonsObj[^1].GetComponent<Button>().onClick
-            .AddListener(() => 
-            {
-                SavePosButtonWarp(tempPlayerPos, tempCameraPos);
-            });
-
-        // Listに格納
-        posButtons.Add(posButtonsObj[^1].GetComponent<Button>());
-        posButtonsText.Add(posButtonsObj[^1].GetComponentInChildren<Text>());
-
-        // ボタンのText変更
-        posButtonsText[^1].text = posNames[^1];
-
-        // Deleteボタンの関数設定
-        string name = posNames[^1];
-        posButtonsObj[^1].transform.GetChild(1).GetComponent<Button>().onClick
-                .AddListener(() => SavePosDeleteButton(name));
+        // ボタンの生成
+        InstantiateSaveButton(@string, @playerPos, @cameraAngle);
     }
 
     /// <summary>
@@ -363,47 +347,36 @@ public class DebugTool : MonoBehaviour
     public void SavePosDeleteButton(string name)
     {
         // データをリストから削除
-        int index = posNames.IndexOf(name);
-
-        posNames.RemoveAt(index);
-        posPlayerVectors.RemoveAt(index);
-        posCameraVectors.RemoveAt(index);
-
+        int index = 0;
+        for(; index < savePosData.Count; index++)
+        {
+            if (savePosData[index].saveName == name)
+            {
+                break;
+            }
+        }
+        Destroy(savePosData[index].buttonObj);
+        savePosData.RemoveAt(index);
 
         // PlayerPrefsの末尾を削除
-        PlayerPrefs.DeleteKey(PlayerPrefsEnum.SavePosName.ToString() + (posNames.Count));
-        PlayerPrefs.DeleteKey(PlayerPrefsEnum.SavePosX.ToString() + (posPlayerVectors.Count));
-        PlayerPrefs.DeleteKey(PlayerPrefsEnum.SavePosY.ToString() + (posPlayerVectors.Count));
-        PlayerPrefs.DeleteKey(PlayerPrefsEnum.SavePosZ.ToString() + (posPlayerVectors.Count));
-        PlayerPrefs.DeleteKey(PlayerPrefsEnum.SaveCameraPosX.ToString() + (posCameraVectors.Count));
-        PlayerPrefs.DeleteKey(PlayerPrefsEnum.SaveCameraPosY.ToString() + (posCameraVectors.Count));
-
+        int length = savePosData.Count;
+        PlayerPrefs.DeleteKey(PlayerPrefsEnum.SavePosName.ToString() + length);
+        PlayerPrefs.DeleteKey(PlayerPrefsEnum.SavePosX.ToString() + length);
+        PlayerPrefs.DeleteKey(PlayerPrefsEnum.SavePosY.ToString() + length);
+        PlayerPrefs.DeleteKey(PlayerPrefsEnum.SavePosZ.ToString() + length);
+        PlayerPrefs.DeleteKey(PlayerPrefsEnum.SaveCameraPosX.ToString() + length);
+        PlayerPrefs.DeleteKey(PlayerPrefsEnum.SaveCameraPosY.ToString() + length);
 
         // PlayerPrefsの更新(上書き)
-        for (int i = 0; i < posNames.Count; i++)
+        for (int i = 0; i < savePosData.Count; i++)
         {
-            PlayerPrefs.SetString(PlayerPrefsEnum.SavePosName.ToString() + i, posNames[i]);
-            PlayerPrefs.SetFloat(PlayerPrefsEnum.SavePosX.ToString() + i, posPlayerVectors[i].x);
-            PlayerPrefs.SetFloat(PlayerPrefsEnum.SavePosY.ToString() + i, posPlayerVectors[i].y);
-            PlayerPrefs.SetFloat(PlayerPrefsEnum.SavePosZ.ToString() + i, posPlayerVectors[i].z);
-            PlayerPrefs.SetFloat(PlayerPrefsEnum.SaveCameraPosX.ToString() + i, posCameraVectors[i].x);
-            PlayerPrefs.SetFloat(PlayerPrefsEnum.SaveCameraPosY.ToString() + i, posCameraVectors[i].y);
+            PlayerPrefs.SetString(PlayerPrefsEnum.SavePosName.ToString() + i, savePosData[i].saveName);
+            PlayerPrefs.SetFloat(PlayerPrefsEnum.SavePosX.ToString() + i, savePosData[i].playerPos.x);
+            PlayerPrefs.SetFloat(PlayerPrefsEnum.SavePosY.ToString() + i, savePosData[i].playerPos.y);
+            PlayerPrefs.SetFloat(PlayerPrefsEnum.SavePosZ.ToString() + i, savePosData[i].playerPos.z);
+            PlayerPrefs.SetFloat(PlayerPrefsEnum.SaveCameraPosX.ToString() + i, savePosData[i].cameraEulerAngle.x);
+            PlayerPrefs.SetFloat(PlayerPrefsEnum.SaveCameraPosY.ToString() + i, savePosData[i].cameraEulerAngle.y);
         }
-
-
-        // ボタンが0個にならないようにする
-        if (posButtonsObj.Count == 1)
-        {
-            posButtonsObj[0].SetActive(false);
-            return;
-        }
-
-        // ボタンの削除
-        Destroy(posButtonsObj[index]);
-
-        posButtonsObj.RemoveAt(index);
-        posButtons.RemoveAt(index);
-        posButtonsText.RemoveAt(index);
     }
 
     /// <summary>
@@ -411,11 +384,30 @@ public class DebugTool : MonoBehaviour
     /// </summary>
     /// <param name="playerPos"></param>
     /// <param name="cameraPos"></param>
-    private void SavePosButtonWarp(Vector3 playerPos, Vector3 cameraPos)
+    private void SavePosButtonWarp(Vector3 playerPos, Vector3 cameraAngle)
     {
         Player.instance.transform.position = playerPos;
-        Player.instance.DebugCameraAngleSet(cameraPos);
+        Player.instance.DebugCameraAngleSet(cameraAngle);
     }
+
+    //public static class PlayerPrefsManager
+    //{
+    //    public static void Load(List<SavePosData> savePosData)
+    //    {
+    //        
+    //    }
+
+    //    public static void Save()
+    //    {
+
+    //    }
+
+    //    public static void Delete()
+    //    {
+
+    //    }
+    //}
+
 
     #endregion
 

@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using System;
 using System.Collections.Generic;
 using static Player;
+using static DebugTool;
 /// <summary>
 /// SwitchBlock
 /// </summary>
@@ -17,7 +18,7 @@ public class DebugTool : MonoBehaviour
     private bool isDebugToolOpen = false;
     [SerializeField] private GameObject uiWindow;
 
-    private enum PlayerPrefsEnum
+    public enum PlayerPrefsEnum
     {
         TimeScale = 0,
         PlayerMove,
@@ -49,7 +50,7 @@ public class DebugTool : MonoBehaviour
     [SerializeField] private InputField inputField;
     [SerializeField] private Button savePosButton;
 
-    public struct SavePosData
+    public class SavePosData
     {
         public string saveName;
         public Vector3 playerPos;
@@ -123,6 +124,9 @@ public class DebugTool : MonoBehaviour
             moveButton[i].onClick
                 .AddListener(() => PlayerMoveButton((PlayerMove)count));
         }
+
+        // ポジションセーブ機能の新規登録用ボタン
+        savePosButton.onClick.AddListener(SavePosSaveButton);
     }
 
     /// <summary>
@@ -242,13 +246,7 @@ public class DebugTool : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// ボタンを生成してリストに追加
-    /// </summary>
-    /// <param name="saveName"></param>
-    /// <param name="playerPos"></param>
-    /// <param name="cameraEulerAngle"></param>
-    private void InstantiateSaveButton(string saveName, Vector3 playerPos, Vector3 cameraEulerAngle)
+    private void InstantiateSaveButton(SavePosData data)
     {
         // ボタン生成
         GameObject @obj = Instantiate(baseButton, content);
@@ -256,25 +254,20 @@ public class DebugTool : MonoBehaviour
 
         // ボタンの関数設定
         Button @button = @obj.GetComponent<Button>();
-        @button.onClick.AddListener(() => SavePosButtonWarp(playerPos, cameraEulerAngle));
+        @button.onClick.AddListener(() => SavePosButtonWarp(data.playerPos, data.cameraEulerAngle));
 
         // ボタンのText変更
         Text @text = @obj.GetComponentInChildren<Text>();
-        @text.text = saveName;
+        @text.text = data.saveName;
 
         // Deleteボタンの関数設定
         obj.transform.GetChild(1).GetComponent<Button>().onClick
-            .AddListener(() => SavePosDeleteButton(saveName));
+            .AddListener(() => SavePosDeleteButton(data.saveName));
 
         // Listに追加
-        SavePosData @tempSavePosData;
-        @tempSavePosData.saveName = saveName;
-        @tempSavePosData.playerPos = playerPos;
-        @tempSavePosData.cameraEulerAngle = cameraEulerAngle;
-        @tempSavePosData.buttonObj = @obj;
-        @tempSavePosData.button = @button;
-        @tempSavePosData.buttonText = @text;
-        savePosData.Add(@tempSavePosData);
+        data.buttonObj = @obj;
+        data.button = @button;
+        data.buttonText = @text;
     }
 
     /// <summary>
@@ -288,24 +281,16 @@ public class DebugTool : MonoBehaviour
         while (true)
         {
             // 名前を取得
-            string name = PlayerPrefs.GetString(PlayerPrefsEnum.SavePosName.ToString() + index);
+            SavePosData data = PlayerPrefsManager.Load(index);
             
             // 保存データが無くなればbreak
-            if (string.IsNullOrEmpty(name)) break;
-
-            // Playerの位置を取得
-            Vector3 playerPos = Vector3.zero;
-            playerPos.x = PlayerPrefs.GetFloat(PlayerPrefsEnum.SavePosX.ToString() + index);
-            playerPos.y = PlayerPrefs.GetFloat(PlayerPrefsEnum.SavePosY.ToString() + index);
-            playerPos.z = PlayerPrefs.GetFloat(PlayerPrefsEnum.SavePosZ.ToString() + index);
-
-            // Cameraの角度を取得
-            Vector3 cameraAngle = Vector3.zero;
-            cameraAngle.x = PlayerPrefs.GetFloat(PlayerPrefsEnum.SaveCameraPosX.ToString() + index);
-            cameraAngle.y = PlayerPrefs.GetFloat(PlayerPrefsEnum.SaveCameraPosY.ToString() + index);
+            if (string.IsNullOrEmpty(data.saveName)) break;
 
             // ボタンの生成
-            InstantiateSaveButton(name, playerPos, cameraAngle);
+            InstantiateSaveButton(data);
+
+            //リストに登録
+            savePosData.Add(data);
 
             index++;
         }
@@ -318,26 +303,26 @@ public class DebugTool : MonoBehaviour
     {
         int index = savePosData.Count;
 
-        // 名前の保存
-        string @string = inputField.text;
-        inputField.text = "";
-        PlayerPrefs.SetString(PlayerPrefsEnum.SavePosName.ToString() + index, @string);
+        // セーブするデータの作成
+        Vector3 @Vector = Player.instance.transform.position;
+        SavePosData data = new SavePosData
+        {
+            saveName = inputField.text,
+            playerPos = Player.instance.transform.position,
+            cameraEulerAngle = Player.instance.DebugCameraAngleSGet()
+        };
 
-        // Playerの位置の保存
-        Vector3 @playerPos = Player.instance.transform.position;
-        PlayerPrefs.SetFloat(PlayerPrefsEnum.SavePosX.ToString() + index, @playerPos.x);
-        PlayerPrefs.SetFloat(PlayerPrefsEnum.SavePosY.ToString() + index, @playerPos.y);
-        PlayerPrefs.SetFloat(PlayerPrefsEnum.SavePosZ.ToString() + index, @playerPos.z);
-
-        // Cameraの位置の保存
-        Vector3 @cameraAngle = Player.instance.DebugCameraAngleSGet();
-        PlayerPrefs.SetFloat(PlayerPrefsEnum.SaveCameraPosX.ToString() + index, @cameraAngle.x);
-        PlayerPrefs.SetFloat(PlayerPrefsEnum.SaveCameraPosY.ToString() + index, @cameraAngle.y);
-
-        PlayerPrefs.Save();
+        // セーブ実施
+        data.Save(index);
 
         // ボタンの生成
-        InstantiateSaveButton(@string, @playerPos, @cameraAngle);
+        InstantiateSaveButton(data);
+
+        //リストに登録
+        savePosData.Add(data);
+
+        // 入力欄を空にする
+        inputField.text = "";
     }
 
     /// <summary>
@@ -350,7 +335,7 @@ public class DebugTool : MonoBehaviour
         int index = 0;
         for(; index < savePosData.Count; index++)
         {
-            if (savePosData[index].saveName == name)
+            if (savePosData[index].saveName.Equals(name))
             {
                 break;
             }
@@ -359,23 +344,12 @@ public class DebugTool : MonoBehaviour
         savePosData.RemoveAt(index);
 
         // PlayerPrefsの末尾を削除
-        int length = savePosData.Count;
-        PlayerPrefs.DeleteKey(PlayerPrefsEnum.SavePosName.ToString() + length);
-        PlayerPrefs.DeleteKey(PlayerPrefsEnum.SavePosX.ToString() + length);
-        PlayerPrefs.DeleteKey(PlayerPrefsEnum.SavePosY.ToString() + length);
-        PlayerPrefs.DeleteKey(PlayerPrefsEnum.SavePosZ.ToString() + length);
-        PlayerPrefs.DeleteKey(PlayerPrefsEnum.SaveCameraPosX.ToString() + length);
-        PlayerPrefs.DeleteKey(PlayerPrefsEnum.SaveCameraPosY.ToString() + length);
+        PlayerPrefsManager.Delete(savePosData.Count);
 
         // PlayerPrefsの更新(上書き)
         for (int i = 0; i < savePosData.Count; i++)
         {
-            PlayerPrefs.SetString(PlayerPrefsEnum.SavePosName.ToString() + i, savePosData[i].saveName);
-            PlayerPrefs.SetFloat(PlayerPrefsEnum.SavePosX.ToString() + i, savePosData[i].playerPos.x);
-            PlayerPrefs.SetFloat(PlayerPrefsEnum.SavePosY.ToString() + i, savePosData[i].playerPos.y);
-            PlayerPrefs.SetFloat(PlayerPrefsEnum.SavePosZ.ToString() + i, savePosData[i].playerPos.z);
-            PlayerPrefs.SetFloat(PlayerPrefsEnum.SaveCameraPosX.ToString() + i, savePosData[i].cameraEulerAngle.x);
-            PlayerPrefs.SetFloat(PlayerPrefsEnum.SaveCameraPosY.ToString() + i, savePosData[i].cameraEulerAngle.y);
+            savePosData[i].Save(i);
         }
     }
 
@@ -390,24 +364,6 @@ public class DebugTool : MonoBehaviour
         Player.instance.DebugCameraAngleSet(cameraAngle);
     }
 
-    //public static class PlayerPrefsManager
-    //{
-    //    public static void Load(List<SavePosData> savePosData)
-    //    {
-    //        
-    //    }
-
-    //    public static void Save()
-    //    {
-
-    //    }
-
-    //    public static void Delete()
-    //    {
-
-    //    }
-    //}
-
 
     #endregion
 
@@ -421,4 +377,77 @@ public class DebugTool : MonoBehaviour
 #endif
 
 
+}
+
+/// <summary>
+/// デバッグ用のプレイヤー位置情報データ処理をする用のクラス
+/// </summary>
+public static class PlayerPrefsManager
+{
+
+    /// <summary>
+    /// インデックスをもとにセーブされてるデータを取得
+    /// </summary>
+    /// <param name="index">インデックス</param>
+    /// <returns>取得したデータ</returns>
+    public static SavePosData Load(int index)
+    {
+        SavePosData answer = new SavePosData();
+
+        // 名前を取得
+        answer.saveName = PlayerPrefs.GetString(PlayerPrefsEnum.SavePosName.ToString() + index);
+
+        // 保存データが無ければ返却
+        if (string.IsNullOrEmpty(answer.saveName)) return answer;
+
+        // Playerの位置を取得
+        Vector3 @Vector = Vector3.zero;
+        @Vector.x = PlayerPrefs.GetFloat(PlayerPrefsEnum.SavePosX.ToString() + index);
+        @Vector.y = PlayerPrefs.GetFloat(PlayerPrefsEnum.SavePosY.ToString() + index);
+        @Vector.z = PlayerPrefs.GetFloat(PlayerPrefsEnum.SavePosZ.ToString() + index);
+        answer.playerPos = @Vector;
+
+        // Cameraの角度を取得
+        @Vector.x = PlayerPrefs.GetFloat(PlayerPrefsEnum.SaveCameraPosX.ToString() + index);
+        @Vector.y = PlayerPrefs.GetFloat(PlayerPrefsEnum.SaveCameraPosY.ToString() + index);
+        @Vector.z = 0;
+        answer.cameraEulerAngle = @Vector;
+
+        return answer;
+    }
+
+    /// <summary>
+    /// クラス内の情報でデータを保存
+    /// </summary>
+    /// <param name="data">保存するデータ</param>
+    /// <param name="index">インデックス</param>
+    public static void Save(this SavePosData data,int index)
+    {
+        PlayerPrefs.SetString(PlayerPrefsEnum.SavePosName.ToString() + index, data.saveName);
+
+        // Playerの位置の保存
+        PlayerPrefs.SetFloat(PlayerPrefsEnum.SavePosX.ToString() + index, data.playerPos.x);
+        PlayerPrefs.SetFloat(PlayerPrefsEnum.SavePosY.ToString() + index, data.playerPos.y);
+        PlayerPrefs.SetFloat(PlayerPrefsEnum.SavePosZ.ToString() + index, data.playerPos.z);
+
+        // Cameraの位置の保存
+        PlayerPrefs.SetFloat(PlayerPrefsEnum.SaveCameraPosX.ToString() + index, data.cameraEulerAngle.x);
+        PlayerPrefs.SetFloat(PlayerPrefsEnum.SaveCameraPosY.ToString() + index, data.cameraEulerAngle.y);
+
+        PlayerPrefs.Save();
+    }
+
+    /// <summary>
+    /// 指定したインデックスのデータを削除する関数
+    /// </summary>
+    /// <param name="index">インデックス</param>
+    public static void Delete(int index)
+    {
+        PlayerPrefs.DeleteKey(PlayerPrefsEnum.SavePosName.ToString() + index);
+        PlayerPrefs.DeleteKey(PlayerPrefsEnum.SavePosX.ToString() + index);
+        PlayerPrefs.DeleteKey(PlayerPrefsEnum.SavePosY.ToString() + index);
+        PlayerPrefs.DeleteKey(PlayerPrefsEnum.SavePosZ.ToString() + index);
+        PlayerPrefs.DeleteKey(PlayerPrefsEnum.SaveCameraPosX.ToString() + index);
+        PlayerPrefs.DeleteKey(PlayerPrefsEnum.SaveCameraPosY.ToString() + index);
+    }
 }

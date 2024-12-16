@@ -2395,6 +2395,56 @@ PrefabInstance:
       propertyPath: m_Name
       value: DebugToolCanvas
       objectReference: {fileID: 0}
+    - target: {fileID: 4268660276170840391, guid: 7485cc5187bfb3b43845e1c7f006f9b0,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4932202798497830082, guid: 7485cc5187bfb3b43845e1c7f006f9b0,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5002083097547953653, guid: 7485cc5187bfb3b43845e1c7f006f9b0,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5438800008640187324, guid: 7485cc5187bfb3b43845e1c7f006f9b0,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7943812571978704858, guid: 7485cc5187bfb3b43845e1c7f006f9b0,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8892140429447156960, guid: 7485cc5187bfb3b43845e1c7f006f9b0,
+        type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8892140429447156960, guid: 7485cc5187bfb3b43845e1c7f006f9b0,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8892140429447156960, guid: 7485cc5187bfb3b43845e1c7f006f9b0,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9116088374735650590, guid: 7485cc5187bfb3b43845e1c7f006f9b0,
+        type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9116088374735650590, guid: 7485cc5187bfb3b43845e1c7f006f9b0,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

@@ -280,18 +280,12 @@ public class DebugTool : MonoBehaviour
         baseButton = content.GetChild(0).gameObject;
 
         int index = 0;
-        while (true)
+        while (PlayerPrefsManager.TryLoad(index,out var data))
         {
-            // 名前を取得
-            SavePosData data = PlayerPrefsManager.Load(index);
-            
-            // 保存データが無くなればbreak
-            if (string.IsNullOrEmpty(data.saveName)) break;
-
             // ボタンの生成
             InstantiateSaveButton(data);
 
-            //リストに登録
+            // リストに登録
             savePosData.Add(data);
 
             index++;
@@ -387,19 +381,27 @@ public static class PlayerPrefsManager
 {
 
     /// <summary>
-    /// インデックスをもとにセーブされてるデータを取得
+    /// 指定されたインデックスにデータがある場合取得
     /// </summary>
     /// <param name="index">インデックス</param>
-    /// <returns>取得したデータ</returns>
-    public static SavePosData Load(int index)
+    /// <param name="answer">取得したデータ</param>
+    /// <returns>成功したか</returns>
+    public static bool TryLoad(int index, out SavePosData answer)
     {
-        SavePosData answer = new SavePosData();
+        // return出来ないので一時的に入れ込む
+        answer = null;
 
         // 名前を取得
-        answer.saveName = PlayerPrefs.GetString(PlayerPrefsEnum.PosName.ToString() + index);
-
+        string name = PlayerPrefs.GetString(PlayerPrefsEnum.PosName.ToString() + index);
+        
         // 保存データが無ければ返却
-        if (string.IsNullOrEmpty(answer.saveName)) return answer;
+        if (string.IsNullOrEmpty(name)) return false;
+
+
+        answer = new SavePosData();
+
+        // 名前の登録
+        answer.saveName = name;
 
         // Playerの位置を取得
         Vector3 @Vector = Vector3.zero;
@@ -414,7 +416,7 @@ public static class PlayerPrefsManager
         @Vector.z = 0;
         answer.cameraEulerAngle = @Vector;
 
-        return answer;
+        return true;
     }
 
     /// <summary>

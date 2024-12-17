@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using static Player;
 using static DebugTool;
+using UnityEngine.SceneManagement;
 /// <summary>
 /// SwitchBlock
 /// </summary>
@@ -22,12 +23,12 @@ public class DebugTool : MonoBehaviour
     {
         TimeScale = 0,
         PlayerMove,
-        SavePosName,
-        SavePosX,
-        SavePosY,
-        SavePosZ,
-        SaveCameraPosX,
-        SaveCameraPosY,
+        PosName,
+        PlayerPosX,
+        PlayerPosY,
+        PlayerPosZ,
+        CameraEulerAngleX,
+        CameraEulerAngleY,
     }
 
     private float timeScale;
@@ -70,6 +71,7 @@ public class DebugTool : MonoBehaviour
 
     private void Awake()
     {
+        DontDestroyOnLoad(gameObject);
         DataLoad();
         SetUiActions();
     }
@@ -364,7 +366,6 @@ public class DebugTool : MonoBehaviour
         Player.instance.DebugCameraAngleSet(cameraAngle);
     }
 
-
     #endregion
 
 #else
@@ -375,9 +376,9 @@ public class DebugTool : MonoBehaviour
     }
 
 #endif
-
-
 }
+
+#if UNITY_EDITOR
 
 /// <summary>
 /// デバッグ用のプレイヤー位置情報データ処理をする用のクラス
@@ -395,21 +396,21 @@ public static class PlayerPrefsManager
         SavePosData answer = new SavePosData();
 
         // 名前を取得
-        answer.saveName = PlayerPrefs.GetString(PlayerPrefsEnum.SavePosName.ToString() + index);
+        answer.saveName = PlayerPrefs.GetString(PlayerPrefsEnum.PosName.ToString() + index);
 
         // 保存データが無ければ返却
         if (string.IsNullOrEmpty(answer.saveName)) return answer;
 
         // Playerの位置を取得
         Vector3 @Vector = Vector3.zero;
-        @Vector.x = PlayerPrefs.GetFloat(PlayerPrefsEnum.SavePosX.ToString() + index);
-        @Vector.y = PlayerPrefs.GetFloat(PlayerPrefsEnum.SavePosY.ToString() + index);
-        @Vector.z = PlayerPrefs.GetFloat(PlayerPrefsEnum.SavePosZ.ToString() + index);
+        @Vector.x = PlayerPrefs.GetFloat(PlayerPrefsEnum.PlayerPosX.ToString() + index);
+        @Vector.y = PlayerPrefs.GetFloat(PlayerPrefsEnum.PlayerPosY.ToString() + index);
+        @Vector.z = PlayerPrefs.GetFloat(PlayerPrefsEnum.PlayerPosZ.ToString() + index);
         answer.playerPos = @Vector;
 
         // Cameraの角度を取得
-        @Vector.x = PlayerPrefs.GetFloat(PlayerPrefsEnum.SaveCameraPosX.ToString() + index);
-        @Vector.y = PlayerPrefs.GetFloat(PlayerPrefsEnum.SaveCameraPosY.ToString() + index);
+        @Vector.x = PlayerPrefs.GetFloat(PlayerPrefsEnum.CameraEulerAngleX.ToString() + index);
+        @Vector.y = PlayerPrefs.GetFloat(PlayerPrefsEnum.CameraEulerAngleY.ToString() + index);
         @Vector.z = 0;
         answer.cameraEulerAngle = @Vector;
 
@@ -423,16 +424,16 @@ public static class PlayerPrefsManager
     /// <param name="index">インデックス</param>
     public static void Save(this SavePosData data,int index)
     {
-        PlayerPrefs.SetString(PlayerPrefsEnum.SavePosName.ToString() + index, data.saveName);
+        PlayerPrefs.SetString(PlayerPrefsEnum.PosName.ToString() + index, data.saveName);
 
         // Playerの位置の保存
-        PlayerPrefs.SetFloat(PlayerPrefsEnum.SavePosX.ToString() + index, data.playerPos.x);
-        PlayerPrefs.SetFloat(PlayerPrefsEnum.SavePosY.ToString() + index, data.playerPos.y);
-        PlayerPrefs.SetFloat(PlayerPrefsEnum.SavePosZ.ToString() + index, data.playerPos.z);
+        PlayerPrefs.SetFloat(PlayerPrefsEnum.PlayerPosX.ToString() + index, data.playerPos.x);
+        PlayerPrefs.SetFloat(PlayerPrefsEnum.PlayerPosY.ToString() + index, data.playerPos.y);
+        PlayerPrefs.SetFloat(PlayerPrefsEnum.PlayerPosZ.ToString() + index, data.playerPos.z);
 
         // Cameraの位置の保存
-        PlayerPrefs.SetFloat(PlayerPrefsEnum.SaveCameraPosX.ToString() + index, data.cameraEulerAngle.x);
-        PlayerPrefs.SetFloat(PlayerPrefsEnum.SaveCameraPosY.ToString() + index, data.cameraEulerAngle.y);
+        PlayerPrefs.SetFloat(PlayerPrefsEnum.CameraEulerAngleX.ToString() + index, data.cameraEulerAngle.x);
+        PlayerPrefs.SetFloat(PlayerPrefsEnum.CameraEulerAngleY.ToString() + index, data.cameraEulerAngle.y);
 
         PlayerPrefs.Save();
     }
@@ -443,11 +444,13 @@ public static class PlayerPrefsManager
     /// <param name="index">インデックス</param>
     public static void Delete(int index)
     {
-        PlayerPrefs.DeleteKey(PlayerPrefsEnum.SavePosName.ToString() + index);
-        PlayerPrefs.DeleteKey(PlayerPrefsEnum.SavePosX.ToString() + index);
-        PlayerPrefs.DeleteKey(PlayerPrefsEnum.SavePosY.ToString() + index);
-        PlayerPrefs.DeleteKey(PlayerPrefsEnum.SavePosZ.ToString() + index);
-        PlayerPrefs.DeleteKey(PlayerPrefsEnum.SaveCameraPosX.ToString() + index);
-        PlayerPrefs.DeleteKey(PlayerPrefsEnum.SaveCameraPosY.ToString() + index);
+        PlayerPrefs.DeleteKey(PlayerPrefsEnum.PosName.ToString() + index);
+        PlayerPrefs.DeleteKey(PlayerPrefsEnum.PlayerPosX.ToString() + index);
+        PlayerPrefs.DeleteKey(PlayerPrefsEnum.PlayerPosY.ToString() + index);
+        PlayerPrefs.DeleteKey(PlayerPrefsEnum.PlayerPosZ.ToString() + index);
+        PlayerPrefs.DeleteKey(PlayerPrefsEnum.CameraEulerAngleX.ToString() + index);
+        PlayerPrefs.DeleteKey(PlayerPrefsEnum.CameraEulerAngleY.ToString() + index);
     }
 }
+
+#endif

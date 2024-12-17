@@ -3,13 +3,25 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Unity.VisualScripting;
-using static Player;
-using UnityEngine.UI;
+
+public interface I_PlayerInterface:
+    I_Trampolined,
+    I_BombHit,
+    I_IceGroundMover,
+    I_SwitchHit, 
+    I_WindMover,
+    I_BreakGround,
+    I_PendulumHit,
+    I_TileHit,
+    I_SlowGround
+{
+
+}
 
 [RequireComponent(typeof(Animator))]
 [RequireComponent(typeof(CharacterController))]
 
-public partial class Player : SingletonActionListener<Player>
+public partial class Player : SingletonActionListener<Player>, I_PlayerInterface
 {
     #region 別コンポーネント
 
@@ -17,7 +29,11 @@ public partial class Player : SingletonActionListener<Player>
     private CharacterController _controller;
     private GameObject _mainCamera;
 
-    #endregion
+#if UNITY_EDITOR
+    public CharacterController GetController() { return _controller; }
+#endif
+
+#endregion
 
     #region ステータス
 
@@ -30,6 +46,7 @@ public partial class Player : SingletonActionListener<Player>
 
     [Space(10)]
     [Tooltip("ジャンプクールタイム"),SerializeField] private float JUMP_TIMEOUT = 0.50f;
+    [Tooltip("コヨーテタイムの時間"), SerializeField] private float JUMP_COYOTE_TIME = 0.15f; 
     [Tooltip("落下までの時間"),SerializeField] private float FALL_TIMEOUT = 0.15f;
 
     [Space(10)]
@@ -48,6 +65,7 @@ public partial class Player : SingletonActionListener<Player>
     private float TERMINAL_VELOCITY = 53.0f;
     //時間
     private float _jumpTimeoutDelta;
+    private float _coyoteTime;
     private float _fallTimeoutDelta;
     private float _slidingTimeoutDelta;
 
@@ -61,6 +79,8 @@ public partial class Player : SingletonActionListener<Player>
     [Tooltip("スライディング"), SerializeReference, SubclassSelector] I_Sliding sliding = new DefaultSliding();
     [Tooltip("ジップライン"), SerializeReference, SubclassSelector] I_ZipLine zipLine = new DefaultZipLine();
     [Tooltip("クライミング"), SerializeReference, SubclassSelector] I_Climbing climbing = new DefaultClimbing();
+    [Tooltip("ドローン"), SerializeReference, SubclassSelector] I_Drone drone = new DefaultDrone();
+    [Tooltip("風"), SerializeReference, SubclassSelector] List<I_AdditionalState> additionalStates = new List<I_AdditionalState>();
 
     #endregion
 
@@ -127,13 +147,6 @@ public partial class Player : SingletonActionListener<Player>
 
     #endregion
 
-    #region ジップライン用の変数
-
-    //[SerializeField] private bool  = 1.2f;
-    //[SerializeField] private float GRAVITY = -15.0f;
-
-    #endregion
-
     #region アニメーターの設定
 
     //アニメーターの設定用
@@ -149,6 +162,8 @@ public partial class Player : SingletonActionListener<Player>
     private int _animIDClimbingUp;
     private int _animIDClimbingDown;
     private int _animIDZipLine;
+    private int _animIDDrone;
+    private int _animIDWind;
 
     //IKアニメーションの設定
     private Vector3 rightHandIKPosition;
@@ -182,6 +197,7 @@ public partial class Player : SingletonActionListener<Player>
 
 
         zipLine.PlayerStart();
+        drone.PlayerStart();
     }
 
     private void Update()
@@ -189,8 +205,14 @@ public partial class Player : SingletonActionListener<Player>
         GroundCheck();
         CameraRotation();
 
+        foreach(I_AdditionalState additionalState in additionalStates)
+        {
+            additionalState.OnUpdate();
+        }
+
         zipLine.PlayerUpdate();
         climbing.CanUseCheck();
+        drone.PlayerUpdate();
 
 #if UNITY_EDITOR
         if (Input.GetKeyDown(KeyCode.Return))
@@ -231,6 +253,8 @@ public partial class Player : SingletonActionListener<Player>
         _animIDClimbingUp = Animator.StringToHash("ClimbingEndUp");
         _animIDClimbingDown = Animator.StringToHash("ClimbingEndDown");
         _animIDZipLine = Animator.StringToHash("ZipLine");
+        _animIDDrone = Animator.StringToHash("Drone");
+        _animIDWind = Animator.StringToHash("Wind");
     }
 
     /// <summary>
@@ -309,7 +333,14 @@ public partial class Player : SingletonActionListener<Player>
 
         if (isGrounded == false)
         {
-            _jumpTimeoutDelta = JUMP_TIMEOUT;
+            if(_coyoteTime < JUMP_COYOTE_TIME)
+            {
+                _coyoteTime += Time.deltaTime;
+            }
+            else
+            {
+                _jumpTimeoutDelta = JUMP_TIMEOUT;
+            }
 
             // fall timeout
             if (_fallTimeoutDelta >= 0.0f)
@@ -345,6 +376,8 @@ public partial class Player : SingletonActionListener<Player>
             {
                 _jumpTimeoutDelta -= Time.deltaTime;
             }
+
+            _coyoteTime = 0;
         }
     }
 
@@ -368,12 +401,6 @@ public partial class Player : SingletonActionListener<Player>
 
     #endregion
 
-    #region ZipLine設定用関数
-
-
-
-    #endregion
-
     #region ActionListenerのコールバック関数
 
     public override void OnPlayerMove(InputAction.CallbackContext context)
@@ -388,7 +415,7 @@ public partial class Player : SingletonActionListener<Player>
     public override void OnJump(InputAction.CallbackContext context)
     {
         if (GameData.G_AllCheck() == true) return;
-        if (isGrounded == false) return;
+        if (isGrounded == false && _coyoteTime > JUMP_COYOTE_TIME) return;
 
         base.OnJump(context);
 
@@ -450,6 +477,19 @@ public partial class Player : SingletonActionListener<Player>
 
     }
 
+    public override void OnDrone(InputAction.CallbackContext context)
+    {
+        if (GameData.G_AllCheck() == true) return;
+        if (drone.IsGuardOnTrigger() == true) return;
+
+        base.OnDrone(context);
+
+        if (context.phase == InputActionPhase.Started)
+        {
+            drone.OnTrigger();
+        }
+    }
+
     public override void OnCamMove(InputAction.CallbackContext context)
     {
         base.OnCamMove(context);
@@ -482,7 +522,22 @@ public partial class Player : SingletonActionListener<Player>
             _cinemachineTargetYaw, 0.0f);
     }
 
-    #endregion
+#if UNITY_EDITOR
+    public void DebugCameraAngleSet(Vector3 angle)
+    {
+        _cinemachineTargetPitch = angle.x;
+        _cinemachineTargetYaw = angle.y;
+        CinemachineCameraTarget.transform.rotation = Quaternion.Euler(_cinemachineTargetPitch + CameraAngleOverride,_cinemachineTargetYaw, 0.0f);
+    }
+
+    public Vector3 DebugCameraAngleSGet()
+    {
+        return new Vector3(_cinemachineTargetPitch, _cinemachineTargetYaw, 0);
+    }
+
+#endif
+
+#endregion
 
     #region サウンド関係
 
@@ -566,7 +621,7 @@ public partial class Player : SingletonActionListener<Player>
         zipLine.OnEnter();
     }
 
-    public void ZipLineState()
+    public void ZipLineUpdate()
     {
         zipLine.OnUpdate();
     }
@@ -591,9 +646,34 @@ public partial class Player : SingletonActionListener<Player>
         climbing.OnExit();
     }
 
+    public void DroneEnter()
+    {
+        drone.OnEnter();
+    }
+
+    public void DroneUpdate()
+    {
+        drone.OnUpdate();
+    }
+
+    public void DroneExit()
+    {
+        drone.OnExit();
+    }
+
     #endregion
 
     #region インターフェース呼び出し用関数
+
+    public void SetZipLineArea(ZipLineArea zipLineArea)
+    {
+        zipLine.AddArea(zipLineArea);
+    }
+
+    public void DeleteZipLineArea(ZipLineArea zipLineArea)
+    {
+        zipLine.DeleteArea(zipLineArea);
+    }
 
     public void SetWallArea(WallArea wallArea)
     {
@@ -605,10 +685,20 @@ public partial class Player : SingletonActionListener<Player>
         climbing.DeleteArea(wallArea);
     }
 
+    public void SetDroneArea(DroneArea droneArea)
+    {
+        drone.AddArea(droneArea);
+    }
+
+    public void DeleteDroneArea(DroneArea droneArea)
+    {
+        drone.DeleteArea(droneArea);
+    }
+
     #endregion
 
     #region アニメーターIK用
-    
+
     private void OnAnimatorIK()
     {
         RightHandIK();
@@ -647,5 +737,135 @@ public partial class Player : SingletonActionListener<Player>
     }
 
     #endregion
+
+    #region 外部インターフェース
+
+    public void TrampolineJump(float trampolineJumpPower)
+    {
+        _verticalVelocity = trampolineJumpPower;
+        _animator.SetBool(_animIDJump, true);
+    }
+
+    public virtual void BombHit(Vector3 power)
+    {
+        // 縦方向の移動は元の計算にゆだねる
+        _verticalVelocity = power.y;
+        LibCoroutineRunner.StartCoroutine(BombMoveHolizontal(power));
+    }
+
+    /// <summary>
+    /// ボムを受けた時の平行移動処理
+    /// Updateを汚したくないためコルーチンで作成
+    /// </summary>
+    /// <param name="power">力</param>
+    /// <returns></returns>
+    private IEnumerator BombMoveHolizontal(Vector3 power)
+    {
+        //縦方向の力は無視するので0にする
+        power.y = 0;
+
+        //力が一定以下になるまで繰り返す
+        while(power.magnitude > Bomb.BOMB_END_SPEED)
+        {
+            //プレイヤーの移動処理
+            _controller.Move(power * Time.deltaTime);
+
+            //移動速度の減速処理
+            power *= Bomb.BOMB_SPEED_SLOW;
+            yield return null;
+        }
+    }
+
+    public virtual void IceAreaInGround(Ice_Add ice)
+    {
+        AddAdditionalState(ice);
+    }
+
+    public void IceAreaOutGround(Ice_Add ice)
+    {
+        RemoveAdditionalState(ice);
+    }
+
+    public virtual void SlowGroundInGround(Slow_Add slow)
+    {
+        AddAdditionalState(slow);
+    }
+
+    public virtual void SlowGroundOutGround(Slow_Add slow)
+    {
+        RemoveAdditionalState(slow);
+    }
+
+    public virtual void WindEnter(Wind_Add wind_Add)
+    {
+        AddAdditionalState(wind_Add);
+    }
+
+    public virtual void WindExit(Wind_Add wind_Add)
+    {
+        RemoveAdditionalState(wind_Add);
+    }
+
+    public void HitPendulum(Vector3 power)
+    {
+        // 縦方向の移動は元の計算にゆだねる
+        _verticalVelocity = power.y;
+        LibCoroutineRunner.StartCoroutine(PendulumMoveHolizontal(power));
+    }
+
+    /// <summary>
+    /// 振り子に衝突した際の横方向の移動処理
+    /// </summary>
+    /// <param name="power">横方向の力</param>
+    /// <returns>コルーチン</returns>
+    private IEnumerator PendulumMoveHolizontal(Vector3 power)
+    {
+        //縦方向の力は無視するので0にする
+        power.y = 0;
+
+        //力が一定以下になるまで繰り返す
+        while (power.magnitude > Bomb.BOMB_END_SPEED)
+        {
+            //プレイヤーの移動処理
+            _controller.Move(power * Time.deltaTime);
+
+            //移動速度の減速処理
+            power *= Pendulum.PENDULUM_SPEED_SLOW;
+            yield return null;
+        }
+    }
+
+    #endregion
+
+    #region I_AdditionalState用関数
+
+    public void AddAdditionalState(I_AdditionalState additionalState)
+    {
+        additionalStates.Add(additionalState);
+
+        additionalState.OnEnter();
+    }
+
+    public void RemoveAdditionalState(I_AdditionalState additionalState)
+    {
+        additionalState.OnExit();
+
+        additionalStates.Remove(additionalState);
+    }
+
+    #endregion
+
+#if UNITY_EDITOR
+
+    #region DebugTool用関数
+
+    public void ChangeMove(I_Move i_Move)
+    {
+        move = i_Move;
+    }
+
+    #endregion
+
+#endif
 }
 

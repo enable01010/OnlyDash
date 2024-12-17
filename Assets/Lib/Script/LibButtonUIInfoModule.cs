@@ -162,6 +162,7 @@ public enum ButtonType
 {
     ZipLine,
     Climbing,
+    Drone,
 }
 
 public enum ControllerType
@@ -188,7 +189,7 @@ public class ButtonUIObj
         this.transform = transform;
         this.image = image;
         this.animator = animator;
-        goalPos = LibVector.Chenge_Y(goalPos, yPos);
+        goalPos = LibVector.Set_Y(goalPos, yPos);
 
         if (CheckHasButtonType(device, out Sprite sprite) == false) return;
 
@@ -198,7 +199,7 @@ public class ButtonUIObj
 
     public void Use(float length)
     {
-        goalPos = LibVector.Chenge_X(goalPos, (length - data.size) / 2);
+        goalPos = LibVector.Set_X(goalPos, (length - data.size) / 2);
         transform.anchoredPosition = goalPos;
         animator.SetTrigger("Start");
 
@@ -212,7 +213,7 @@ public class ButtonUIObj
     public void SetGoalPos(float time, ref float holizontalPos)
     {
         moveTime = time;
-        goalPos = LibVector.Chenge_X(goalPos,holizontalPos + data.size / 2);
+        goalPos = LibVector.Set_X(goalPos,holizontalPos + data.size / 2);
         holizontalPos += data.size;
     }
 

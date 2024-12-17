@@ -103,13 +103,22 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "Drone",
+                    "type": "Button",
+                    "id": "10abf5d9-bfb3-4f26-8ab8-cd82ff399aad",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
                 {
                     "name": "",
                     "id": "9d8f27c6-053e-4ebe-8d23-371f27ae9e03",
-                    "path": "<Keyboard>/f1",
+                    "path": "<Keyboard>/escape",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -345,6 +354,28 @@
                     "processors": "",
                     "groups": "",
                     "action": "Climbing",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "2ebba837-2803-4d0c-9f7d-01c3f6fba63b",
+                    "path": "<Gamepad>/buttonNorth",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Drone",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "456875c2-2b63-41e8-a5ce-ea775ff1d0c6",
+                    "path": "<Keyboard>/r",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Drone",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

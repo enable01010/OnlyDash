@@ -1,18 +1,14 @@
+#if UNITY_EDITOR
+
 using UnityEngine;
 using UnityEngine.UI;
 using System;
 using System.Collections.Generic;
 using static Player;
 using static DebugTool;
-using UnityEngine.SceneManagement;
-/// <summary>
-/// SwitchBlock
-/// </summary>
 
 public class DebugTool : MonoBehaviour
 {
-#if UNITY_EDITOR
-
     #region Field
 
     [SerializeField] private bool isStartOpen = false;
@@ -361,18 +357,7 @@ public class DebugTool : MonoBehaviour
     }
 
     #endregion
-
-#else
-
-    private void Awake()
-    {
-        Destroy(this.gameObject);
-    }
-
-#endif
 }
-
-#if UNITY_EDITOR
 
 /// <summary>
 /// デバッグ用のプレイヤー位置情報データ処理をする用のクラス

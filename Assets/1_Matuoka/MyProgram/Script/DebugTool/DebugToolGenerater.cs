@@ -1,3 +1,5 @@
+#if UNITY_EDITOR
+
 using UnityEngine;
 
 public class DebugToolGenerater : MonoBehaviour
@@ -13,3 +15,5 @@ public class DebugToolGenerater : MonoBehaviour
         Instantiate(LibResourceLoader._debugToolPref);
     }
 }
+
+#endif

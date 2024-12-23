@@ -54,11 +54,13 @@ public class PlayerPosChange : DebugToolBase
 
     public override void DebugToolOpen()
     {
+        // キャラクターの移動がバグるため暫定対応で移動用のコンポーネントを無効化
         Player.instance.GetController().enabled = false;
     }
 
     public override void DebugToolClose()
     {
+        // キャラクターの移動がバグるため暫定対応で移動用のコンポーネントを有効化
         Player.instance.GetController().enabled = true;
     }
 
@@ -108,7 +110,7 @@ public class PlayerPosChange : DebugToolBase
         {
             saveName = inputField.text,
             playerPos = Player.instance.transform.position,
-            cameraEulerAngle = Player.instance.DebugCameraAngleSGet()
+            cameraEulerAngle = Player.instance.DebugCameraAngleGet()
         };
 
         // セーブ実施
@@ -190,6 +192,7 @@ public class PlayerPosChange : DebugToolBase
     {
         Player.instance.transform.position = playerPos;
         Player.instance.DebugCameraAngleSet(cameraAngle);
+        // TODO:プレイヤーの回転をする場合ここ
     }
 
     #endregion

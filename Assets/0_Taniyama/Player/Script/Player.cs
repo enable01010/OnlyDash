@@ -530,7 +530,7 @@ public partial class Player : SingletonActionListener<Player>, I_PlayerInterface
         CinemachineCameraTarget.transform.rotation = Quaternion.Euler(_cinemachineTargetPitch + CameraAngleOverride,_cinemachineTargetYaw, 0.0f);
     }
 
-    public Vector3 DebugCameraAngleSGet()
+    public Vector3 DebugCameraAngleGet()
     {
         return new Vector3(_cinemachineTargetPitch, _cinemachineTargetYaw, 0);
     }

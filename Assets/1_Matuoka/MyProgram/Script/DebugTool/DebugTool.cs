@@ -301,7 +301,7 @@ public class DebugTool : MonoBehaviour
         {
             saveName = inputField.text,
             playerPos = Player.instance.transform.position,
-            cameraEulerAngle = Player.instance.DebugCameraAngleSGet()
+            cameraEulerAngle = Player.instance.DebugCameraAngleGet()
         };
 
         // ÉZÅ[Éué¿é{

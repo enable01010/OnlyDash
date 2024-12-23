@@ -36,7 +36,7 @@ public class TimeScaleChange : DebugToolBase
 
     //public override void DebugToolOpen()
     //{
-    //    Time.timeScale = 0f;
+    //    
     //}
 
     public override void DebugToolClose()

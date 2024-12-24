@@ -17,6 +17,7 @@ public class PlayerPosChange : DebugToolBase
         PlayerPosZ,
         CameraEulerAngleX,
         CameraEulerAngleY,
+        PlayerRotationY,
     }
 
     [SerializeField] private Transform content;
@@ -28,6 +29,7 @@ public class PlayerPosChange : DebugToolBase
         public string saveName;
         public Vector3 playerPos;
         public Vector3 cameraEulerAngle;
+        public float playerRotationY;
         public GameObject buttonObj;
         public Button button;
         public Text buttonText;
@@ -110,7 +112,8 @@ public class PlayerPosChange : DebugToolBase
         {
             saveName = inputField.text,
             playerPos = Player.instance.transform.position,
-            cameraEulerAngle = Player.instance.DebugCameraAngleGet()
+            cameraEulerAngle = Player.instance.DebugCameraAngleGet(),
+            playerRotationY = Player.instance.transform.rotation.eulerAngles.y,
         };
 
         // セーブ実施
@@ -139,7 +142,7 @@ public class PlayerPosChange : DebugToolBase
 
         // ボタンの関数設定
         Button @button = @obj.GetComponent<Button>();
-        @button.onClick.AddListener(() => PlayerWarp(data.playerPos, data.cameraEulerAngle));
+        @button.onClick.AddListener(() => PlayerWarp(data.playerPos, data.cameraEulerAngle, data.playerRotationY));
 
         // ボタンのText変更
         Text @text = @obj.GetComponentInChildren<Text>();
@@ -188,11 +191,11 @@ public class PlayerPosChange : DebugToolBase
     /// </summary>
     /// <param name="playerPos"></param>
     /// <param name="cameraAngle"></param>
-    private void PlayerWarp(Vector3 playerPos, Vector3 cameraAngle)
+    private void PlayerWarp(Vector3 playerPos, Vector3 cameraAngle, float playerRotationY)
     {
         Player.instance.transform.position = playerPos;
         Player.instance.DebugCameraAngleSet(cameraAngle);
-        // TODO:プレイヤーの回転をする場合ここ
+        Player.instance.transform.rotation = Quaternion.Euler(0f, playerRotationY, 0f);
     }
 
     #endregion
@@ -203,7 +206,6 @@ public class PlayerPosChange : DebugToolBase
 /// </summary>
 public static class SavePosDataManager
 {
-
     /// <summary>
     /// 指定されたインデックスにデータがある場合取得
     /// </summary>
@@ -240,6 +242,9 @@ public static class SavePosDataManager
         @Vector.z = 0;
         answer.cameraEulerAngle = @Vector;
 
+        // Playerの角度を取得
+        answer.playerRotationY = PlayerPrefs.GetFloat(PlayerPrefsEnum.PlayerRotationY.ToString() + index);
+
         return true;
     }
 
@@ -257,9 +262,12 @@ public static class SavePosDataManager
         PlayerPrefs.SetFloat(PlayerPrefsEnum.PlayerPosY.ToString() + index, data.playerPos.y);
         PlayerPrefs.SetFloat(PlayerPrefsEnum.PlayerPosZ.ToString() + index, data.playerPos.z);
 
-        // Cameraの位置の保存
+        // Cameraの角度の保存
         PlayerPrefs.SetFloat(PlayerPrefsEnum.CameraEulerAngleX.ToString() + index, data.cameraEulerAngle.x);
         PlayerPrefs.SetFloat(PlayerPrefsEnum.CameraEulerAngleY.ToString() + index, data.cameraEulerAngle.y);
+
+        // Playerの角度の保存
+        PlayerPrefs.SetFloat(PlayerPrefsEnum.PlayerRotationY.ToString() + index, data.playerRotationY);
 
         PlayerPrefs.Save();
     }
@@ -276,6 +284,7 @@ public static class SavePosDataManager
         PlayerPrefs.DeleteKey(PlayerPrefsEnum.PlayerPosZ.ToString() + index);
         PlayerPrefs.DeleteKey(PlayerPrefsEnum.CameraEulerAngleX.ToString() + index);
         PlayerPrefs.DeleteKey(PlayerPrefsEnum.CameraEulerAngleY.ToString() + index);
+        PlayerPrefs.DeleteKey(PlayerPrefsEnum.PlayerRotationY.ToString() + index);
     }
 }
 

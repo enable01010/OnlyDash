@@ -61,9 +61,9 @@ public class SwitchBlock : MonoBehaviour ,I_GeneralColliderUser
 
     #endregion
 
-    public virtual void OnEnter_GeneralCollider(Collider collision, Transform generalCollider)
+    public virtual void OnEnter_GeneralCollider(Collider other, GeneralColliderAttribute attribute)
     {
-        if (collision.TryGetComponent(out I_SwitchHit i_SwitchHit))
+        if (other.TryGetComponent(out I_SwitchHit i_SwitchHit))
         {
             ChangeColor(Color.yellow);
             blocks.SetActive(true);
@@ -73,9 +73,9 @@ public class SwitchBlock : MonoBehaviour ,I_GeneralColliderUser
         }
     }
 
-    public virtual void OnExit_GeneralCollider(Collider collision, Transform generalCollider)
+    public virtual void OnExit_GeneralCollider(Collider other, GeneralColliderAttribute attribute)
     {
-        if (collision.TryGetComponent<I_SwitchHit>(out _))
+        if (other.TryGetComponent<I_SwitchHit>(out _))
         {
             ChangeColor(Color.red);
 

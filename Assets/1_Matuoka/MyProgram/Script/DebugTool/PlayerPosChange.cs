@@ -57,13 +57,14 @@ public class PlayerPosChange : DebugToolBase
     public override void DebugToolOpen()
     {
         // キャラクターの移動がバグるため暫定対応で移動用のコンポーネントを無効化
-        Player.instance.GetController().enabled = false;
+        //Player.instance.GetController().enabled = false;
     }
 
     public override void DebugToolClose()
     {
         // キャラクターの移動がバグるため暫定対応で移動用のコンポーネントを有効化
-        Player.instance.GetController().enabled = true;
+        //Player.instance.GetController().enabled = true; ;
+        
     }
 
     #endregion
@@ -193,9 +194,13 @@ public class PlayerPosChange : DebugToolBase
     /// <param name="cameraAngle"></param>
     private void PlayerWarp(Vector3 playerPos, Vector3 cameraAngle, float playerRotationY)
     {
+        // キャラクターの移動がバグるため暫定対応で移動用のコンポーネントを無効化
+        Player.instance.GetController().enabled = false;
         Player.instance.transform.position = playerPos;
         Player.instance.DebugCameraAngleSet(cameraAngle);
         Player.instance.transform.rotation = Quaternion.Euler(0f, playerRotationY, 0f);
+        // キャラクターの移動がバグるため暫定対応で移動用のコンポーネントを有効化
+        Player.instance.GetController().enabled = false;
     }
 
     #endregion

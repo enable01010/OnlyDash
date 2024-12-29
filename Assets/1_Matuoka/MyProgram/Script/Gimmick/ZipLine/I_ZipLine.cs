@@ -289,6 +289,9 @@ public partial class Player : SingletonActionListener<Player>
 
         public virtual bool IsGuardOnTrigger()
         {
+#if UNITY_EDITOR
+            if (typeof(DroneMove) == instance.move.GetType()) return true;
+#endif
             return !canPushButton;
         }
 

@@ -14,12 +14,12 @@ public partial class Player : SingletonActionListener<Player>
     }
 
     [System.Serializable]
-    public class ControlledMove:I_Move
+    public class ControlledMove : I_Move
     {
         public virtual void Move()
         {
             instance._speed = instance.playerMove.magnitude * instance.MOVE_SPEED;
-            instance._animationBlend = (instance._speed < 0.1f)?0 : instance._speed;
+            instance._animationBlend = (instance._speed < 0.1f) ? 0 : instance._speed;
             Vector3 targetDirection = Quaternion.Euler(0.0f, instance._targetRotation, 0.0f) * Vector3.forward;
             instance._controller.Move(targetDirection.normalized * (instance._speed * Time.deltaTime) + new Vector3(0.0f, instance._verticalVelocity, 0.0f) * Time.deltaTime);
             instance._animator.SetFloat(instance._animIDSpeed, instance._animationBlend);
@@ -85,4 +85,54 @@ public partial class Player : SingletonActionListener<Player>
             instance._animator.SetFloat(instance._animIDMotionSpeed, inputMagnitude);
         }
     }
+
+#if UNITY_EDITOR
+
+    [System.Serializable]
+    public class DroneMove : I_Move
+    {
+        public virtual void Move()
+        {
+            float MOVE_SPEED = 5f;
+            float getkeySpeed = MOVE_SPEED * Time.deltaTime;
+            Transform playerTrans = instance.transform;
+            Quaternion rot = Quaternion.Euler(0.0f, instance.DebugCameraAngleGet().y, 0.0f);
+
+            // Key‚É‰ž‚¶‚ÄˆÚ“®
+            if (Input.GetKey(KeyCode.E))
+            {
+                Vector3 up = Vector3.up * getkeySpeed;
+                playerTrans.position += up;
+            }
+            if (Input.GetKey(KeyCode.Q))
+            {
+                Vector3 down = Vector3.down * getkeySpeed;
+                playerTrans.position += down;
+            }
+            if (Input.GetKey(KeyCode.W))
+            {
+                Vector3 forward = Vector3.forward * getkeySpeed;
+                playerTrans.position += rot * forward;
+            }
+            if (Input.GetKey(KeyCode.S))
+            {
+                Vector3 back = Vector3.back * getkeySpeed;
+                playerTrans.position += rot * back;
+            }
+            if (Input.GetKey(KeyCode.D))
+            {
+                Vector3 right = Vector3.right * getkeySpeed;
+                playerTrans.position += rot * right;
+            }
+            if (Input.GetKey(KeyCode.A))
+            {
+                Vector3 left = Vector3.left * getkeySpeed;
+                playerTrans.position += rot * left;
+            }
+        }
+    }
+
+#endif
+
 }
+

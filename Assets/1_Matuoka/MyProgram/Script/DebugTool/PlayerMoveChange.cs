@@ -3,6 +3,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System;
+using System.Collections.Generic;
 using static Player;
 
 public class PlayerMoveChange : DebugToolBase
@@ -18,9 +19,11 @@ public class PlayerMoveChange : DebugToolBase
     {
         ControlledMove = 0,
         AutoMove,
+        DroneMove,
     }
+
     private PlayerMove playerMove;
-    [SerializeField] private Button[] moveButton;
+    private List<Button> moveButton = new ();
 
     #endregion
 
@@ -58,8 +61,14 @@ public class PlayerMoveChange : DebugToolBase
     /// </summary>
     private void SetUiAction()
     {
+        // Buttonを全て取得
+        foreach (Transform child in this.transform)
+        {
+            moveButton.Add(child.GetComponent<Button>());
+        }
+
         // 移動方法を受け取り、ボタンの色を調整する
-        for (int i = 0; i < moveButton.Length; i++)
+        for (int i = 0; i < moveButton.Count; i++)
         {
             int count = i;
             moveButton[i].onClick.AddListener(() => {
@@ -86,10 +95,17 @@ public class PlayerMoveChange : DebugToolBase
         {
             case PlayerMove.ControlledMove:
                 Player.instance.ChangeMove(new ControlledMove());
+                Player.instance.GetController().enabled = true;
                 break;
 
             case PlayerMove.AutoMove:
                 Player.instance.ChangeMove(new AutoMove());
+                Player.instance.GetController().enabled = true;
+                break;
+
+            case PlayerMove.DroneMove:
+                Player.instance.ChangeMove(new DroneMove());
+                Player.instance.GetController().enabled = false;
                 break;
 
             default:

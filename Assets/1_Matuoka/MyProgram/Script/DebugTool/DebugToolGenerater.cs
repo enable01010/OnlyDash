@@ -12,7 +12,8 @@ public class DebugToolGenerater : MonoBehaviour
     {
         if (!isGenerate) return;
 
-        Instantiate(LibResourceLoader._debugToolPref);
+        DontDestroyOnLoad(Instantiate(LibResourceLoader._debugToolPref));
+        DontDestroyOnLoad(Instantiate(LibResourceLoader._uiEventSystem));
     }
 }
 

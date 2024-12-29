@@ -20,8 +20,6 @@ public class DebugToolManager : MonoBehaviour
 
     private void Awake()
     {
-        DontDestroyOnLoad(gameObject);
-
         foreach (var debugToolBase in debugToolBases) debugToolBase.DebugToolAwake();
     }
 

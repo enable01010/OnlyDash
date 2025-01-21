@@ -299,13 +299,18 @@ public partial class Player : SingletonActionListener<Player>, I_PlayerInterface
     {
         // set sphere position, with offset
         Vector3 spherePosition = LibVector.Add_Y(transform.position, -GROUNDED_OFFSET);
+        bool isGroundedBefore = isGrounded;
         isGrounded = Physics.CheckSphere(spherePosition, GROUNDED_RADIUS, GroundLayers,
             QueryTriggerInteraction.Ignore);
 
         _animator.SetBool(_animIDGrounded, isGrounded);
 
-        if(isGrounded == false)
+        if (isGrounded == false)
         {
+            if(isGroundedBefore && _animator.GetBool(_animIDJump) == false)
+            {
+                _verticalVelocity = 0f;
+            }
             CustomEvent.Trigger(gameObject, "inAir");
         }
         else
@@ -360,17 +365,18 @@ public partial class Player : SingletonActionListener<Player>, I_PlayerInterface
     /// </summary>
     private void CaluculateJumpSettingsOnGround()
     {
+        const float GROUNDED_VERTICAL_VEROCITY = -20f;
+
         if (isGrounded == true)
         {
             _fallTimeoutDelta = FALL_TIMEOUT;
 
             _animator.SetBool(_animIDFreeFall, false);
 
-            if (_verticalVelocity < 0.0f)
+            if (_animator.GetBool(_animIDJump) == false)
             {
-                _verticalVelocity = -2f;
+                _verticalVelocity = GROUNDED_VERTICAL_VEROCITY;
             }
-
 
             if (_jumpTimeoutDelta >= 0.0f)
             {

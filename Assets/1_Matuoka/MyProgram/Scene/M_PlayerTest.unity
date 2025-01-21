@@ -2602,6 +2602,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6250606337119821870, guid: dc8965673a73a2b4b9783cb17af17c0f,
         type: 3}
+      propertyPath: GROUNDED_RADIUS
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6250606337119821870, guid: dc8965673a73a2b4b9783cb17af17c0f,
+        type: 3}
       propertyPath: managedReferences[1002].red
       value: 
       objectReference: {fileID: 0}

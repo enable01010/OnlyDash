@@ -196,4 +196,24 @@ public static class LibTransform
     {
         return RotationDirOfObjectFront(obj, new Vector3(dir.x, 0, dir.y));
     }
+
+
+    /// <summary>
+    /// 子階層以下のすべてのオブジェクト一覧を取得する処理
+    /// </summary>
+    /// <param name="parent">自身</param>
+    /// <param name="list">入力しなくてよしメモリ対策用変数</param>
+    /// <returns></returns>
+    public static List<Transform> GetAllChildren(this Transform parent, List<Transform> list = null)
+    {
+        if (list == null) list = new List<Transform>();
+
+        list.Add(parent);
+        foreach (Transform children in parent)
+        {
+            children.GetAllChildren(list);
+        }
+
+        return list;
+    }
 }

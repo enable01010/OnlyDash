@@ -61,7 +61,7 @@ public class AutoGetComponentChildDrawer : PropertyDrawer
         // 名前一致オブジェクトを探す
         foreach (Transform child in children)
         {
-            if (child.name.CompareTo(name) == 0)
+            if (child.name.Equals(name))
             {
                 // 名前一致オブジェクトを代入
                 nameObj = child.gameObject;
